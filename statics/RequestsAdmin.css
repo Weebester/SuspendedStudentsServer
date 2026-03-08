@@ -1,0 +1,307 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    min-height: 100vh;
+    /* Full screen height */
+    font-family: sans-serif;
+     align-items: flex-start;
+}
+
+.sidebar {
+    width: 20%;
+    min-width: 200px;
+    background-color: #333030;
+    color: #fff;
+    padding: 1em;
+    
+    /* Sticky Logic */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0; /* Prevents the sidebar from squishing */
+}
+
+
+.NavName h1 {
+    margin: 0;
+    padding: 1em 0.5em;
+    font-size: 1.75rem;
+    border-bottom: 1px solid #444;
+}
+
+
+.NavOps {
+    list-style: none;
+    padding: 0;
+    margin-top: 1em;
+}
+
+
+.NavOps li a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.NavOps li a:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Content takes all remaining space */
+.content {
+    flex-grow: 1;
+    padding: 2em;
+    width: 0;  
+    min-height: 100vh;
+    padding: 24px;
+    background-color: #f9fafb;
+
+      --primary: #2563eb;
+    --border: #e5e7eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --pending: #ea580c;
+    --accepted: #16a34a;
+    --denied: #dc2626;
+    --bg-gray: #f9fafb;
+    
+    padding: 24px;
+    background-color: var(--bg-gray);
+    font-family: sans-serif;
+}
+
+.content .status-btn {
+    padding: 10px 16px; /* Increased vertical padding to match select */
+    height: 41px;       /* Explicit height for perfect alignment */
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 12px; /* Matched the soft edges of your dropdowns */
+    cursor: pointer;
+    background: #f3f4f6;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+/* 3. Ensure the filter bar doesn't have extra vertical space */
+.content .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px; 
+    border: 1px solid grey;
+    margin-bottom: 30px;
+    align-items: flex-end; 
+    justify-content: space-between;
+   
+}
+
+.emptybox {
+    flex-grow: 1;
+}
+
+.input-group {
+    font-family: sans-serif;
+    
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group select {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px; 
+    background-color: #f9f9f9;
+    color: #333;
+    outline: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Hover & Focus Effects */
+.input-group select:hover {
+    background-color: #f0f0f0;
+    border-color: #d0d0d0;
+}
+
+.input-group select:focus {
+    background-color: #fff;
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+
+.content .status-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f3f4f6;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.content .download-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    background: green;
+    color:white;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+
+.content .status-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.content .ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.content .ticket-card {
+    background: white;
+    border: 2px solid var(--border); /* Thickened border for the ticket */
+    border-radius: 12px;
+    border-color: grey;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.content .ticket-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.content .card-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content .ticket-id {
+    font-size: 12px;
+    color: var(--primary);
+    background: #eff6ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.content .status-badge {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    border: 1px solid currentColor; /* Outline style for badge */
+}
+
+.content .status-Pending { color: var(--pending); background: #fff7ed; }
+.content .status-Accepted { color: var(--accepted); background: #f0fdf4; }
+.content .status-Denied { color: var(--denied); background: #fef2f2; }
+
+.content .card-body {
+    padding: 16px;
+    flex-grow: 1;
+}
+
+.content .student-name {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.content .student-speciality {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.content .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background: #fcfcfc;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed var(--border);
+}
+
+.content .detail-item p:first-child {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.content .detail-item p:last-child {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 2px 0 0 0;
+    color: var(--text-main);
+}
+
+.content .more-btn {
+    width: 100%;
+    padding: 14px;
+    background: #f9fafb;
+    border: none;
+    border-top: 2px solid var(--border);
+    color: var(--primary);
+    font-weight: bold;
+    cursor: pointer;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    transition: background 0.2s;
+}
+
+.content .more-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

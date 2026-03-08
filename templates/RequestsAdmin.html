@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello</title>
+    <link rel="stylesheet" href="/static/RequestsAdmin.css">
+    <script src="/static/RequestsAdmin.js" defer></script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="NavName">
+            <h2>System 2</h2>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/MainAdmin">Main</a></li>
+            <li><a href="/RequestsAdmin">Requests</a></li>
+            <li><a href="/OptionsAdmin">Options</a></li>
+            <li><a href="/AccountsAdmin">Accounts</a></li>
+        </ul>
+    </div>
+    </div>
+    <div class="content">
+        <div class="dashboard-container">
+            <div class="filter-bar">
+                <div class="input-group">
+                    <label>YEAR FILTER</label>
+                    <select id="yearInput">
+                        <option value="">Any</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>COLLEGE FILTER</label>
+                    <select id="collegeInput">
+                        <option value="">Any</option>
+                    </select>
+
+                </div>
+                <span class="emptybox"></span>
+                <button class="status-btn active" data-status="All">All</button>
+                <button class="status-btn" data-status="Pending">Pending</button>
+                <button class="status-btn" data-status="Accepted">Accepted</button>
+                <button class="status-btn" data-status="Denied">Denied</button>
+                <button class="download-btn" onclick="window.location.href='/download-excel'">Excel</button>
+                
+            </div>
+
+            <div id="ticketContainer" class="ticket-grid"></div>
+        </div>
+       
+    </div>
+
+</body>
+
+</html>

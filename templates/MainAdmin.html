@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="Ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello</title>
+    <link rel="stylesheet" href="/static/MainAdmin.css">
+    <script src="/static/MainAdmin.js" defer></script>
+</head>
+
+<body>
+
+    <div class="content">
+        <div class="logo"><img src="/static/Logo.png" alt="Logo"></div>
+        <div class="Stats">
+            <div class="stat-card">
+                <p class="label">مقبول</p>
+                <p class="count" id="count-accepted">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="label">مرفوض</p>
+                <p class="count" id="count-denied">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="label">قيد الانتظار</p>
+                <p class="count" id="count-pending">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="NavName">
+            <h1>الرئيسية</h1>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/MainAdmin">الرئيسية</a></li>
+            <li><a href="/RequestsAdmin">الطلبات</a></li>
+            <li><a href="/OptionsAdmin">الاعدادات</a></li>
+            <li><a href="/AccountsAdmin">الحسابات</a></li>
+        </ul>
+    </div>
+</body>
+
+</html>
