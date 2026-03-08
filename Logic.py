@@ -6,8 +6,6 @@ from fastapi.security import OAuth2PasswordBearer
 import jwt
 import datetime
 import secrets
-
-from Script import check_password
 from datamodels import *
 
 secret_key = secrets.token_hex(32)
@@ -25,7 +23,7 @@ def tokenCheck(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-########################################################Login################################################################
+########################################################AccountsOPs################################################################
 
 
 async def Login(cred: str, password: str) -> dict:
@@ -46,6 +44,70 @@ async def Login(cred: str, password: str) -> dict:
 
     else:
         return {"success": False, "message": "User not found", "status_code": 456}
+
+
+
+async def get_users():
+    return await UsersList.all().values()
+
+
+async def delete_user(user_id: int):
+    user = await users.get(id=user_id)
+    if user:
+        await user.delete()
+        return {"success": True,"status_code": 200, "message": "User deleted successfully"}
+    else:
+        return {"success": False, "status_code": 404, "message": "User not found"}
+
+
+async def add_user(cred: str, password: str, college: str):
+    existing_user = await users.get_or_none(cred=cred)
+    if existing_user:
+        return {"success": False, "status_code": 400, "message": "User already exists"}
+    cid = await Colleges.get(college=college)
+    print(cid)
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
+    return {"success": True, "status_code": 200, "message": "User added successfully"}
+
+async def toggle_user_status(user_id: int, enable: bool):
+    user = await users.get(id=user_id)
+    if user:
+        await user.update(enabled=Flag.Yes if enable else Flag.No)
+        return {"success": True, "status_code": 200, "message": "User status updated successfully"}
+    else:
+        return {"success": False, "status_code": 404, "message": "User not found"}
+
+async def toggle_all_users_status(enable: bool):
+    new_status = Flag.Yes if enable else Flag.No
+    await users.filter(id__not=1).update(enabled=new_status)
+    return {"success": True, "status_code": 200, "message": "All user statuses updated successfully"}
+
+
+    
+async def get_users():
+    return await UsersList.all().values()
+
+
+async def delete_user(user_id: int):
+    user = await users.get(id=user_id)
+    if user:
+        await user.delete()
+        return {"success": True,"status_code": 200, "message": "User deleted successfully"}
+    else:
+        return {"success": False, "status_code": 404, "message": "User not found"}
+
+
+async def add_user(cred: str, password: str, college: str):
+    existing_user = await users.get_or_none(cred=cred)
+    if existing_user:
+        return {"success": False, "status_code": 400, "message": "User already exists"}
+    cid = await Colleges.get(college=college)
+    print(cid)
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
+    return {"success": True, "status_code": 200, "message": "User added successfully"}
+
 
 
 #####################################################################################################################
@@ -102,27 +164,3 @@ async def get_requests_Admin(
         result = result.offset(offset).limit(page_size)
 
     return await result.values()
-
-
-async def get_users():
-    return await UsersList.all().values()
-
-
-async def delete_user(user_id: int):
-    user = await users.get(id=user_id)
-    if user:
-        await user.delete()
-        return {"success": True,"status_code": 200, "message": "User deleted successfully"}
-    else:
-        return {"success": False, "status_code": 404, "message": "User not found"}
-
-
-async def add_user(cred: str, password: str, college: str):
-    existing_user = await users.get_or_none(cred=cred)
-    if existing_user:
-        return {"success": False, "status_code": 400, "message": "User already exists"}
-    cid = await Colleges.get(college=college)
-    print(cid)
-    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-    new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
-    return {"success": True, "status_code": 200, "message": "User added successfully"}

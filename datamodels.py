@@ -32,11 +32,20 @@ class JobStatus(Model):
     class Meta:
         table = "jobstatus"
 
+class JobStatusSub(Model):
+    id = fields.IntField(pk=True)
+    status = fields.IntField()
+    sub = fields.CharField(max_length=50)
+
+    class Meta:
+        table = "jobstatussub"
+
 class users(Model):
     id = fields.IntField(pk=True)
     cred = fields.CharField(max_length=50)
     password = fields.CharField(max_length=128)
     college = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag, default=Flag.No)
 
     class Meta:
         table = "users"
@@ -67,6 +76,13 @@ class Status(Model):
 class Study(Model):
     id = fields.IntField(pk=True)
     study = fields.CharField(max_length=50)
+
+    class Meta:
+        table = "study"
+
+class Study(Model):
+    id = fields.IntField(pk=True)
+    study = fields.IntField()
     Sub = fields.CharField(max_length=50)
 
     class Meta:
@@ -108,12 +124,13 @@ class excel(Model):
     
     AcceptionYear =  fields.CharField(max_length=50)
     SuspensionYear =  fields.CharField(max_length=50)
+    SuspensionReason =  fields.CharField(max_length=512)
     
     jobstatus =  fields.CharField(max_length=100)
     RequestStatus = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
     status = fields.CharField(max_length=100,default="~")
 
-    SuspensionReason =  fields.CharField(max_length=512)
+    
     benefactor = fields.CharEnumField(Flag)
     RequestYear =  fields.CharField(max_length=50)
     
@@ -136,9 +153,9 @@ class requestscount(Model):
         managed = False
 
 
-from tortoise import fields, models
 
-class RequestsAdmin(models.Model):
+
+class RequestsAdmin(Model):
     
     id = fields.IntField(pk=True)
     StudentName = fields.CharField(max_length=100)
@@ -152,11 +169,12 @@ class RequestsAdmin(models.Model):
         table = "requests_admin"
         managed = False
 
-class UsersList(models.Model):
+class UsersList(Model):
     
     id = fields.IntField(pk=True)
     cred = fields.CharField(max_length=50)
     college = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag)
 
     class Meta:
         table = "userslist"

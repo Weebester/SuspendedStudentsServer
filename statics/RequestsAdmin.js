@@ -43,7 +43,7 @@ const statusButtons = document.querySelectorAll('.status-btn');
 
 async function fetchData() {
     ticketContainer.innerHTML = '<p style="padding: 20px;">Fetching records...</p>';
-    const url = new URL(API_BASE + '/requestsA');
+    const url = new URL(API_BASE + '/requestsAdmin');
     const params = new URLSearchParams();
 
     if (currentStatus !== 'All') params.append('status', currentStatus);

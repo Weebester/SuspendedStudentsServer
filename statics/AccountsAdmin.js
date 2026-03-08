@@ -26,8 +26,11 @@ async function fetchAccounts() {
                 <div class="account-info">
                     <div class="info-item"><label>Username</label><span>${acc.cred}</span></div>
                     <div class="info-item"><label>College</label><span>${acc.college}</span></div>
+                    <div class="info-item"><label>Enabled?:</label><span>${acc.enabled}</span></div>
                 </div>
                 <div class="account-actions">
+                    <button class="action-btn btn-enable" onclick="placeholder(${acc.id}, true)">enable</button>
+                    <button class="action-btn btn-disable" onclick="placeholder(${acc.id}, false)">disable</button>
                     <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id}, '${acc.cred}')">Change Password</button>
                     <button class="action-btn btn-remove" onclick="deleteAccount(${acc.id})">Remove</button>
                 </div>

@@ -122,6 +122,29 @@ body {
     cursor: pointer;
 }
 
+#EnableAllBtn {
+    height: 41px;
+    padding: 0 24px;
+    background:#57ce67;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#DisableAllBtn {
+    height: 41px;
+    padding: 0 24px;
+    background:#e29637;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
 /* Account Rows */
 .account-row {
     display: flex;
@@ -162,6 +185,9 @@ body {
 
 .btn-change-pw { background: #e0f2fe; color: #0369a1; }
 .btn-remove { background: #fee2e2; color: #dc2626; }
+.btn-enable { background: #e0f2fe; color: #2b9439; }
+.btn-disable { background: #fee2e2; color: #9c6624; }
+
 
 /* Modal Styles */
 .modal-overlay {

@@ -117,6 +117,7 @@ async def MainU(request: Request):
 
 ####################################-Account-Ops-########################################
 
+
 class LoginRequest(BaseModel):
     cred: str
     password: str
@@ -190,12 +191,52 @@ async def add_account(body: AddUserRequest, request: Request):
     else:
         raise HTTPException(status_code=result["status_code"], detail=result["message"])
 
+@app.patch  ("/toggle_user/{account_id}")
+async def toggle_user(account_id: int, request: Request, enable: bool):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    result = await toggle_user_status(account_id, enable)
+
+    if result["success"]:
+        return result
+    else:
+        raise HTTPException(status_code=result["status_code"], detail=result["message"])
+
+@app.patch("/toggle_all_users")
+async def toggle_all_users(request: Request, enable: bool):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    result = await toggle_all_users_status(enable)
+
+    if result["success"]:
+        return result
+    else:
+        raise HTTPException(status_code=result["status_code"], detail=result["message"])
 #################################################-Files-##################################################
 
 
 @app.get("/download-excel")
-async def download_excel(request: Request):
+async def download_excel(request: Request, year: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -206,11 +247,11 @@ async def download_excel(request: Request):
         raise HTTPException(status_code=401, detail="Invalid token")
 
     if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+        records = []
+    else:
+        records = await get_data_for_excel(year=year)
 
-    records = await get_data_for_excel()
-
-    if not records:
+    if not records or len(records) == 0:
         raise HTTPException(status_code=404, detail="No records found")
 
     # 2. Convert to DataFrame and drop 'id'
@@ -226,13 +267,42 @@ async def download_excel(request: Request):
     if "RequestYear" in df.columns:
         df["RequestYear"] = df["RequestYear"].apply(lambda y: f"{y}-{y+1}")
 
-    if "benefactor" in df.columns:
-        df["benefactor"] = df["benefactor"].apply(lambda x: x.value if hasattr(x, 'value') else x)
-        
-    if "RequestStatus" in df.columns:
-        df["RequestStatus"] = df["RequestStatus"].apply(lambda x: x.value if hasattr(x, 'value') else x)
+    benefactor_map = {Flag.Yes: "نعم", Flag.No: "لا"}
 
-    # 4. Save to a byte stream (In-memory file)
+    if "benefactor" in df.columns:
+        df["benefactor"] = df["benefactor"].apply(lambda x: benefactor_map.get(x, x))
+
+    RequestStatus_map = {
+        RequestStatus.PENDING: "قيد الانتظار",
+        RequestStatus.ACCEPTED: "مقبول",
+        RequestStatus.DENIED: "مرفوض",
+    }
+
+    if "RequestStatus" in df.columns:
+        df["RequestStatus"] = df["RequestStatus"].apply(
+            lambda x: RequestStatus_map.get(x, x)
+        )
+
+    header_map = {
+        "StudentName": "اسم الطالب",
+        "BirthDate": "التولد",
+        "college": "الكلية",
+        "department": "القسم",
+        "speciality": "التخصص",
+        "study": "المرحلة الدراسية",
+        "AcceptionYear": "سنة القبول",
+        "SuspensionYear": "سنة الترقين",
+         "SuspensionReason": "سبب لبترقين",
+        "jobstatus": "الموقف الوظيفي",
+        "RequestStatus": "حالة الطلب",
+        "status": "موقف الطلب",
+        "benefactor": "مستفيد سابقا",
+        "RequestYear": "العام الدراسي الحالي",
+        
+    }
+
+    df.rename(columns=header_map, inplace=True)
+
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Students")
@@ -247,22 +317,9 @@ async def download_excel(request: Request):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
 
+
+
 ##############################################-filters-Items-#######################################################
-
-@app.get("/Stats")
-async def MainU(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") == 1:
-        return await get_stats()
-    return {"message": "tbd"}
 
 
 @app.get("/get_colleges_list")
@@ -306,24 +363,10 @@ async def get_colleges_list(request: Request):
     return await get_colleges()
 
 
-@app.get("/get_users_list")
-async def get_users_list(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_users()
-
 #######################################################-Admin-OPs-################################################################
 
-@app.get("/requestsA")
+
+@app.get("/requestsAdmin")
 async def requests(
     request: Request,
     page: Optional[int] = None,
@@ -347,10 +390,43 @@ async def requests(
     )
 
 
+@app.get("/get_users_list")
+async def get_users_list(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    return await get_users()
+
+
+
 ######################################-Non-Admin-OPs-################################
 
 
 ######################################################################
+
+@app.get("/Stats")
+async def MainU(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") == 1:
+        return await get_stats()
+    return {"message": "tbd"}
+
 
 @app.get("/logo")
 async def get_logo():
