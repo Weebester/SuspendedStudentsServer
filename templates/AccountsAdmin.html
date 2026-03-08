@@ -12,19 +12,6 @@
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="NavName">
-            <h2>System 4</h2>
-        </div>
-        <ul class="NavOps">
-            <li><a href="/MainAdmin">Main</a></li>
-            <li><a href="/RequestsAdmin">Requests</a></li>
-            <li><a href="/OptionsAdmin">Options</a></li>
-            <li><a href="/AccountsAdmin">Accounts</a></li>
-        </ul>
-    </div>
-
-
     <div class="content">
         <div class="filter-bar">
             <div class="input-group">
@@ -64,6 +51,22 @@
                     <button class="action-btn" onclick="closeModal()">Cancel</button>
                     <button id="confirmPassBtn" class="action-btn btn-change-pw">Update</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="NavName">
+            <h1>الرئيسية</h1>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/MainAdmin">الرئيسية</a></li>
+            <li><a href="/RequestsAdmin">الطلبات</a></li>
+            <li><a href="/AccountsAdmin">الحسابات</a></li>
+        </ul>
+        <div class="OptionsContainer">
+            <button class="OptionsToggle" onclick="toggleOptions()">الاعدادات</button>
+            <div id="OptionsList" class="SubMenu">
+                <a href="/OptionsAdmin/College">الكلية-القسم</a>
             </div>
         </div>
     </div>

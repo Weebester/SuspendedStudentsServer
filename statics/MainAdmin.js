@@ -5,6 +5,7 @@ async function loadStats() {
         if (!response.ok) throw new Error('Network error');
 
         const data = await response.json();
+        // Tip: Use optional chaining or check if elements exist to prevent errors
         document.getElementById('count-accepted').textContent = data.Accepted;
         document.getElementById('count-denied').textContent = data.Denied;
         document.getElementById('count-pending').textContent = data.Pending;
@@ -14,4 +15,13 @@ async function loadStats() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadStats);
+loadStats();
+
+function toggleOptions() {
+    const list = document.getElementById("OptionsList");
+    if (list.style.display === "block") {
+        list.style.display = "none";
+    } else {
+        list.style.display = "block";
+    }
+}

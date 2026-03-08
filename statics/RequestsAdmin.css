@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
     /* Full screen height */
     font-family: sans-serif;
-     align-items: flex-start;
+    align-items: flex-start;
 }
 
 .sidebar {
@@ -19,13 +19,14 @@ body {
     background-color: #333030;
     color: #fff;
     padding: 1em;
-    
+
     /* Sticky Logic */
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
-    flex-shrink: 0; /* Prevents the sidebar from squishing */
+    flex-shrink: 0;
+    /* Prevents the sidebar from squishing */
 }
 
 
@@ -58,16 +59,63 @@ body {
     color: #fff;
 }
 
+/* Styling the button to match your .NavOps li a exactly */
+.OptionsToggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    color: #ddd;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.OptionsToggle:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Sub-menu styling */
+.SubMenu {
+    display: none;
+    /* Hidden by default */
+    padding-left: 1.5em;
+    /* Indent sub-items */
+}
+
+/* Style the sub-links just like the main links */
+.SubMenu a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    /* Slightly smaller to show hierarchy */
+    transition: background-color 0.3s ease;
+}
+
+.SubMenu a:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+
 /* Content takes all remaining space */
 .content {
     flex-grow: 1;
     padding: 2em;
-    width: 0;  
+    width: 0;
     min-height: 100vh;
     padding: 24px;
     background-color: #f9fafb;
 
-      --primary: #2563eb;
+    --primary: #2563eb;
     --border: #e5e7eb;
     --text-main: #1f2937;
     --text-muted: #6b7280;
@@ -75,19 +123,22 @@ body {
     --accepted: #16a34a;
     --denied: #dc2626;
     --bg-gray: #f9fafb;
-    
+
     padding: 24px;
     background-color: var(--bg-gray);
     font-family: sans-serif;
 }
 
 .content .status-btn {
-    padding: 10px 16px; /* Increased vertical padding to match select */
-    height: 41px;       /* Explicit height for perfect alignment */
+    padding: 10px 16px;
+    /* Increased vertical padding to match select */
+    height: 41px;
+    /* Explicit height for perfect alignment */
     display: flex;
     align-items: center;
     border: 1px solid var(--border);
-    border-radius: 12px; /* Matched the soft edges of your dropdowns */
+    border-radius: 12px;
+    /* Matched the soft edges of your dropdowns */
     cursor: pointer;
     background: #f3f4f6;
     color: var(--text-muted);
@@ -102,12 +153,12 @@ body {
     gap: 16px;
     background: white;
     padding: 20px;
-    border-radius: 12px; 
+    border-radius: 12px;
     border: 1px solid grey;
     margin-bottom: 30px;
-    align-items: flex-end; 
+    align-items: flex-end;
     justify-content: space-between;
-   
+
 }
 
 .emptybox {
@@ -116,7 +167,7 @@ body {
 
 .input-group {
     font-family: sans-serif;
-    
+
 }
 
 .input-group label {
@@ -134,7 +185,7 @@ body {
     padding: 10px 15px;
     font-size: 14px;
     border: 1px solid #e0e0e0;
-    border-radius: 12px; 
+    border-radius: 12px;
     background-color: #f9f9f9;
     color: #333;
     outline: none;
@@ -172,7 +223,7 @@ body {
     border-radius: 4px;
     cursor: pointer;
     background: green;
-    color:white;
+    color: white;
     font-weight: 500;
     transition: all 0.2s;
 }
@@ -192,7 +243,8 @@ body {
 
 .content .ticket-card {
     background: white;
-    border: 2px solid var(--border); /* Thickened border for the ticket */
+    border: 2px solid var(--border);
+    /* Thickened border for the ticket */
     border-radius: 12px;
     border-color: grey;
     display: flex;
@@ -228,12 +280,24 @@ body {
     padding: 2px 10px;
     border-radius: 99px;
     text-transform: uppercase;
-    border: 1px solid currentColor; /* Outline style for badge */
+    border: 1px solid currentColor;
+    /* Outline style for badge */
 }
 
-.content .status-Pending { color: var(--pending); background: #fff7ed; }
-.content .status-Accepted { color: var(--accepted); background: #f0fdf4; }
-.content .status-Denied { color: var(--denied); background: #fef2f2; }
+.content .status-Pending {
+    color: var(--pending);
+    background: #fff7ed;
+}
+
+.content .status-Accepted {
+    color: var(--accepted);
+    background: #f0fdf4;
+}
+
+.content .status-Denied {
+    color: var(--denied);
+    background: #fef2f2;
+}
 
 .content .card-body {
     padding: 16px;
@@ -296,12 +360,4 @@ body {
 .content .more-btn:hover {
     background: var(--primary);
     color: white;
-}
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
 }

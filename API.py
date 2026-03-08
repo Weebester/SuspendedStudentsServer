@@ -99,6 +99,21 @@ async def AccountsA(request: Request):
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     return templates.TemplateResponse(request=request, name="AccountsAdmin.html")
 
+@app.get("/OptionsAdmin/College", response_class=HTMLResponse)
+async def OptionsCollege(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    return templates.TemplateResponse(request=request, name="CollegesOptions.html")
+
 
 #############################################################################
 

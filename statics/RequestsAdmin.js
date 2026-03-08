@@ -116,6 +116,15 @@ statusButtons.forEach(btn => {
     });
 });
 
+function toggleOptions() {
+    const list = document.getElementById("OptionsList");
+    if (list.style.display === "block") {
+        list.style.display = "none";
+    } else {
+        list.style.display = "block";
+    }
+}
+
 // Event Listeners for Dropdown Changes
 yearInput.addEventListener('change', fetchData);
 collegeInput.addEventListener('change', fetchData);

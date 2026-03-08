@@ -11,18 +11,7 @@
 </head>
 
 <body>
-    <div class="sidebar">
-        <div class="NavName">
-            <h2>System 2</h2>
-        </div>
-        <ul class="NavOps">
-            <li><a href="/MainAdmin">Main</a></li>
-            <li><a href="/RequestsAdmin">Requests</a></li>
-            <li><a href="/OptionsAdmin">Options</a></li>
-            <li><a href="/AccountsAdmin">Accounts</a></li>
-        </ul>
-    </div>
-    </div>
+
     <div class="content">
         <div class="dashboard-container">
             <div class="filter-bar">
@@ -44,15 +33,32 @@
                 <button class="status-btn" data-status="Pending">Pending</button>
                 <button class="status-btn" data-status="Accepted">Accepted</button>
                 <button class="status-btn" data-status="Denied">Denied</button>
-                <button class="download-btn" onclick="window.location.href='/download-excel?year='+ document.getElementById('yearInput').value">Excel</button>
-                
+                <button class="download-btn"
+                    onclick="window.location.href='/download-excel?year='+ document.getElementById('yearInput').value">Excel</button>
+
             </div>
 
             <div id="ticketContainer" class="ticket-grid"></div>
         </div>
-       
+
     </div>
 
+    <div class="sidebar">
+        <div class="NavName">
+            <h1>الرئيسية</h1>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/MainAdmin">الرئيسية</a></li>
+            <li><a href="/RequestsAdmin">الطلبات</a></li>
+            <li><a href="/AccountsAdmin">الحسابات</a></li>
+        </ul>
+        <div class="OptionsContainer">
+            <button class="OptionsToggle" onclick="toggleOptions()">الاعدادات</button>
+            <div id="OptionsList" class="SubMenu">
+                <a href="/OptionsAdmin/College">الكلية-القسم</a>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

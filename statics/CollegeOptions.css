@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
     /* Full screen height */
     font-family: sans-serif;
-    align-items: flex-start;
+     align-items: flex-start;
 }
 
 .sidebar {
@@ -19,34 +19,33 @@ body {
     background-color: #333030;
     color: #fff;
     padding: 1em;
-
+    
     /* Sticky Logic */
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
-    flex-shrink: 0;
-    /* Prevents the sidebar from squishing */
+    flex-shrink: 0; /* Prevents the sidebar from squishing */
 }
 
 .NavName h1 {
     margin: 0;
     padding: 1em 0.5em;
     font-size: 1.75rem;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #444; 
 }
 
 
 .NavOps {
-    list-style: none;
+    list-style: none; 
     padding: 0;
     margin-top: 1em;
 }
 
 
 .NavOps li a {
-    display: block;
-    color: #ddd;
+    display: block; 
+    color: #ddd;    
     text-decoration: none;
     padding: 0.8em 1em;
     border-radius: 4px;
@@ -57,7 +56,6 @@ body {
     background-color: #555;
     color: #fff;
 }
-
 /* Styling the button to match your .NavOps li a exactly */
 .OptionsToggle {
     display: block;
@@ -81,10 +79,8 @@ body {
 
 /* Sub-menu styling */
 .SubMenu {
-    display: none;
-    /* Hidden by default */
-    padding-left: 1.5em;
-    /* Indent sub-items */
+    display: none; /* Hidden by default */
+    padding-left: 1.5em; /* Indent sub-items */
 }
 
 /* Style the sub-links just like the main links */
@@ -94,8 +90,7 @@ body {
     text-decoration: none;
     padding: 0.8em 1em;
     border-radius: 4px;
-    font-size: 0.95rem;
-    /* Slightly smaller to show hierarchy */
+    font-size: 0.95rem; /* Slightly smaller to show hierarchy */
     transition: background-color 0.3s ease;
 }
 
@@ -106,68 +101,11 @@ body {
 
 .content {
     flex-grow: 1;
-    width: 0;
+    width: 0;  
     min-height: 100vh;
     padding: 24px;
     background-color: #f9fafb;
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
-}
-
-.logo {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.logo img {
-    max-width: 300px;
-    /* Adjust based on your logo size */
-    height: auto;
-}
-
-.Stats {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    gap: 24px;
-    flex-shrink: 0;
-    margin-top: auto;
-    padding: 40px 20px;
-}
-
-.stat-card {
-    background-color: #ffffff;
-    min-width: 200px;
-    flex: 1;
-    max-width: 350px;
-    border-radius: 16px;
-    text-align: center;
-    padding: 30px;
-
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: #bbb;
-}
-
-.stat-card .label {
-    margin: 0;
-    font-size: 1rem;
-    color: #777;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.stat-card .count {
-    margin: 15px 0 0 0;
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #222;
 }

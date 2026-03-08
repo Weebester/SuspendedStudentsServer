@@ -99,3 +99,12 @@ document.getElementById('addAccountBtn').onclick = async () => {
         alert("Error: " + (errorMessage || "Failed to add account"));
     }
 };
+
+function toggleOptions() {
+    const list = document.getElementById("OptionsList");
+    if (list.style.display === "block") {
+        list.style.display = "none";
+    } else {
+        list.style.display = "block";
+    }
+}

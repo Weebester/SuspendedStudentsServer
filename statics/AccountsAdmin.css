@@ -57,6 +57,49 @@ body {
     color: #fff;
 }
 
+/* Styling the button to match your .NavOps li a exactly */
+.OptionsToggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    color: #ddd;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.OptionsToggle:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Sub-menu styling */
+.SubMenu {
+    display: none; /* Hidden by default */
+    padding-left: 1.5em; /* Indent sub-items */
+}
+
+/* Style the sub-links just like the main links */
+.SubMenu a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    font-size: 0.95rem; /* Slightly smaller to show hierarchy */
+    transition: background-color 0.3s ease;
+}
+
+.SubMenu a:hover {
+    background-color: #555;
+    color: #fff;
+}
+
 .content {
     flex-grow: 1;
     padding: 2em;
@@ -215,13 +258,3 @@ body {
     gap: 10px;
     margin-top: 20px;
 }
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
