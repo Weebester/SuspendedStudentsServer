@@ -38,12 +38,21 @@ async def login_process(cred: str, password: str) -> dict:
             except jwt.PyJWTError as e:
                 raise RuntimeError(f"Token generation failed: {e}")
 
-            return {"Token": token, "success": True, "college": user.college}
+            return {"Token": token, "college": user.college}
         else:
-            return {"success": False, "message": "Invalid password", "status_code": 401}
-
+            raise HTTPException(status_code=401, detail="Invalid password")
     else:
-        return {"success": False, "message": "User not found", "status_code": 456}
+        raise HTTPException(status_code=404, detail="User not found")
+
+
+async def change_user_password(user_id: int, new_password: str):
+    try:
+        hashed_password = bcrypt.hashpw(
+            new_password.encode(), bcrypt.gensalt()
+        ).decode()
+        await users.get(id=user_id).update(password=hashed_password)
+    except:
+        raise HTTPException(status_code=404, detail="faild to update password")
 
 
 
@@ -51,73 +60,63 @@ async def get_users_admin():
     return await UsersList.all().values()
 
 
-async def delete_user(user_id: int):
+async def delete_user(user_id: int, password: str):
+    user = await users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
     user = await users.get(id=user_id)
     if user:
         await user.delete()
-        return {"success": True,"status_code": 200, "message": "User deleted successfully"}
     else:
-        return {"success": False, "status_code": 404, "message": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 async def add_user(cred: str, password: str, college: str):
     existing_user = await users.get_or_none(cred=cred)
     if existing_user:
-        return {"success": False, "status_code": 400, "message": "User already exists"}
+        raise HTTPException(status_code=400, detail="User already exists")
     cid = await Colleges.get(college=college)
-    print(cid)
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-    new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
-    return {"success": True, "status_code": 200, "message": "User added successfully"}
+    await users.create(cred=cred, password=hashed_password, college=cid.id)
+   
+
 
 async def toggle_user(user_id: int, enable: bool):
     user = await users.get(id=user_id)
     if user:
         await user.update(enabled=Flag.Yes if enable else Flag.No)
-        return {"success": True, "status_code": 200, "message": "User status updated successfully"}
+        return {
+            "success": True,
+            "status_code": 200,
+            "message": "User status updated successfully",
+        }
     else:
         return {"success": False, "status_code": 404, "message": "User not found"}
+
 
 async def toggle_all_users(enable: bool):
     new_status = Flag.Yes if enable else Flag.No
     await users.filter(id__not=1).update(enabled=new_status)
-    return {"success": True, "status_code": 200, "message": "All user statuses updated successfully"}
-
-
-    
-async def get_users_admin():
-    return await UsersList.all().values()
-
-
-async def delete_user(user_id: int):
-    user = await users.get(id=user_id)
-    if user:
-        await user.delete()
-        return {"success": True,"status_code": 200, "message": "User deleted successfully"}
-    else:
-        return {"success": False, "status_code": 404, "message": "User not found"}
-
-
-async def add_user(cred: str, password: str, college: str):
-    existing_user = await users.get_or_none(cred=cred)
-    if existing_user:
-        return {"success": False, "status_code": 400, "message": "User already exists"}
-    cid = await Colleges.get(college=college)
-    print(cid)
-    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-    new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
-    return {"success": True, "status_code": 200, "message": "User added successfully"}
-
+    return {
+        "success": True,
+        "status_code": 200,
+        "message": "All user statuses updated successfully",
+    }
 
 
 #####################################################################################################################
 
-async def get_data_for_excel(year: int=None):
+
+async def get_data_for_excel(year: int = None):
     if not year:
         current_year = await RequestYear.get(current=Flag.Yes)
         year = current_year.Startyear
     data = await excel.filter(RequestYear=year).values()
-    return data  
+
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found for the specified year")
+    return data
+
 
 async def get_stats():
     stats = await requestscount.get(id=1)
@@ -143,7 +142,7 @@ async def get_years():
 
 
 async def get_requests_admin(
-    page: int = None, status: str = None, year: int = None, college: str = None
+    status: str = None, year: int = None, college: str = None
 ):
     result = RequestsAdmin.all()
     if status is not None:
@@ -156,18 +155,59 @@ async def get_requests_admin(
     if not year:
         current_year = await RequestYear.get(current=Flag.Yes)
         year = current_year.Startyear
+
     result = result.filter(RequestYear=year)
 
-    if page is not None:
-        page_size = 4
-        offset = page * page_size
-        result = result.offset(offset).limit(page_size)
+    
+    result = await result.values()
+    return result
 
-    return await result.values()
-
-
+#########################################################-Colleges-OPs-########################################################
 async def get_colleges_admin():
-    CollegesList = await Colleges.filter(id__not=1).values("id","college")
+    CollegesList = await Colleges.filter(id__not=1).values("id", "college")
     if not CollegesList:
         raise HTTPException(status_code=404, detail="No colleges found")
     return CollegesList
+
+async def add_college_admin(name: str):
+    existing_college = await Colleges.get_or_none(college=name)
+    if existing_college:
+        raise HTTPException(status_code=400, detail="College already exists")
+    await Colleges.create(college=name)
+    
+
+async def delete_college_admin(college_id: int, password: str):
+    user = await users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    college = await Colleges.get(id=college_id)
+    if college:
+        await college.delete()
+    else:
+        raise HTTPException(status_code=404, detail="College not found")
+    
+#############################################################-Departments-OPs-########################################################
+async def get_departments_admin():
+    DepartmentsList = await Departments.all().values("id", "department", "college")
+    if not DepartmentsList:
+        raise HTTPException(status_code=404, detail="No departments found")
+    return DepartmentsList
+
+async def add_department_admin(name: str, college_id: int):
+    existing_department = await Departments.get_or_none(department=name)
+    if existing_department:
+        raise HTTPException(status_code=400, detail="Department already exists")
+
+    await Departments.create(department=name, college=college_id)
+    
+
+async def delete_department_admin(department_id: int, password: str):
+    user = await users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    department = await Departments.get(id=department_id)
+    if department:
+        await department.delete()
+    else:
+        raise HTTPException(status_code=404, detail="Department not found")
+    

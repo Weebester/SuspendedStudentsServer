@@ -20,9 +20,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             const data = await response.json();
             //alert(data.college);
             if (data.college === 1) {
-                window.location.href = "/MainAdmin";
+                window.location.href = "/Admin/Main";
             } else {
-                window.location.href = "/MainUser";
+                window.location.href = "/User/Main";
             }
         } else {
             const errorData = await response.json();

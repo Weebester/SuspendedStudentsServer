@@ -8,25 +8,32 @@ body {
     display: flex;
     margin: 0;
     min-height: 100vh;
-
     font-family: sans-serif;
     align-items: flex-start;
 }
 
+/* --- Sidebar Styling --- */
 .sidebar {
     width: 20%;
     min-width: 200px;
     background-color: #333030;
     color: #fff;
     padding: 1em;
-
-    /* Sticky Logic */
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
     flex-shrink: 0;
-    /* Prevents the sidebar from squishing */
+}
+
+/* Sidebar Scrollbar Logic */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
 }
 
 .NavName h1 {
@@ -34,8 +41,8 @@ body {
     padding: 1em 0.5em;
     font-size: 1.75rem;
     border-bottom: 1px solid #444;
+    text-align: right;
 }
-
 
 .NavOps {
     list-style: none;
@@ -43,97 +50,96 @@ body {
     margin-top: 1em;
 }
 
-
-.NavOps li a {
-    display: block;
-    color: #ddd;
-    text-decoration: none;
-    padding: 0.8em 1em;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-.NavOps li a:hover {
-    background-color: #555;
-    color: #fff;
-}
-
-/* Styling the button to match your .NavOps li a exactly */
+.NavOps li a,
 .OptionsToggle {
     display: block;
     width: 100%;
-    text-align: left;
+    text-align: right;
     background: none;
     border: none;
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
-    color: #ddd;
-    padding: 0.8em 1em;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-.OptionsToggle:hover {
-    background-color: #555;
-    color: #fff;
-}
-
-/* Sub-menu styling */
-.SubMenu {
-    display: none;
-    /* Hidden by default */
-    padding-left: 1.5em;
-    /* Indent sub-items */
-}
-
-/* Style the sub-links just like the main links */
-.SubMenu a {
-    display: block;
     color: #ddd;
     text-decoration: none;
     padding: 0.8em 1em;
     border-radius: 4px;
-    font-size: 0.95rem;
-    /* Slightly smaller to show hierarchy */
     transition: background-color 0.3s ease;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
 }
 
+.NavOps li a:hover,
+.OptionsToggle:hover ,
 .SubMenu a:hover {
     background-color: #555;
     color: #fff;
 }
 
-.content {
-    flex-grow: 1;
-    padding: 2em;
-    width: 0;
-    min-height: 100vh;
-    padding: 24px;
-    background-color: #f9fafb;
-
-    padding: 24px;
-    background-color: var(--bg-gray);
-    font-family: sans-serif;
+.SubMenu {
+    display: none;
+    padding-left: 1.5em;
 }
 
+.SubMenu a {
+    display: block;
+    color: #ddd;
+    text-align: right;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
 
-/* Add Account Bar */
-.content .filter-bar {
+/* --- Main Content Scope --- */
+.content {
+    flex-grow: 1;
+    height: 100vh;
+    padding: 24px;
+    background-color: #f9fafb;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.content .split-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 48px);
+    width: 100%;
+    align-items: stretch;
+}
+
+.content .side-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+.content .separator {
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #001e3b, transparent);
+    align-self: stretch;
+    margin: 0 3px;
+}
+
+/* --- UI Elements --- */
+.content .input-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
     background: white;
-    padding: 20px;
+    padding: 16px;
     border-radius: 12px;
-    border: 1px solid gray;
-    margin-bottom: 30px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 20px;
     align-items: flex-end;
+    flex-shrink: 0;
 }
 
 .content .input-group {
     flex: 1;
-    min-width: 140px;
+    min-width: 110px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -155,12 +161,32 @@ body {
     border-radius: 10px;
     background-color: #f9f9f9;
     outline: none;
-    transition: 0.2s;
 }
 
-#addAccountBtn {
+/* --- Scrollable Containers --- */
+#collegeContainer,
+#departmentContainer {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+#collegeContainer::-webkit-scrollbar,
+#departmentContainer::-webkit-scrollbar {
+    width: 5px;
+}
+
+#collegeContainer::-webkit-scrollbar-thumb,
+#departmentContainer::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+}
+
+/* --- Action Buttons & Rows --- */
+#addCollegeBtn,
+#addDeptBtn {
     height: 41px;
-    padding: 0 24px;
+    padding: 0 20px;
     background: #007bff;
     color: white;
     border: none;
@@ -169,88 +195,41 @@ body {
     cursor: pointer;
 }
 
-#EnableAllBtn {
-    height: 41px;
-    padding: 0 24px;
-    background: #57ce67;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#DisableAllBtn {
-    height: 41px;
-    padding: 0 24px;
-    background: #e29637;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-
-/* Account Rows */
-.account-row {
+.content .item-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: white;
-    padding: 16px 24px;
+    padding: 16px 20px;
     border-radius: 12px;
-    border: 1px solid grey;
+    border: 1px solid #d1d5db;
     margin-bottom: 12px;
 }
 
-.account-info {
+.content .item-info {
     display: flex;
-    gap: 40px;
+    gap: 25px;
 }
 
-.info-item label {
+.content .info label {
     display: block;
     font-size: 10px;
     color: #999;
-    text-transform: uppercase;
 }
 
-.info-item span {
+.content .info span {
     font-weight: 600;
     color: #333;
 }
 
-.action-btn {
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    border: none;
-    font-weight: 500;
-}
-
-.btn-change-pw {
-    background: #e0f2fe;
-    color: #0369a1;
-}
-
-.btn-remove {
+.content .btn-remove {
     background: #fee2e2;
     color: #dc2626;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    cursor: pointer;
 }
-
-.btn-enable {
-    background: #e0f2fe;
-    color: #2b9439;
-}
-
-.btn-disable {
-    background: #fee2e2;
-    color: #9c6624;
-}
-
-
 
 /* --- Modal Styling --- */
 .content .modal-overlay {
@@ -278,7 +257,7 @@ body {
     gap: 15px;
     animation: modalFadeIn 0.3s ease-out;
 }
-
+ 
 /* Container for modal buttons */
 .content .modal-actions {
     display: flex;
@@ -295,10 +274,8 @@ body {
     font-weight: 600;
     cursor: pointer;
     border: none;
-    background-color: #f3f4f6;
-    /* Light gray */
-    color: #4b5563;
-    /* Gray text */
+    background-color: #f3f4f6; /* Light gray */
+    color: #4b5563;           /* Gray text */
     transition: background-color 0.2s;
 }
 
@@ -315,38 +292,20 @@ body {
     font-weight: 700;
     cursor: pointer;
     border: 1px solid #fecaca;
-    background-color: #fee2e2;
-    /* Soft red */
-    color: #dc2626;
-    /* Danger red */
+    background-color: #fee2e2; /* Soft red */
+    color: #dc2626;           /* Danger red */
     transition: all 0.2s ease;
 }
 
 .content .btn-modal-confirm:hover {
-    background-color: #dc2626;
-    /* Solid red */
+    background-color: #dc2626; /* Solid red */
     color: white;
     border-color: #b91c1c;
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 /* Click feedback for both */
-.content .btn-modal-cancel:active,
+.content .btn-modal-cancel:active, 
 .content .btn-modal-confirm:active {
     transform: scale(0.97);
-}
-
-
-/* Update button specific colors */
-.content .btn-modal-confirm#confirmChangeBtn {
-    background-color: #e0f2fe; /* Light blue */
-    color: #0369a1;           /* Dark blue text */
-    border: 1px solid #bae6fd;
-}
-
-.content .btn-modal-confirm#confirmChangeBtn:hover {
-    background-color: #0369a1;
-    color: white;
-    border-color: #0369a1;
-    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
 }

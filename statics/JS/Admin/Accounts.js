@@ -18,7 +18,7 @@ let activeAccountId = null;
 })();
 
 async function fetchAccounts() {
-    const res = await fetch(`${API_BASE}/get_users_admin`);
+    const res = await fetch(`${API_BASE}/get_users`);
     const accounts = await res.json();
 
     container.innerHTML = accounts.map(acc => `
@@ -43,11 +43,11 @@ let activePassUpdateId = null;
 // Called by the "Change Password" button in your list
 function openPassModal(id) {
     activePassUpdateId = id;
-    
+
     // Reset fields
     document.getElementById('newPassInput').value = '';
     document.getElementById('confirmNewPassInput').value = '';
-    
+
     document.getElementById('changePassModal').style.display = 'flex';
 }
 
@@ -65,17 +65,24 @@ document.getElementById('confirmChangeBtn').onclick = async () => {
         return alert("Passwords must match and cannot be empty.");
     }
 
-    const res = await fetch(`${API_BASE}/accounts/${activePassUpdateId}/password`, {
+    const response = await fetch(`${API_BASE}/change_pass_user/${activePassUpdateId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: newPass })
     });
 
-    if (res.ok) {
+    if (response.ok) {
         alert("Password updated successfully!");
         closePassModal();
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
     } else {
-        alert("Failed to update password.");
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Login Failed";
+
+        alert("Error: " + errorMessage);
     }
 };
 
@@ -83,7 +90,7 @@ function closeModal() {
     const modal = document.getElementById('passwordModal');
     if (modal) {
         modal.style.display = 'none'; // Hides the overlay
-        
+
         // Clear the inputs so they are empty next time you open it
         document.getElementById('deleteConfirmPass').value = '';
         document.getElementById('deleteConfirmCheck').value = '';
@@ -97,14 +104,14 @@ let activeAccountIdToDelete = null;
 // Replace your old deleteAccount function with this
 function deleteAccount(id) {
     activeAccountIdToDelete = id;
-    
+
     // Reset modal inputs
     document.getElementById('deleteConfirmPass').value = '';
     document.getElementById('deleteConfirmCheck').value = '';
-    
+
     // Update modal text for clarity (Optional)
     document.getElementById('modalUserInfo').textContent = "Confirming account deletion. Please enter your password.";
-    
+
     // Show modal
     document.getElementById('passwordModal').style.display = 'flex';
 }
@@ -118,17 +125,24 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
         return alert("Passwords must match and cannot be empty.");
     }
 
-    const res = await fetch(`${API_BASE}/delete_user/${activeAccountIdToDelete}`, {
+    const response = await fetch(`${API_BASE}/delete_user/${activeAccountIdToDelete}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pass })
     });
 
-    if (res.ok) {
+    if (response.ok) {
         closeModal();
         fetchAccounts();
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
     } else {
-        alert("Delete failed. Please check your password.");
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Failed";
+
+        alert("Error: " + errorMessage);
     }
 };
 
@@ -141,19 +155,23 @@ document.getElementById('addAccountBtn').onclick = async () => {
 
     if (!user || !pass || !conf) return alert("Fill all fields");
     if (pass !== conf) return alert("Passwords mismatch");
-    const res = await fetch(`${API_BASE}/add_user/`, {
+    const response = await fetch(`${API_BASE}/add_user/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cred: user, password: pass, college: coll })
     });
 
-    if (res.ok) {
+    if (response.ok) {
         fetchAccounts();
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
     } else {
-        const errorData = await res.json();
-        const errorMessage = errorData.detail;
 
-        alert("Error: " + (errorMessage || "Failed to add account"));
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Failed";
+
+        alert("Error: " + errorMessage);
     }
 };
 

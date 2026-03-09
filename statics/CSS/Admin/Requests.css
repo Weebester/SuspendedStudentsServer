@@ -8,35 +8,41 @@ body {
     display: flex;
     margin: 0;
     min-height: 100vh;
-    /* Full screen height */
     font-family: sans-serif;
     align-items: flex-start;
 }
 
+/* --- Sidebar Styling --- */
 .sidebar {
     width: 20%;
     min-width: 200px;
     background-color: #333030;
     color: #fff;
     padding: 1em;
-
-    /* Sticky Logic */
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
     flex-shrink: 0;
-    /* Prevents the sidebar from squishing */
 }
 
+/* Sidebar Scrollbar Logic */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
 
 .NavName h1 {
     margin: 0;
     padding: 1em 0.5em;
     font-size: 1.75rem;
     border-bottom: 1px solid #444;
+    text-align: right;
 }
-
 
 .NavOps {
     list-style: none;
@@ -44,65 +50,44 @@ body {
     margin-top: 1em;
 }
 
-
-.NavOps li a {
+.NavOps li a,
+.OptionsToggle {
     display: block;
+    width: 100%;
+    text-align: right;
+    background: none;
+    border: none;
     color: #ddd;
     text-decoration: none;
     padding: 0.8em 1em;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-}
-
-.NavOps li a:hover {
-    background-color: #555;
-    color: #fff;
-}
-
-/* Styling the button to match your .NavOps li a exactly */
-.OptionsToggle {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
+    cursor: pointer;
     font-family: inherit;
     font-size: inherit;
-    cursor: pointer;
-    color: #ddd;
-    padding: 0.8em 1em;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
 }
 
-.OptionsToggle:hover {
+.NavOps li a:hover,
+.OptionsToggle:hover ,
+.SubMenu a:hover {
     background-color: #555;
     color: #fff;
 }
 
-/* Sub-menu styling */
 .SubMenu {
     display: none;
-    /* Hidden by default */
     padding-left: 1.5em;
-    /* Indent sub-items */
 }
 
-/* Style the sub-links just like the main links */
 .SubMenu a {
     display: block;
     color: #ddd;
     text-decoration: none;
+    text-align: right;
     padding: 0.8em 1em;
     border-radius: 4px;
     font-size: 0.95rem;
-    /* Slightly smaller to show hierarchy */
     transition: background-color 0.3s ease;
-}
-
-.SubMenu a:hover {
-    background-color: #555;
-    color: #fff;
 }
 
 

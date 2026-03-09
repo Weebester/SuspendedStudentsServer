@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="AR">
 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello</title>
-    <link rel="stylesheet" href="/static/RequestsAdmin.css">
-    <script src="/static/RequestsAdmin.js" defer></script>
+    <link rel="stylesheet" href="/static/CSS/Admin/Requests.css">
+    <script src="/static/JS/Admin/Requests.js" defer></script>
 </head>
 
 <body>
@@ -34,7 +34,7 @@
                 <button class="status-btn" data-status="Accepted">Accepted</button>
                 <button class="status-btn" data-status="Denied">Denied</button>
                 <button class="download-btn"
-                    onclick="window.location.href='/download-excel?year='+ document.getElementById('yearInput').value">Excel</button>
+                    onclick="window.location.href='/download_excel?year='+ document.getElementById('yearInput').value">Excel</button>
 
             </div>
 
@@ -45,17 +45,22 @@
 
     <div class="sidebar">
         <div class="NavName">
-            <h1>الرئيسية</h1>
+            <h1>مشرف</h1>
         </div>
         <ul class="NavOps">
-            <li><a href="/MainAdmin">الرئيسية</a></li>
-            <li><a href="/RequestsAdmin">الطلبات</a></li>
-            <li><a href="/AccountsAdmin">الحسابات</a></li>
+            <li><a href="/Admin/Main">الرئيسية</a></li>
+            <li><a href="/Admin/Requests">الطلبات</a></li>
+            <li><a href="/Admin/Accounts">الحسابات</a></li>
         </ul>
         <div class="OptionsContainer">
-            <button class="OptionsToggle" onclick="toggleOptions()">الاعدادات</button>
+            <button class="OptionsToggle" onclick="toggleOptions()">▼ الاعدادات</button>
             <div id="OptionsList" class="SubMenu">
-                <a href="/OptionsAdmin/College">الكلية-القسم</a>
+                <a href="/Admin/CollegesOptions">الكلية-القسم</a>
+                <a href="/Admin/CollegesOptions">سنة دراسية</a>
+                <a href="/Admin/CollegesOptions">سنة الطلب</a>
+                <a href="/Admin/CollegesOptions">نوع الدراسة</a>
+                <a href="/Admin/CollegesOptions">الحالة الوظيفية</a>
+                <a href="/Admin/CollegesOptions">حالة الطلب</a>
             </div>
         </div>
     </div>

@@ -36,98 +36,34 @@ async def root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
-@app.get("/MainAdmin", response_class=HTMLResponse)
-async def MainA(request: Request):
+@app.get("/Admin/{page}", response_class=HTMLResponse)
+async def MainA(page: str, request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
         payload = tokenCheck(token)
-
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
+        #raise
+        return templates.TemplateResponse(request=request, name="index.html")
     if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return templates.TemplateResponse(request=request, name="MainAdmin.html")
+        #raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+        return templates.TemplateResponse(request=request, name="index.html")
+    return templates.TemplateResponse(request=request, name=f"Admin/{page}.html")
 
 
-@app.get("/OptionsAdmin", response_class=HTMLResponse)
-async def OptionsA(request: Request):
+@app.get("/User/{page}", response_class=HTMLResponse)
+async def MainU(request: Request, page: str):
     token = request.cookies.get("Token")
     if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return templates.TemplateResponse(request=request, name="OptionsAdmin.html")
-
-
-@app.get("/RequestsAdmin", response_class=HTMLResponse)
-async def RequestsA(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return templates.TemplateResponse(request=request, name="RequestsAdmin.html")
-
-
-@app.get("/AccountsAdmin", response_class=HTMLResponse)
-async def AccountsA(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return templates.TemplateResponse(request=request, name="AccountsAdmin.html")
-
-@app.get("/OptionsAdmin/College", response_class=HTMLResponse)
-async def OptionsCollege(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return templates.TemplateResponse(request=request, name="CollegesOptions.html")
-
-
-#############################################################################
-
-
-@app.get("/MainUser", response_class=HTMLResponse)
-async def MainU(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        #raise HTTPException(status_code=401, detail="Not authenticated")
+        return templates.TemplateResponse(request=request, name="index.html")
     try:
         tokenCheck(token)
-        return templates.TemplateResponse(request=request, name="MainUser.html")
+        return templates.TemplateResponse(request=request, name=f"User/{page}.html")
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        #raise
+        return templates.TemplateResponse(request=request, name="index.html")
 
 
 ####################################-Account-Ops-########################################
@@ -138,11 +74,14 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class Password(BaseModel):
+    password: str
+
+
 @app.post("/login")
 async def login(body: LoginRequest, response: Response):
-    result = await login_process(cred=body.cred, password=body.password)
-    if result["success"]:
-
+    try:
+        result = await login_process(cred=body.cred, password=body.password)
         response.set_cookie(
             key="Token",
             value=result["Token"],
@@ -151,12 +90,30 @@ async def login(body: LoginRequest, response: Response):
             secure=False,
         )
         return {"college": result["college"]}
-    else:
-        raise HTTPException(status_code=result["status_code"], detail=result["message"])
+    except HTTPException:
+        raise
+
+@app.get("/get_users")
+async def getUsersList(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    try:
+        return await get_users_admin()
+    except HTTPException:
+        raise
 
 
 @app.delete("/delete_user/{account_id}")
-async def deleteUser(account_id: int, request: Request):
+async def deleteUser(account_id: int, request: Request, body: Password):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -164,17 +121,15 @@ async def deleteUser(account_id: int, request: Request):
     try:
         payload = tokenCheck(token)
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await delete_user(account_id)
-
-    if result["success"]:
-        return result
-    else:
-        raise HTTPException(status_code=result["status_code"], detail=result["message"])
+    try:
+        await delete_user(account_id, body.password)
+    except HTTPException:
+        raise
 
 
 class AddUserRequest(BaseModel):
@@ -192,21 +147,37 @@ async def addUser(body: AddUserRequest, request: Request):
     try:
         payload = tokenCheck(token)
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    try:
+        await add_user(cred=body.cred, password=body.password, college=body.college)
+    except HTTPException:
+        raise
+
+
+@app.patch("/change_pass_user/{account_id}")
+async def changePassword(account_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await add_user(
-        cred=body.cred, password=body.password, college=body.college
-    )
+    try:
+        await change_user_password(account_id, body.password)
+    except HTTPException:
+        raise
 
-    if result["success"]:
-        return result
-    else:
-        raise HTTPException(status_code=result["status_code"], detail=result["message"])
-
-@app.patch  ("/toggle_user/{account_id}")
+####to be done###
+@app.patch("/toggle_user/{account_id}")
 async def toggleUser(account_id: int, request: Request, enable: bool):
     token = request.cookies.get("Token")
     if not token:
@@ -215,7 +186,7 @@ async def toggleUser(account_id: int, request: Request, enable: bool):
     try:
         payload = tokenCheck(token)
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
@@ -227,6 +198,7 @@ async def toggleUser(account_id: int, request: Request, enable: bool):
     else:
         raise HTTPException(status_code=result["status_code"], detail=result["message"])
 
+####to be done###
 @app.patch("/toggle_all_users")
 async def toggleAllUsers(request: Request, enable: bool):
     token = request.cookies.get("Token")
@@ -247,10 +219,12 @@ async def toggleAllUsers(request: Request, enable: bool):
         return result
     else:
         raise HTTPException(status_code=result["status_code"], detail=result["message"])
+
+
 #################################################-Files-##################################################
 
 
-@app.get("/download-excel")
+@app.get("/download_excel")
 async def downloadExcel(request: Request, year: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
@@ -259,7 +233,7 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
         payload = tokenCheck(token)
 
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     if payload.get("id") != 1:
         records = []
@@ -269,7 +243,6 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
     if not records or len(records) == 0:
         raise HTTPException(status_code=404, detail="No records found")
 
-    # 2. Convert to DataFrame and drop 'id'
     df = pd.DataFrame(records)
     if "id" in df.columns:
         df = df.drop(columns=["id"])
@@ -307,13 +280,12 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
         "study": "المرحلة الدراسية",
         "AcceptionYear": "سنة القبول",
         "SuspensionYear": "سنة الترقين",
-         "SuspensionReason": "سبب لبترقين",
+        "SuspensionReason": "سبب لبترقين",
         "jobstatus": "الموقف الوظيفي",
         "RequestStatus": "حالة الطلب",
         "status": "موقف الطلب",
         "benefactor": "مستفيد سابقا",
         "RequestYear": "العام الدراسي الحالي",
-        
     }
 
     df.rename(columns=header_map, inplace=True)
@@ -333,7 +305,6 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
     )
 
 
-
 ##############################################-filters-Items-#######################################################
 
 
@@ -345,7 +316,7 @@ async def get_colleges_list(request: Request):
     try:
         tokenCheck(token)
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     return await get_colleges()
 
@@ -359,7 +330,7 @@ async def get_years_list(request: Request):
         tokenCheck(token)
 
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     return await get_years()
 
@@ -370,7 +341,6 @@ async def get_years_list(request: Request):
 @app.get("/get_requests_admin")
 async def getRequestsAdmin(
     request: Request,
-    page: Optional[int] = None,
     status: Optional[str] = None,
     year: Optional[int] = None,
     college: Optional[str] = None,
@@ -382,29 +352,18 @@ async def getRequestsAdmin(
         payload = tokenCheck(token)
 
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_requests_admin(
-        page=page, status=status, year=year, college=college
-    )
 
-
-@app.get("/get_users_admin")
-async def getUsersList(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = tokenCheck(token)
-
+        return await get_requests_admin(status=status, year=year, college=college)
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_users_admin()
+
+#######################################################colleges-ops############################################
 
 @app.get("/get_colleges_admin")
 async def getCollegesAdmin(request: Request):
@@ -415,17 +374,126 @@ async def getCollegesAdmin(request: Request):
         payload = tokenCheck(token)
 
     except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_colleges_admin()
+    
+    try:
+        return await get_colleges_admin()
+    except HTTPException:
+        raise
+
+class AddCollegeRequest(BaseModel):
+    name: str   
+
+@app.post("/add_college_admin")
+async def addCollegeAdmin(request: Request, body: AddCollegeRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        await add_college_admin(name=body.name)
+    except HTTPException:
+        raise
+
+@app.delete("/delete_college_admin/{college_id}")
+async def deleteCollegeAdmin(college_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        await delete_college_admin(college_id=college_id, password=body.password)
+    except HTTPException:
+        raise
+
+######################################################department-op#####################################
+
+@app.get("/get_departments_admin")
+async def getDepartmentsAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        return await get_departments_admin()
+    except HTTPException:
+        raise
+
+class AddDepartmentRequest(BaseModel):
+    name: str
+    college: int    
+
+@app.post("/add_department_admin")
+async def addDepartmentAdmin(request: Request, body: AddDepartmentRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        await add_department_admin(name=body.name, college_id=body.college)
+    except HTTPException:
+        raise
+
+@app.delete("/delete_department_admin/{department_id}")
+async def deleteDepartmentAdmin(department_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        await delete_department_admin(department_id=department_id, password=body.password)
+    except HTTPException:
+        raise
 
 
 ######################################-Non-Admin-OPs-################################
 
 
 ######################################################################
+
 
 @app.get("/stats")
 async def getStats(request: Request):

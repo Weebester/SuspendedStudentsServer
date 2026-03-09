@@ -63,15 +63,24 @@ async function fetchData() {
 
     url.search = params.toString();
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+    const response = await fetch(url);
+    if (response.ok) {
         const apiData = await response.json();
         renderTickets(apiData);
-    } catch (err) {
-        ticketContainer.innerHTML = `<p style="color: red; padding: 20px;">Error: ${err.message}</p>`;
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Failed";
+
+        alert("Error: " + errorMessage);
     }
+
 }
+
 
 function renderTickets(data) {
     if (!data || data.length === 0) {
