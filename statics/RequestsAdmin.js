@@ -43,7 +43,7 @@ const statusButtons = document.querySelectorAll('.status-btn');
 
 async function fetchData() {
     ticketContainer.innerHTML = '<p style="padding: 20px;">Fetching records...</p>';
-    const url = new URL(API_BASE + '/requestsAdmin');
+    const url = new URL(API_BASE + '/get_requests_admin');
     const params = new URLSearchParams();
 
     if (currentStatus !== 'All') params.append('status', currentStatus);
@@ -125,6 +125,5 @@ function toggleOptions() {
     }
 }
 
-// Event Listeners for Dropdown Changes
 yearInput.addEventListener('change', fetchData);
 collegeInput.addEventListener('change', fetchData);

@@ -26,7 +26,7 @@ def tokenCheck(token: str):
 ########################################################AccountsOPs################################################################
 
 
-async def Login(cred: str, password: str) -> dict:
+async def login_process(cred: str, password: str) -> dict:
     #  print("request received")
     #  print(cred)
     user = await users.get(cred=cred)
@@ -47,7 +47,7 @@ async def Login(cred: str, password: str) -> dict:
 
 
 
-async def get_users():
+async def get_users_admin():
     return await UsersList.all().values()
 
 
@@ -70,7 +70,7 @@ async def add_user(cred: str, password: str, college: str):
     new_user = await users.create(cred=cred, password=hashed_password, college=cid.id)
     return {"success": True, "status_code": 200, "message": "User added successfully"}
 
-async def toggle_user_status(user_id: int, enable: bool):
+async def toggle_user(user_id: int, enable: bool):
     user = await users.get(id=user_id)
     if user:
         await user.update(enabled=Flag.Yes if enable else Flag.No)
@@ -78,14 +78,14 @@ async def toggle_user_status(user_id: int, enable: bool):
     else:
         return {"success": False, "status_code": 404, "message": "User not found"}
 
-async def toggle_all_users_status(enable: bool):
+async def toggle_all_users(enable: bool):
     new_status = Flag.Yes if enable else Flag.No
     await users.filter(id__not=1).update(enabled=new_status)
     return {"success": True, "status_code": 200, "message": "All user statuses updated successfully"}
 
 
     
-async def get_users():
+async def get_users_admin():
     return await UsersList.all().values()
 
 
@@ -142,7 +142,7 @@ async def get_years():
     return years
 
 
-async def get_requests_Admin(
+async def get_requests_admin(
     page: int = None, status: str = None, year: int = None, college: str = None
 ):
     result = RequestsAdmin.all()
@@ -164,3 +164,10 @@ async def get_requests_Admin(
         result = result.offset(offset).limit(page_size)
 
     return await result.values()
+
+
+async def get_colleges_admin():
+    CollegesList = await Colleges.filter(id__not=1).values("id","college")
+    if not CollegesList:
+        raise HTTPException(status_code=404, detail="No colleges found")
+    return CollegesList

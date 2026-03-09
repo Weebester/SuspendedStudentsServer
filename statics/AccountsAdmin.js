@@ -18,7 +18,7 @@ let activeAccountId = null;
 })();
 
 async function fetchAccounts() {
-    const res = await fetch(`${API_BASE}/get_users_list`);
+    const res = await fetch(`${API_BASE}/get_users_admin`);
     const accounts = await res.json();
 
     container.innerHTML = accounts.map(acc => `
@@ -31,49 +31,106 @@ async function fetchAccounts() {
                 <div class="account-actions">
                     <button class="action-btn btn-enable" onclick="placeholder(${acc.id}, true)">enable</button>
                     <button class="action-btn btn-disable" onclick="placeholder(${acc.id}, false)">disable</button>
-                    <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id}, '${acc.cred}')">Change Password</button>
+                    <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id})">Change Password</button>
                     <button class="action-btn btn-remove" onclick="deleteAccount(${acc.id})">Remove</button>
                 </div>
             </div>
         `).join('');
 }
 
-// Modal Control
-function openPassModal(id, username) {
-    activeAccountId = id;
-    document.getElementById('modalUserInfo').textContent = `User: ${cred}`;
-    document.getElementById('modalNewPass').value = '';
-    document.getElementById('passwordModal').style.display = 'flex';
+let activePassUpdateId = null;
+
+// Called by the "Change Password" button in your list
+function openPassModal(id) {
+    activePassUpdateId = id;
+    
+    // Reset fields
+    document.getElementById('newPassInput').value = '';
+    document.getElementById('confirmNewPassInput').value = '';
+    
+    document.getElementById('changePassModal').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('passwordModal').style.display = 'none';
-    activeAccountId = null;
+function closePassModal() {
+    document.getElementById('changePassModal').style.display = 'none';
+    activePassUpdateId = null;
 }
 
-// Password Update Submission
-document.getElementById('confirmPassBtn').onclick = async () => {
-    const password = document.getElementById('modalNewPass').value;
-    if (!password) return alert("Enter a password");
+// Handle the Update Button click
+document.getElementById('confirmChangeBtn').onclick = async () => {
+    const newPass = document.getElementById('newPassInput').value;
+    const confirmPass = document.getElementById('confirmNewPassInput').value;
 
-    const res = await fetch(`${API_BASE}/accounts/${activeAccountId}/password`, {
+    if (!newPass || newPass !== confirmPass) {
+        return alert("Passwords must match and cannot be empty.");
+    }
+
+    const res = await fetch(`${API_BASE}/accounts/${activePassUpdateId}/password`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password: newPass })
     });
 
     if (res.ok) {
-        alert("Updated!");
-        closeModal();
+        alert("Password updated successfully!");
+        closePassModal();
+    } else {
+        alert("Failed to update password.");
     }
 };
 
-// Remove Account
-async function deleteAccount(id) {
-    if (!confirm("Remove this account?")) return;
-    await fetch(`${API_BASE}/delete_user/${id}`, { method: 'DELETE' });
-    fetchAccounts();
+function closeModal() {
+    const modal = document.getElementById('passwordModal');
+    if (modal) {
+        modal.style.display = 'none'; // Hides the overlay
+        
+        // Clear the inputs so they are empty next time you open it
+        document.getElementById('deleteConfirmPass').value = '';
+        document.getElementById('deleteConfirmCheck').value = '';
+        activeAccountIdToDelete = null;
+        activeCollegeIdToDelete = null;
+    }
 }
+
+let activeAccountIdToDelete = null;
+
+// Replace your old deleteAccount function with this
+function deleteAccount(id) {
+    activeAccountIdToDelete = id;
+    
+    // Reset modal inputs
+    document.getElementById('deleteConfirmPass').value = '';
+    document.getElementById('deleteConfirmCheck').value = '';
+    
+    // Update modal text for clarity (Optional)
+    document.getElementById('modalUserInfo').textContent = "Confirming account deletion. Please enter your password.";
+    
+    // Show modal
+    document.getElementById('passwordModal').style.display = 'flex';
+}
+
+// Update the Modal's "Confirm" button logic for the Accounts page
+document.getElementById('confirmDeleteBtn').onclick = async () => {
+    const pass = document.getElementById('deleteConfirmPass').value;
+    const conf = document.getElementById('deleteConfirmCheck').value;
+
+    if (!pass || pass !== conf) {
+        return alert("Passwords must match and cannot be empty.");
+    }
+
+    const res = await fetch(`${API_BASE}/delete_user/${activeAccountIdToDelete}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass })
+    });
+
+    if (res.ok) {
+        closeModal();
+        fetchAccounts();
+    } else {
+        alert("Delete failed. Please check your password.");
+    }
+};
 
 // Add Account
 document.getElementById('addAccountBtn').onclick = async () => {

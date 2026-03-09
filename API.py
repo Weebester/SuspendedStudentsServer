@@ -138,9 +138,9 @@ class LoginRequest(BaseModel):
     password: str
 
 
-@app.post("/Login")
-async def login_route(body: LoginRequest, response: Response):
-    result = await Login(cred=body.cred, password=body.password)
+@app.post("/login")
+async def login(body: LoginRequest, response: Response):
+    result = await login_process(cred=body.cred, password=body.password)
     if result["success"]:
 
         response.set_cookie(
@@ -156,7 +156,7 @@ async def login_route(body: LoginRequest, response: Response):
 
 
 @app.delete("/delete_user/{account_id}")
-async def delete_account(account_id: int, request: Request):
+async def deleteUser(account_id: int, request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -184,7 +184,7 @@ class AddUserRequest(BaseModel):
 
 
 @app.post("/add_user")
-async def add_account(body: AddUserRequest, request: Request):
+async def addUser(body: AddUserRequest, request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -207,7 +207,7 @@ async def add_account(body: AddUserRequest, request: Request):
         raise HTTPException(status_code=result["status_code"], detail=result["message"])
 
 @app.patch  ("/toggle_user/{account_id}")
-async def toggle_user(account_id: int, request: Request, enable: bool):
+async def toggleUser(account_id: int, request: Request, enable: bool):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -220,7 +220,7 @@ async def toggle_user(account_id: int, request: Request, enable: bool):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await toggle_user_status(account_id, enable)
+    result = await toggle_user(account_id, enable)
 
     if result["success"]:
         return result
@@ -228,7 +228,7 @@ async def toggle_user(account_id: int, request: Request, enable: bool):
         raise HTTPException(status_code=result["status_code"], detail=result["message"])
 
 @app.patch("/toggle_all_users")
-async def toggle_all_users(request: Request, enable: bool):
+async def toggleAllUsers(request: Request, enable: bool):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -241,7 +241,7 @@ async def toggle_all_users(request: Request, enable: bool):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await toggle_all_users_status(enable)
+    result = await toggle_all_users(enable)
 
     if result["success"]:
         return result
@@ -251,7 +251,7 @@ async def toggle_all_users(request: Request, enable: bool):
 
 
 @app.get("/download-excel")
-async def download_excel(request: Request, year: Optional[int] = None):
+async def downloadExcel(request: Request, year: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -364,25 +364,11 @@ async def get_years_list(request: Request):
     return await get_years()
 
 
-@app.get("/get_colleges_list")
-async def get_colleges_list(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        tokenCheck(token)
-
-    except HTTPException:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    return await get_colleges()
-
-
 #######################################################-Admin-OPs-################################################################
 
 
-@app.get("/requestsAdmin")
-async def requests(
+@app.get("/get_requests_admin")
+async def getRequestsAdmin(
     request: Request,
     page: Optional[int] = None,
     status: Optional[str] = None,
@@ -400,13 +386,13 @@ async def requests(
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_requests_Admin(
+    return await get_requests_admin(
         page=page, status=status, year=year, college=college
     )
 
 
-@app.get("/get_users_list")
-async def get_users_list(request: Request):
+@app.get("/get_users_admin")
+async def getUsersList(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -418,8 +404,22 @@ async def get_users_list(request: Request):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    return await get_users()
+    return await get_users_admin()
 
+@app.get("/get_colleges_admin")
+async def getCollegesAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    return await get_colleges_admin()
 
 
 ######################################-Non-Admin-OPs-################################
@@ -427,8 +427,8 @@ async def get_users_list(request: Request):
 
 ######################################################################
 
-@app.get("/Stats")
-async def MainU(request: Request):
+@app.get("/stats")
+async def getStats(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -444,7 +444,7 @@ async def MainU(request: Request):
 
 
 @app.get("/logo")
-async def get_logo():
+async def getLogo():
     return FileResponse("Logo.png", media_type="image/png")
 
 
