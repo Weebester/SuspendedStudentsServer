@@ -135,7 +135,7 @@ async def deleteUser(account_id: int, request: Request, body: Password):
 class AddUserRequest(BaseModel):
     cred: str
     password: str
-    college: str
+    college_id: int
 
 
 @app.post("/add_user")
@@ -152,7 +152,7 @@ async def addUser(body: AddUserRequest, request: Request):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     try:
-        await add_user(cred=body.cred, password=body.password, college=body.college)
+        await add_user(cred=body.cred, password=body.password, college_id=body.college_id)
     except HTTPException:
         raise
 
@@ -225,7 +225,7 @@ async def toggleAllUsers(request: Request, enable: bool):
 
 
 @app.get("/download_excel")
-async def downloadExcel(request: Request, year: Optional[int] = None):
+async def downloadExcel(request: Request, year: Optional[int] = None , college: Optional[int]=None,status:Optional[str]=None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -235,10 +235,10 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
     except HTTPException:
         raise
 
-    if payload.get("id") != 1:
-        records = []
+    if payload.get("id") == 1:
+        records = await get_data_for_excel(year=year,college_id=college)
     else:
-        records = await get_data_for_excel(year=year)
+        records = await get_data_for_excel(college_id=payload.get("id"),status=status)
 
     if not records or len(records) == 0:
         raise HTTPException(status_code=404, detail="No records found")
@@ -246,14 +246,16 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
     df = pd.DataFrame(records)
     if "id" in df.columns:
         df = df.drop(columns=["id"])
+    if "college_id" in df.columns:
+        df = df.drop(columns=["college_id"])
 
-    if "AcceptionYear" in df.columns:
-        df["AcceptionYear"] = df["AcceptionYear"].apply(lambda y: f"{y}-{y+1}")
-    if "SuspensionYear" in df.columns:
-        df["SuspensionYear"] = df["SuspensionYear"].apply(lambda y: f"{y}-{y+1}")
+    if "acception_year" in df.columns:
+        df["acception_year"] = df["acception_year"].apply(lambda y: f"{y}-{y+1}")
+    if "suspension_year" in df.columns:
+        df["suspension_year"] = df["suspension_year"].apply(lambda y: f"{y}-{y+1}")
 
-    if "RequestYear" in df.columns:
-        df["RequestYear"] = df["RequestYear"].apply(lambda y: f"{y}-{y+1}")
+    if "request_year" in df.columns:
+        df["request_year"] = df["request_year"].apply(lambda y: f"{y}-{y+1}")
 
     benefactor_map = {Flag.Yes: "نعم", Flag.No: "لا"}
 
@@ -266,26 +268,26 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
         RequestStatus.DENIED: "مرفوض",
     }
 
-    if "RequestStatus" in df.columns:
-        df["RequestStatus"] = df["RequestStatus"].apply(
+    if "request_status" in df.columns:
+        df["request_status"] = df["request_status"].apply(
             lambda x: RequestStatus_map.get(x, x)
         )
 
     header_map = {
-        "StudentName": "اسم الطالب",
-        "BirthDate": "التولد",
+        "student_name": "اسم الطالب",
+        "birth_date": "التولد",
         "college": "الكلية",
         "department": "القسم",
         "speciality": "التخصص",
         "study": "المرحلة الدراسية",
-        "AcceptionYear": "سنة القبول",
-        "SuspensionYear": "سنة الترقين",
-        "SuspensionReason": "سبب لبترقين",
-        "jobstatus": "الموقف الوظيفي",
-        "RequestStatus": "حالة الطلب",
+        "acception_year": "سنة القبول",
+        "suspension_year": "سنة الترقين",
+        "suspension_reason": "سبب لبترقين",
+        "job_status": "الموقف الوظيفي",
+        "request_status": "حالة الطلب",
         "status": "موقف الطلب",
         "benefactor": "مستفيد سابقا",
-        "RequestYear": "العام الدراسي الحالي",
+        "request_year": "العام الدراسي الحالي",
     }
 
     df.rename(columns=header_map, inplace=True)
@@ -305,24 +307,10 @@ async def downloadExcel(request: Request, year: Optional[int] = None):
     )
 
 
-##############################################-filters-Items-#######################################################
+##############################################-YearsOPs-#######################################################
 
-
-@app.get("/get_colleges_list")
-async def get_colleges_list(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        tokenCheck(token)
-    except HTTPException:
-        raise
-
-    return await get_colleges()
-
-
-@app.get("/get_years_list")
-async def get_years_list(request: Request):
+@app.get("/get_years_admin")
+async def getYearsAdmin(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -338,7 +326,7 @@ async def get_years_list(request: Request):
 #######################################################-Admin-OPs-################################################################
 
 
-@app.get("/get_requests_admin")
+@app.get("/get_requests")
 async def getRequestsAdmin(
     request: Request,
     status: Optional[str] = None,
@@ -354,11 +342,11 @@ async def getRequestsAdmin(
     except HTTPException:
         raise
 
-    if payload.get("id") != 1:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-
     try:
-        return await get_requests_admin(status=status, year=year, college=college)
+        if payload.get("id") == 1:
+            return await get_requests(status=status, year=year, college_id=college)
+        else:
+            return await get_requests(status=status, college_id=payload.get("id"))
     except HTTPException:
         raise
 
@@ -422,6 +410,28 @@ async def deleteCollegeAdmin(college_id: int, request: Request, body: Password):
     
     try:
         await delete_college_admin(college_id=college_id, password=body.password)
+    except HTTPException:
+        raise
+
+class Rename(BaseModel):
+    new_name:str
+
+@app.patch("/rename_college_admin/{college_id}")
+async def renameCollegeAdmin(college_id:int,request: Request,body:Rename):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    
+    try:
+        await rename_college_admin(college_id=college_id,new_name=body.new_name)
     except HTTPException:
         raise
 

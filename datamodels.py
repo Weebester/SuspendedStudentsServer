@@ -12,40 +12,43 @@ class RequestStatus(Enum):
 
 class EducationalYear(Model):
     id = fields.IntField(pk=True)
-    Startyear = fields.CharField(max_length=50)
+    start_year = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag, default=Flag.No)
 
     class Meta:
-        table = "educationalyear"
+        table = "educational_year"
 
 class RequestYear(Model):
     id = fields.IntField(pk=True)
-    Startyear = fields.CharField(max_length=50)
+    start_year = fields.CharField(max_length=50)
     current = fields.CharEnumField(Flag, default=Flag.No)
 
     class Meta:
-        table = "requestyear"
+        table = "request_year"
 
 class JobStatus(Model):
     id = fields.IntField(pk=True)
     status = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
-        table = "jobstatus"
+        table = "job_status"
 
 class JobStatusSub(Model):
     id = fields.IntField(pk=True)
     status = fields.IntField()
     sub = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
-        table = "jobstatussub"
+        table = "job_status_sub"
 
-class users(Model):
+class Users(Model):
     id = fields.IntField(pk=True)
     cred = fields.CharField(max_length=50)
     password = fields.CharField(max_length=128)
     college = fields.CharField(max_length=100)
-    enabled = fields.CharEnumField(Flag, default=Flag.No)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
         table = "users"
@@ -53,7 +56,6 @@ class users(Model):
 class Colleges(Model):
     id = fields.IntField(pk=True)
     college = fields.CharField(max_length=100)
-    Active = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
         table = "colleges"
@@ -62,6 +64,7 @@ class Departments(Model):
     id = fields.IntField(pk=True)
     college = fields.IntField()
     department = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
         table = "departments"
@@ -69,6 +72,7 @@ class Departments(Model):
 class Status(Model):
     id = fields.IntField(pk=True)
     status = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
         table = "status"
@@ -76,32 +80,34 @@ class Status(Model):
 class Study(Model):
     id = fields.IntField(pk=True)
     study = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
         table = "study"
 
-class Study(Model):
+class StudySub(Model):
     id = fields.IntField(pk=True)
     study = fields.IntField()
     Sub = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
-        table = "study"
+        table = "study_sub"
 
-class requests(Model):
+class Requests(Model):
     id = fields.IntField(pk=True)
-    StudentName = fields.CharField(max_length=100)
+    student_name = fields.CharField(max_length=100)
     college = fields.IntField()
     speciality = fields.CharField(max_length=100)
-    BirthDate = fields.DateField()
+    birth_date = fields.DateField()
     
-    AcceptionYear =  fields.CharField(max_length=50)
-    SuspensionYear =  fields.CharField(max_length=50)
-    SuspensionReason =  fields.CharField(max_length=512)
-    RequestYear =  fields.CharField(max_length=50)
+    acception_year =  fields.CharField(max_length=50)
+    suspension_year =  fields.CharField(max_length=50)
+    suspension_reason =  fields.CharField(max_length=512)
+    request_year =  fields.CharField(max_length=50)
     
-    jobstatus =  fields.CharField(max_length=100)
-    RequestStatus = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
+    job_status =  fields.CharField(max_length=100)
+    request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
     status = fields.CharField(max_length=100,default="~")
     benefactor = fields.CharEnumField(Flag)
     study = fields.CharField(max_length=100)
@@ -112,36 +118,33 @@ class requests(Model):
 
 #######################################Views##################################
 
-class excel(Model):
+class Excel(Model):
     id = fields.IntField(pk=True)
-    StudentName = fields.CharField(max_length=100)
-    BirthDate = fields.DateField()
+    college_id = fields.IntField()
+    student_name = fields.CharField(max_length=100)
+    birth_date = fields.DateField()
 
     college = fields.CharField(max_length=100)
     department = fields.CharField(max_length=100)
     speciality = fields.CharField(max_length=100)
     study = fields.CharField(max_length=100)
     
-    AcceptionYear =  fields.CharField(max_length=50)
-    SuspensionYear =  fields.CharField(max_length=50)
-    SuspensionReason =  fields.CharField(max_length=512)
+    acception_year =  fields.CharField(max_length=50)
+    suspension_year =  fields.CharField(max_length=50)
+    suspension_reason =  fields.CharField(max_length=512)
     
-    jobstatus =  fields.CharField(max_length=100)
-    RequestStatus = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
+    job_status =  fields.CharField(max_length=100)
+    request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
     status = fields.CharField(max_length=100,default="~")
 
-    
     benefactor = fields.CharEnumField(Flag)
-    RequestYear =  fields.CharField(max_length=50)
+    request_year =  fields.CharField(max_length=50)
     
-    
-   
-
     class Meta:
         table = "excel"
         managed= False
 
-class requestscount(Model):
+class RequestsCount(Model):
     id = fields.IntField(pk=True)
 
     ACcount = fields.IntField()
@@ -149,24 +152,26 @@ class requestscount(Model):
     PNcount = fields.IntField()
 
     class Meta:
-        table = "requestscount"
+        table = "requests_count"
         managed = False
 
 
 
 
-class RequestsAdmin(Model):
+class RequestsShort(Model):
     
     id = fields.IntField(pk=True)
-    StudentName = fields.CharField(max_length=100)
-    Speciality = fields.CharField(max_length=100)
+    college_id = fields.IntField()
+    student_name = fields.CharField(max_length=100)
+    speciality = fields.CharField(max_length=100)
     college = fields.CharField(max_length=100)
-    RequestStatus = fields.CharEnumField(RequestStatus)
+    request_status = fields.CharEnumField(RequestStatus)
     study = fields.CharField(max_length=100)
-    RequestYear = fields.CharField(max_length=50 )
+    status= fields.CharField(max_length=100)
+    request_year = fields.CharField(max_length=50 )
 
     class Meta:
-        table = "requests_admin"
+        table = "requests_short"
         managed = False
 
 class UsersList(Model):
@@ -177,5 +182,6 @@ class UsersList(Model):
     enabled = fields.CharEnumField(Flag)
 
     class Meta:
-        table = "userslist"
+        table = "users_list"
         managed = False
+

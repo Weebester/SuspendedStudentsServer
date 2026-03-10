@@ -7,8 +7,8 @@ let activeAccountId = null;
 (async () => {
     try {
         // 1. Populate Colleges (No "Any")
-        const colleges = await fetch(`${API_BASE}/get_colleges_list`).then(r => r.json());
-        colleges.forEach(c => collegeSelect.add(new Option(c, c)));
+        const colleges = await fetch(`${API_BASE}/get_colleges_admin`).then(r => r.json());
+        colleges.forEach(c => collegeSelect.add(new Option(c.college, c.id)));
 
         // 2. Fetch Initial Account List
         await fetchAccounts();
@@ -23,16 +23,17 @@ async function fetchAccounts() {
 
     container.innerHTML = accounts.map(acc => `
             <div class="account-row">
+                
                 <div class="account-info">
-                    <div class="info-item"><label>Username</label><span>${acc.cred}</span></div>
-                    <div class="info-item"><label>College</label><span>${acc.college}</span></div>
-                    <div class="info-item"><label>Enabled?:</label><span>${acc.enabled}</span></div>
+                    <div class="info-item"><label>اسم المستخدم</label><p>${acc.cred}</p></div>
+                    <div class="info-item"><label>الكلية</label><p>${acc.college}</p></div>
+                    <div class="info-item"><label>مفعل:؟</label><p>${acc.enabled}</p></div>
                 </div>
-                <div class="account-actions">
-                    <button class="action-btn btn-enable" onclick="placeholder(${acc.id}, true)">enable</button>
-                    <button class="action-btn btn-disable" onclick="placeholder(${acc.id}, false)">disable</button>
-                    <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id})">Change Password</button>
-                    <button class="action-btn btn-remove" onclick="deleteAccount(${acc.id})">Remove</button>
+                <div class="account-actions"> 
+                    <button class="action-btn btn-disable" onclick="placeholder(${acc.id}, false)">تعطيل</button>
+                    <button class="action-btn btn-enable" onclick="placeholder(${acc.id}, true)">تفعيل</button> 
+                    <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id})">تغير الرمز</button>  
+                    <button class="action-btn btn-remove" onclick="deleteAccount(${acc.id})">حذف</button>
                 </div>
             </div>
         `).join('');
@@ -158,7 +159,7 @@ document.getElementById('addAccountBtn').onclick = async () => {
     const response = await fetch(`${API_BASE}/add_user/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cred: user, password: pass, college: coll })
+        body: JSON.stringify({ cred: user, password: pass, college_id: coll })
     });
 
     if (response.ok) {

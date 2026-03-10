@@ -16,25 +16,27 @@
         <div class="dashboard-container">
             <div class="filter-bar">
                 <div class="input-group">
-                    <label>YEAR FILTER</label>
+                    <label>العام الدراسي</label>
                     <select id="yearInput">
-                        <option value="">Any</option>
+                        <option value="">الحالي</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>COLLEGE FILTER</label>
+                    <label>الكلية</label>
                     <select id="collegeInput">
-                        <option value="">Any</option>
+                        <option value="">الكل</option>
                     </select>
 
                 </div>
+
                 <span class="emptybox"></span>
-                <button class="status-btn active" data-status="All">All</button>
-                <button class="status-btn" data-status="Pending">Pending</button>
-                <button class="status-btn" data-status="Accepted">Accepted</button>
-                <button class="status-btn" data-status="Denied">Denied</button>
-                <button class="download-btn"
-                    onclick="window.location.href='/download_excel?year='+ document.getElementById('yearInput').value">Excel</button>
+                <button class="status-btn active" data-status="All">الكل</button>
+                <button class="status-btn" data-status="Pending">قيد الانتظار</button>
+                <button class="status-btn" data-status="Accepted">مقبول</button>
+                <button class="status-btn" data-status="Denied">مرفوض</button>
+                <button class="download-btn" onclick=downloadExcel()>
+                    Excel
+                </button>
 
             </div>
 

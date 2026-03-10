@@ -15,34 +15,40 @@
         <div class="split-container">
             <div class="side-panel">
                 <div class="input-bar">
+
                     <div class="input-group">
-                        <label>College Name</label>
-                        <input type="text" id="collegeNameInput" placeholder="Enter college name">
+                        <label>اسم الكلية</label>
+                        <input type="text" id="collegeNameInput" placeholder="ادخل الاسم">
                     </div>
-                    <button id="addCollegeBtn">Add College</button>
+
+                    <button id="addCollegeBtn">اضافة كلية</button>
+
                 </div>
                 <div id="collegeContainer">
                 </div>
             </div>
-
             <div class="separator"></div>
-
             <div class="side-panel">
                 <div class="input-bar">
                     <div class="input-group">
-                        <label>Select College</label>
+                        <label>اختر الكلية</label>
                         <select id="deptCollegeSelect">
                         </select>
                     </div>
+
                     <div class="input-group">
-                        <label>Department Name</label>
-                        <input type="text" id="deptNameInput" placeholder="Enter department">
+                        <label>اسم القسم</label>
+                        <input type="text" id="deptNameInput" placeholder="ادخل الاسم">
                     </div>
-                    <button id="addDeptBtn">Add Dept</button>
+                    <button id="addDeptBtn">اضافة قسم</button>
                 </div>
                 <div id="departmentContainer">
                 </div>
             </div>
+
+
+
+
         </div>
 
         <div id="passwordModal" class="modal-overlay" style="display: none;">
@@ -63,6 +69,26 @@
                 </div>
             </div>
         </div>
+
+        <div id="changeNameModal" class="modal-overlay" style="display: none;">
+            <div class="modal-card">
+                <h3>Rename College</h3>
+                <p id="changePassUserInfo">Enter a New Name</p>
+
+                <div class="input-group">
+                    <label>New Name</label>
+                    <input type="text" id="newNameInput" placeholder="new name">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closePassModal()">Cancel</button>
+                    <button id="confirmChangeBtn" class="btn-modal-confirm"
+                        style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Update
+                        Password</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="sidebar">

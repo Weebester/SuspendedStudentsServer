@@ -15,25 +15,31 @@
     <div class="content">
         <div class="filter-bar">
             <div class="input-group">
-                <label>Username</label>
-                <input type="text" id="usernameInput" placeholder="Enter username">
+                <label>اسم المستخدم</label>
+                <input type="text" id="usernameInput" placeholder="ادخل اسم المستخدم">
             </div>
             <div class="input-group">
-                <label>College</label>
+                <label>الكلية</label>
                 <select id="collegeInput">
                 </select>
             </div>
             <div class="input-group">
-                <label>Password</label>
+                <label>الرمز السري</label>
                 <input type="password" id="passwordInput" placeholder="••••••••">
             </div>
+
             <div class="input-group">
-                <label>Confirm</label>
+                <label>تأكيد الرمز</label>
                 <input type="password" id="confirmPasswordInput" placeholder="••••••••">
             </div>
-            <button id="addAccountBtn">Add Account</button>
-            <button id="EnableAllBtn">Enable All</button>
-            <button id="DisableAllBtn">Disable All</button>
+
+            <button id="addAccountBtn">اضافة حساب</button>
+            <button id="DisableAllBtn">تعطيل الكل</button>
+            <button id="EnableAllBtn">تفعيل الكل</button>
+
+
+
+
         </div>
 
         <div id="accountContainer">
@@ -56,7 +62,6 @@
                     <button id="confirmDeleteBtn" class="btn-modal-confirm">Delete Permanently</button>
                 </div>
             </div>
-
         </div>
 
         <div id="changePassModal" class="modal-overlay" style="display: none;">

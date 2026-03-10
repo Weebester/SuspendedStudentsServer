@@ -98,6 +98,7 @@ body {
     background-color: #f9fafb;
     box-sizing: border-box;
     overflow: hidden;
+    direction: rtl;
 }
 
 .content .split-container {
@@ -146,17 +147,16 @@ body {
 }
 
 .content .input-group label {
-    font-size: 11px;
+    font-size: 15px;
     font-weight: bold;
     color: #666;
-    text-transform: uppercase;
 }
 
 .content .input-group input,
 .content .input-group select {
     width: 100%;
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: 15px;
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     background-color: #f9f9f9;
@@ -193,6 +193,7 @@ body {
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
+    font-size: 15px;
 }
 
 .content .item-row {
@@ -209,17 +210,21 @@ body {
 .content .item-info {
     display: flex;
     gap: 25px;
+    font-size: 15px;
 }
 
 .content .info label {
     display: block;
     font-size: 10px;
     color: #999;
+    text-align: right;
+    font-size: 15px;
 }
 
-.content .info span {
+.content .info p{
     font-weight: 600;
     color: #333;
+    font-size: 15px;
 }
 
 .content .btn-remove {
@@ -229,6 +234,17 @@ body {
     border-radius: 8px;
     border: 1px solid #fecaca;
     cursor: pointer;
+    font-size: 15px;
+}
+
+.content .btn-rename {
+    background: #e0f2fe;;
+    color: #0369a1;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #e0f2fe;;
+    cursor: pointer;
+    font-size: 15px;
 }
 
 /* --- Modal Styling --- */
@@ -308,4 +324,19 @@ body {
 .content .btn-modal-cancel:active, 
 .content .btn-modal-confirm:active {
     transform: scale(0.97);
+}
+
+
+/* Update button specific colors */
+.content .btn-modal-confirm#confirmChangeBtn {
+    background-color: #e0f2fe; /* Light blue */
+    color: #0369a1;           /* Dark blue text */
+    border: 1px solid #bae6fd;
+}
+
+.content .btn-modal-confirm#confirmChangeBtn:hover {
+    background-color: #0369a1;
+    color: white;
+    border-color: #0369a1;
+    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
 }

@@ -29,7 +29,7 @@ def tokenCheck(token: str):
 async def login_process(cred: str, password: str) -> dict:
     #  print("request received")
     #  print(cred)
-    user = await users.get(cred=cred)
+    user = await Users.get(cred=cred)
     if user:
         if bcrypt.checkpw(password.encode(), user.password.encode()):
             payload = {"id": user.id}
@@ -50,7 +50,7 @@ async def change_user_password(user_id: int, new_password: str):
         hashed_password = bcrypt.hashpw(
             new_password.encode(), bcrypt.gensalt()
         ).decode()
-        await users.get(id=user_id).update(password=hashed_password)
+        await Users.get(id=user_id).update(password=hashed_password)
     except:
         raise HTTPException(status_code=404, detail="faild to update password")
 
@@ -61,28 +61,27 @@ async def get_users_admin():
 
 
 async def delete_user(user_id: int, password: str):
-    user = await users.get(id=1)
+    user = await Users.get(id=1)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
-    user = await users.get(id=user_id)
+    user = await Users.get(id=user_id)
     if user:
         await user.delete()
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
 
-async def add_user(cred: str, password: str, college: str):
-    existing_user = await users.get_or_none(cred=cred)
+async def add_user(cred: str, password: str, college_id: int):
+    existing_user = await Users.get_or_none(cred=cred)
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
-    cid = await Colleges.get(college=college)
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-    await users.create(cred=cred, password=hashed_password, college=cid.id)
+    await Users.create(cred=cred, password=hashed_password, college=college_id)
    
 
 
 async def toggle_user(user_id: int, enable: bool):
-    user = await users.get(id=user_id)
+    user = await Users.get(id=user_id)
     if user:
         await user.update(enabled=Flag.Yes if enable else Flag.No)
         return {
@@ -96,7 +95,7 @@ async def toggle_user(user_id: int, enable: bool):
 
 async def toggle_all_users(enable: bool):
     new_status = Flag.Yes if enable else Flag.No
-    await users.filter(id__not=1).update(enabled=new_status)
+    await Users.filter(id__not=1).update(enabled=new_status)
     return {
         "success": True,
         "status_code": 200,
@@ -107,19 +106,27 @@ async def toggle_all_users(enable: bool):
 #####################################################################################################################
 
 
-async def get_data_for_excel(year: int = None):
+async def get_data_for_excel(year: int = None ,college_id: str = None,status:str= None):
     if not year:
         current_year = await RequestYear.get(current=Flag.Yes)
-        year = current_year.Startyear
-    data = await excel.filter(RequestYear=year).values()
+        year = current_year.start_year
+    data = Excel.filter(request_year=year)
+    
+    if college_id is not None:
+        data=data.filter(college_id=college_id)
+
+    if status is not None:
+        data=data.filter(status=status)
+
+    data =await data.values() 
 
     if not data:
-        raise HTTPException(status_code=404, detail="No data found for the specified year")
+        raise HTTPException(status_code=404, detail="No data found")
     return data
 
 
 async def get_stats():
-    stats = await requestscount.get(id=1)
+    stats = await RequestsCount.get(id=1)
 
     print(stats.ACcount, stats.DNcount, stats.PNcount)
     return {
@@ -128,56 +135,54 @@ async def get_stats():
         "Pending": stats.PNcount,
     }
 
-
-async def get_colleges():
-
-    colleges = await Colleges.filter(id__not=1).values_list("college", flat=True)
-    print(colleges)
-    return colleges
-
-
 async def get_years():
-    years = await RequestYear.all().values_list("Startyear", flat=True)
+    years = await RequestYear.all().values()
     return years
 
 
-async def get_requests_admin(
-    status: str = None, year: int = None, college: str = None
+async def get_requests(
+    status: str = None, year: int = None, college_id: int = None
 ):
-    result = RequestsAdmin.all()
+    result = RequestsShort.all()
     if status is not None:
         print(status)
-        result = result.filter(RequestStatus=status)
+        result = result.filter(request_status=status)
 
-    if college is not None:
-        result = result.filter(college=college)
+    if college_id is not None:
+        result = result.filter(college_id=college_id)
 
     if not year:
         current_year = await RequestYear.get(current=Flag.Yes)
-        year = current_year.Startyear
+        year = current_year.start_year
 
-    result = result.filter(RequestYear=year)
+    result = result.filter(request_year=year)
 
     
     result = await result.values()
     return result
 
 #########################################################-Colleges-OPs-########################################################
+
 async def get_colleges_admin():
     CollegesList = await Colleges.filter(id__not=1).values("id", "college")
     if not CollegesList:
         raise HTTPException(status_code=404, detail="No colleges found")
     return CollegesList
 
+
 async def add_college_admin(name: str):
     existing_college = await Colleges.get_or_none(college=name)
     if existing_college:
         raise HTTPException(status_code=400, detail="College already exists")
     await Colleges.create(college=name)
+
+
+async def rename_college_admin(college_id=int ,new_name=str):
+    await Colleges.get(id=college_id).update(college=new_name)
     
 
 async def delete_college_admin(college_id: int, password: str):
-    user = await users.get(id=1)
+    user = await Users.get(id=1)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     college = await Colleges.get(id=college_id)
@@ -202,7 +207,7 @@ async def add_department_admin(name: str, college_id: int):
     
 
 async def delete_department_admin(department_id: int, password: str):
-    user = await users.get(id=1)
+    user = await Users.get(id=1)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     department = await Departments.get(id=department_id)

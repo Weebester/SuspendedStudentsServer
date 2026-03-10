@@ -34,13 +34,17 @@ async function fetchCollegesItems() {
     if (response.ok) {
         collegeContainer.innerHTML = colleges.map(c => `
         <div class="item-row">
+           
             <div class="item-info">
                 <div class="info">
-                    <label>College</label>
+                    <label>الكلية</label>
                     <span>${c.college}</span>
                 </div>
             </div>
-            <button class="action-btn btn-remove" onclick="openDeleteModal(${c.id}, 'college')">Delete</button>
+             <div>
+                <button class="btn-rename" onclick="openRenameModal(${c.id})">تغير الاسم</button>
+                <button class="btn-remove" onclick="openDeleteModal(${c.id}, 'college')">حذف</button>
+            </div>
         </div>
     `).join('');
 
@@ -93,17 +97,19 @@ async function fetchDepartmentsItems() {
     if (response.ok) {
         departmentContainer.innerHTML = depts.map(d => `
         <div class="item-row">
-            <div class="item-info">
+            <div class="item-info">    
                 <div class="info">
-                    <label>College</label>
-                    <span>${d.college}</span>
-                </div>
+                    <label>الكلية</label>
+                    <p>${d.college}</p>
+                </div>    
                 <div class="info">
-                    <label>Department</label>
-                    <span>${d.department}</span>
+                    <label>القسم</label>
+                    <p>${d.department}</p>
                 </div>
             </div>
-            <button class="action-btn btn-remove" onclick="openDeleteModal(${d.id}, 'department')">Delete</button>
+            <div>
+            <button class="btn-remove" onclick="openDeleteModal(${d.id}, 'department')">حذف</button>
+            </div>
         </div>
     `).join('');
 
@@ -200,6 +206,54 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
         const errorData = await response.json();
 
         const errorMessage = errorData.detail || "Failed";
+
+        alert("Error: " + errorMessage);
+    }
+};
+
+
+
+let activeRenameId = null;
+
+// Called by the "Change Name" button in your list
+function openRenameModal(id) {
+    activeRenameId = id;
+    // Reset fields
+    document.getElementById('newNameInput').value = '';
+    document.getElementById('changeNameModal').style.display = 'flex';
+}
+
+function closePassModal() {
+    document.getElementById('changeNameModal').style.display = 'none';
+    activeRenameId = null;
+}
+
+// Handle the Update Button click
+document.getElementById('confirmChangeBtn').onclick = async () => {
+    const newName = document.getElementById('newNameInput').value;
+
+    if (!newName) {
+        return alert("new name cannot be empty.");
+    }
+
+    const response = await fetch(`${API_BASE}/rename_college_admin/${activeRenameId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ new_name: newName })
+    });
+
+    if (response.ok) {
+        alert("Name Changed successfully!");
+        closePassModal();
+        fetchCollegesItems()
+        fetchDepartmentsItems()
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Login Failed";
 
         alert("Error: " + errorMessage);
     }

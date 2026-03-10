@@ -14,23 +14,22 @@ const statusButtons = document.querySelectorAll('.status-btn');
     try {
         // 1. Fetch Dropdown Data
         const [years, colleges] = await Promise.all([
-            fetch(`${API_BASE}/get_years_list`).then(res => res.json()),
-            fetch(`${API_BASE}/get_colleges_list`).then(res => res.json())
+            fetch(`${API_BASE}/get_years_admin`).then(res => res.json()),
+            fetch(`${API_BASE}/get_colleges_admin`).then(res => res.json())
         ]);
 
         // 2. Populate Years (Remove "Any", Set Latest)
-        if (years.length > 0) {
-            yearInput.innerHTML = '';
-            latestYear = Math.max(...years);
-            years.sort((a, b) => b - a).forEach(y => {
-                yearInput.add(new Option(`${y}-${y + 1}`, y));
+        // Assumed structure: { "anyKey": { "id": 1, "year": 2025, "flag": true }, ... }
+
+        years.forEach(y => {
+                const option = new Option(`${y.start_year}-${y.start_year + 1}`, y.start_year);
+                yearInput.add(option);
             });
-            yearInput.value = latestYear;
-        }
+
 
         // 3. Populate Colleges
         colleges.forEach(c => {
-            collegeInput.add(new Option(c, c));
+            collegeInput.add(new Option(c.college, c.id));
         });
 
         // 4. Initial Data Load
@@ -43,7 +42,7 @@ const statusButtons = document.querySelectorAll('.status-btn');
 
 async function fetchData() {
     ticketContainer.innerHTML = '<p style="padding: 20px;">Fetching records...</p>';
-    const url = new URL(API_BASE + '/get_requests_admin');
+    const url = new URL(API_BASE + '/get_requests');
     const params = new URLSearchParams();
 
     if (currentStatus !== 'All') params.append('status', currentStatus);
@@ -52,7 +51,7 @@ async function fetchData() {
     const collegeVal = collegeInput.value;
 
     // Skip year if matches latestYear
-    if (yearVal && parseInt(yearVal) !== latestYear) {
+    if (yearVal) {
         params.append('year', yearVal);
     }
 
@@ -82,6 +81,12 @@ async function fetchData() {
 }
 
 
+const statusTranslations = {
+    "Pending": "قيد الانتظار",
+    "Accepted": "مقبول",
+    "Denied": "مرفوض"
+};
+
 function renderTickets(data) {
     if (!data || data.length === 0) {
         ticketContainer.innerHTML = '<p style="padding: 20px;">No results found.</p>';
@@ -91,25 +96,28 @@ function renderTickets(data) {
     ticketContainer.innerHTML = data.map(ticket => `
             <div class="ticket-card">
                 <div class="card-header">
-                    <span class="ticket-id">ID: ${ticket.id}</span>
-                    <span class="status-badge status-${ticket.RequestStatus}">${ticket.RequestStatus}</span>
+                <span class="status-badge status-${ticket.request_status}">
+                    ${statusTranslations[ticket.request_status] || ticket.request_status}
+                    </span>
+                    <span class="ticket-id">ID: ${ticket.id}</span>    
                 </div>
                 <div class="card-body">
-                    <h3 class="student-name">${ticket.StudentName}</h3>
-                    <h4 class="student-speciality">Speciality: ${ticket.Speciality}</h4>
+                    <h3 class="student-name">${ticket.student_name}</h3>
+                    <h4 class="student-speciality">التخصص: ${ticket.speciality}</h4>
+                    <h4 class="student-speciality">موقف الطلب:${ticket.status}</h4>
                     <div class="details-grid">
                         <div class="detail-item">
-                            <p>College</p>
+                            <p>الكلية</p>
                             <p>${ticket.college}</p>
                         </div>
                         <div class="detail-item">
-                            <p>Year</p>
-                            <p>${ticket.RequestYear}-${ticket.RequestYear + 1}</p>
+                            <p>العام الدراسي للطلب</p>
+                            <p>${ticket.request_year}-${ticket.request_year + 1}</p>
                         </div>
                     </div>
                 </div>
                 <button class="more-btn" onclick="window.location.href='/details/${ticket.id}'">
-                    View Full Details →
+                    عرض التفاصيل الشاملة
                 </button>
             </div>
         `).join('');
@@ -132,6 +140,21 @@ function toggleOptions() {
     } else {
         list.style.display = "block";
     }
+}
+
+function downloadExcel() {
+    const year = document.getElementById('yearInput').value;
+    const college = document.getElementById('collegeInput').value;
+
+    const params = new URLSearchParams();
+    
+    // Only add if the value is not empty
+    if (year) params.append('year', year);
+    if (college) params.append('college', college);
+    if (currentStatus !== 'All') params.append('status', currentStatus);
+
+    // Redirect to the URL with only the active params
+    window.location.href = `/download_excel?${params.toString()}`;
 }
 
 yearInput.addEventListener('change', fetchData);

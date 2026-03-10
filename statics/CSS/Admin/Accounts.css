@@ -102,6 +102,7 @@ body {
     padding: 24px;
     background-color: var(--bg-gray);
     font-family: sans-serif;
+    direction: rtl;
 }
 
 
@@ -127,7 +128,7 @@ body {
 }
 
 .content .input-group label {
-    font-size: 11px;
+    font-size: 15px;
     font-weight: bold;
     color: #666;
     text-transform: uppercase;
@@ -137,7 +138,7 @@ body {
 .content .input-group select {
     width: 100%;
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: 16px;
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     background-color: #f9f9f9;
@@ -148,6 +149,7 @@ body {
 #addAccountBtn {
     height: 41px;
     padding: 0 24px;
+    font-size: 16px;
     background: #007bff;
     color: white;
     border: none;
@@ -159,6 +161,7 @@ body {
 #EnableAllBtn {
     height: 41px;
     padding: 0 24px;
+    font-size: 16px;
     background: #57ce67;
     color: white;
     border: none;
@@ -170,6 +173,7 @@ body {
 #DisableAllBtn {
     height: 41px;
     padding: 0 24px;
+    font-size: 16px;
     background: #e29637;
     color: white;
     border: none;
@@ -203,7 +207,7 @@ body {
     text-transform: uppercase;
 }
 
-.info-item span {
+.info-item p {
     font-weight: 600;
     color: #333;
 }
@@ -211,7 +215,7 @@ body {
 .action-btn {
     padding: 8px 14px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 15px;
     cursor: pointer;
     border: none;
     font-weight: 500;
