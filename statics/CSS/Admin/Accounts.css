@@ -68,7 +68,7 @@ body {
 }
 
 .NavOps li a:hover,
-.OptionsToggle:hover ,
+.OptionsToggle:hover,
 .SubMenu a:hover {
     background-color: #555;
     color: #fff;
@@ -146,40 +146,48 @@ body {
     transition: 0.2s;
 }
 
-#addAccountBtn {
-    height: 41px;
-    padding: 0 24px;
-    font-size: 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-}
 
-#EnableAllBtn {
-    height: 41px;
-    padding: 0 24px;
-    font-size: 16px;
-    background: #57ce67;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-}
 
+#addAccountBtn,
+#EnableAllBtn,
 #DisableAllBtn {
     height: 41px;
     padding: 0 24px;
     font-size: 16px;
-    background: #e29637;
-    color: white;
     border: none;
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+#addAccountBtn:hover ,
+#EnableAllBtn:hover ,
+#DisableAllBtn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+#addAccountBtn:active ,
+#EnableAllBtn:active ,
+#DisableAllBtn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+#addAccountBtn {
+    background: #007bff;
+    color: white;
+}
+
+#EnableAllBtn {
+    background: #57ce67;
+    color: white;
+}
+
+#DisableAllBtn {
+    background: #d63a17;
+    color: white;
 }
 
 
@@ -215,30 +223,48 @@ body {
 .action-btn {
     padding: 8px 14px;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     border: none;
     font-weight: 500;
+    transition: filter 0.2s ease;
+}
+
+.action-btn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
 
 .btn-change-pw {
-    background: #e0f2fe;
-    color: #0369a1;
+    background: #0369a1;
+    color: #e0f2fe;
 }
 
 .btn-remove {
-    background: #fee2e2;
-    color: #dc2626;
+    background: #ad2828;
+    color: #fee2e2;
 }
 
 .btn-enable {
-    background: #e0f2fe;
-    color: #2b9439;
+    font-size: 15px;
+    font-weight: bolder;
+    background: #2b9439;
+    color: #e0f2fe;
+    margin-left: 8px;
 }
 
 .btn-disable {
-    background: #fee2e2;
-    color: #9c6624;
+    font-size: 15px;
+    font-weight: bolder;
+    background: #d63a17;
+    color: #fee2e2;
+    margin-left: 8px;
 }
 
 
@@ -330,8 +356,10 @@ body {
 
 /* Update button specific colors */
 .content .btn-modal-confirm#confirmChangeBtn {
-    background-color: #e0f2fe; /* Light blue */
-    color: #0369a1;           /* Dark blue text */
+    background-color: #e0f2fe;
+    /* Light blue */
+    color: #0369a1;
+    /* Dark blue text */
     border: 1px solid #bae6fd;
 }
 

@@ -5,7 +5,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello</title>
+    <link rel="icon" href="/static/icon.ico" type="image/x-icon">
+    <title>الطلبة المرقنين</title>
     <link rel="stylesheet" href="/static/CSS/Admin/Accounts.css">
     <script src="/static/JS/Admin/Accounts.js" defer></script>
 
@@ -14,15 +15,19 @@
 <body>
     <div class="content">
         <div class="filter-bar">
+
             <div class="input-group">
                 <label>اسم المستخدم</label>
                 <input type="text" id="usernameInput" placeholder="ادخل اسم المستخدم">
             </div>
+
             <div class="input-group">
                 <label>الكلية</label>
                 <select id="collegeInput">
+                    <option value=''>غير محدد</option>
                 </select>
             </div>
+
             <div class="input-group">
                 <label>الرمز السري</label>
                 <input type="password" id="passwordInput" placeholder="••••••••">
@@ -34,10 +39,8 @@
             </div>
 
             <button id="addAccountBtn">اضافة حساب</button>
-            <button id="DisableAllBtn">تعطيل الكل</button>
-            <button id="EnableAllBtn">تفعيل الكل</button>
-
-
+            <button id="DisableAllBtn" onclick="toggleAllUsers(false)">تعطيل الكل</button>
+            <button id="EnableAllBtn"  onclick="toggleAllUsers(true)">تفعيل الكل</button>
 
 
         </div>
@@ -47,43 +50,39 @@
 
         <div id="passwordModal" class="modal-overlay" style="display: none;">
             <div class="modal-card">
-                <h3>Confirm Deletion</h3>
-                <p id="modalUserInfo">Please enter your password to confirm deleting this college.</p>
+                <h3>تأكيدالحذف</h3>
                 <div class="input-group">
-                    <label>Admin Password</label>
+                    <label>الرمز السري</label>
                     <input type="password" id="deleteConfirmPass" placeholder="••••••••">
                 </div>
                 <div class="input-group" style="margin-top: 10px;">
-                    <label>Confirm Password</label>
+                    <label>تأكيد الرمز</label>
                     <input type="password" id="deleteConfirmCheck" placeholder="••••••••">
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-                    <button id="confirmDeleteBtn" class="btn-modal-confirm">Delete Permanently</button>
+                    <button class="btn-modal-cancel" onclick="closeModal()">الغاء</button>
+                    <button id="confirmDeleteBtn" class="btn-modal-confirm">حذف</button>
                 </div>
             </div>
         </div>
 
         <div id="changePassModal" class="modal-overlay" style="display: none;">
             <div class="modal-card">
-                <h3>Change Password</h3>
-                <p id="changePassUserInfo">Enter a new password for this account.</p>
-
+                <h3>تغير رمز الحساب</h3>
                 <div class="input-group">
-                    <label>New Password</label>
+                    <label>الرمز الجديد</label>
                     <input type="password" id="newPassInput" placeholder="••••••••">
                 </div>
 
                 <div class="input-group" style="margin-top: 10px;">
-                    <label>Confirm New Password</label>
+                    <label>تأكيد الرمز الجديد</label>
                     <input type="password" id="confirmNewPassInput" placeholder="••••••••">
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-modal-cancel" onclick="closePassModal()">Cancel</button>
+                    <button type="button" class="btn-modal-cancel" onclick="closePassModal()">الغاء</button>
                     <button id="confirmChangeBtn" class="btn-modal-confirm"
-                        style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Update
-                        Password</button>
+                        style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">تغير</button>
                 </div>
             </div>
         </div>

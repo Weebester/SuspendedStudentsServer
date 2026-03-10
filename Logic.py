@@ -55,8 +55,9 @@ async def change_user_password(user_id: int, new_password: str):
         raise HTTPException(status_code=404, detail="faild to update password")
 
 
-
-async def get_users_admin():
+async def get_users(college_id: int = None):
+    if college_id is not None:
+        return await UsersList.filter(college_id=college_id).values()
     return await UsersList.all().values()
 
 
@@ -77,48 +78,42 @@ async def add_user(cred: str, password: str, college_id: int):
         raise HTTPException(status_code=400, detail="User already exists")
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     await Users.create(cred=cred, password=hashed_password, college=college_id)
-   
 
 
-async def toggle_user(user_id: int, enable: bool):
+async def toggle_user(user_id: int):
     user = await Users.get(id=user_id)
     if user:
-        await user.update(enabled=Flag.Yes if enable else Flag.No)
-        return {
-            "success": True,
-            "status_code": 200,
-            "message": "User status updated successfully",
-        }
+        user.enabled = Flag.No if user.enabled == Flag.Yes else Flag.Yes
+        await user.save()
     else:
-        return {"success": False, "status_code": 404, "message": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 async def toggle_all_users(enable: bool):
     new_status = Flag.Yes if enable else Flag.No
     await Users.filter(id__not=1).update(enabled=new_status)
-    return {
-        "success": True,
-        "status_code": 200,
-        "message": "All user statuses updated successfully",
-    }
 
 
-#####################################################################################################################
+#######################################################Misc##############################################################
 
 
-async def get_data_for_excel(year: int = None ,college_id: str = None,status:str= None):
-    if not year:
+async def get_data_for_excel(
+    year: int = None, college_id: str = None, status: str = None
+):
+    if year is None:
         current_year = await RequestYear.get(current=Flag.Yes)
         year = current_year.start_year
     data = Excel.filter(request_year=year)
-    
+
     if college_id is not None:
-        data=data.filter(college_id=college_id)
+        data = data.filter(college_id=college_id)
 
     if status is not None:
-        data=data.filter(status=status)
+        data = data.filter(request_status=status)
 
-    data =await data.values() 
+    print(year, status, college_id)
+
+    data = await data.values()
 
     if not data:
         raise HTTPException(status_code=404, detail="No data found")
@@ -135,14 +130,13 @@ async def get_stats():
         "Pending": stats.PNcount,
     }
 
+
 async def get_years():
     years = await RequestYear.all().values()
     return years
 
 
-async def get_requests(
-    status: str = None, year: int = None, college_id: int = None
-):
+async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
     if status is not None:
         print(status)
@@ -155,19 +149,20 @@ async def get_requests(
         current_year = await RequestYear.get(current=Flag.Yes)
         year = current_year.start_year
 
+    print(year, status, college_id)
+
     result = result.filter(request_year=year)
 
-    
     result = await result.values()
     return result
 
+
 #########################################################-Colleges-OPs-########################################################
 
+
 async def get_colleges_admin():
-    CollegesList = await Colleges.filter(id__not=1).values("id", "college")
-    if not CollegesList:
-        raise HTTPException(status_code=404, detail="No colleges found")
-    return CollegesList
+    List = await Colleges.filter(id__not=1).values("id", "college")
+    return List
 
 
 async def add_college_admin(name: str):
@@ -177,9 +172,9 @@ async def add_college_admin(name: str):
     await Colleges.create(college=name)
 
 
-async def rename_college_admin(college_id=int ,new_name=str):
+async def rename_college_admin(college_id=int, new_name=str):
     await Colleges.get(id=college_id).update(college=new_name)
-    
+
 
 async def delete_college_admin(college_id: int, password: str):
     user = await Users.get(id=1)
@@ -190,13 +185,16 @@ async def delete_college_admin(college_id: int, password: str):
         await college.delete()
     else:
         raise HTTPException(status_code=404, detail="College not found")
-    
+
+
 #############################################################-Departments-OPs-########################################################
-async def get_departments_admin():
-    DepartmentsList = await Departments.all().values("id", "department", "college")
-    if not DepartmentsList:
-        raise HTTPException(status_code=404, detail="No departments found")
-    return DepartmentsList
+async def get_departments_admin(college_id: int = None):
+    if college_id is not None:
+        List = await DepartmentsList.filter(college_id=college_id).values()
+    else:
+        List = await DepartmentsList.all().values()
+    return List
+
 
 async def add_department_admin(name: str, college_id: int):
     existing_department = await Departments.get_or_none(department=name)
@@ -204,7 +202,7 @@ async def add_department_admin(name: str, college_id: int):
         raise HTTPException(status_code=400, detail="Department already exists")
 
     await Departments.create(department=name, college=college_id)
-    
+
 
 async def delete_department_admin(department_id: int, password: str):
     user = await Users.get(id=1)
@@ -215,4 +213,12 @@ async def delete_department_admin(department_id: int, password: str):
         await department.delete()
     else:
         raise HTTPException(status_code=404, detail="Department not found")
-    
+
+
+async def toggle_department_admin(department_id: int):
+    department = await Departments.get(id=department_id)
+    if department:
+        department.enabled = Flag.No if department.enabled == Flag.Yes else Flag.Yes
+        await department.save()
+    else:
+        raise HTTPException(status_code=404, detail="Department not found")

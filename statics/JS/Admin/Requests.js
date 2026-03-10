@@ -88,10 +88,11 @@ const statusTranslations = {
 };
 
 function renderTickets(data) {
+    /*
     if (!data || data.length === 0) {
         ticketContainer.innerHTML = '<p style="padding: 20px;">No results found.</p>';
         return;
-    }
+    }*/
 
     ticketContainer.innerHTML = data.map(ticket => `
             <div class="ticket-card">

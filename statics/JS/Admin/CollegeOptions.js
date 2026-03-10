@@ -42,15 +42,17 @@ async function fetchCollegesItems() {
                 </div>
             </div>
              <div>
-                <button class="btn-rename" onclick="openRenameModal(${c.id})">تغير الاسم</button>
-                <button class="btn-remove" onclick="openDeleteModal(${c.id}, 'college')">حذف</button>
+                <button class="action-btn btn-rename" onclick="openRenameModal(${c.id})">تغير الاسم</button>
+                <button class="action-btn btn-remove" onclick="openDeleteModal(${c.id}, 'college')">حذف</button>
             </div>
         </div>
     `).join('');
 
-        deptCollegeSelect.innerHTML = colleges.map(c =>
-            `<option value="${c.id}">${c.college}</option>`
-        ).join('');
+        deptCollegeSelect.innerHTML =`<option value=''>غير محدد</option>`   
+        colleges.forEach(c => deptCollegeSelect.add(new Option(c.college, c.id)));     
+        
+
+
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
     } else {
@@ -91,7 +93,8 @@ document.getElementById('addCollegeBtn').onclick = async () => {
 
 // --- DEPARTMENT LOGIC ---
 async function fetchDepartmentsItems() {
-    const response = await fetch(`${API_BASE}/get_departments_admin`);
+
+    const response = await fetch(`${API_BASE}/get_departments_admin${deptCollegeSelect.value ? `?college_id=${deptCollegeSelect.value}` : ''}`);
     const depts = await response.json();
 
     if (response.ok) {
@@ -108,7 +111,13 @@ async function fetchDepartmentsItems() {
                 </div>
             </div>
             <div>
-            <button class="btn-remove" onclick="openDeleteModal(${d.id}, 'department')">حذف</button>
+                <button id="toggle-${d.id}" 
+                        data-status="${d.enabled === 'yes' ? 'yes' : 'no'}" 
+                        class="action-btn ${d.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
+                        onclick="toggleDepartmentStatus(${d.id}, 'toggle-${d.id}')">
+                        ${d.enabled === 'yes' ? 'O' : 'X'}
+                </button>
+                <button class="action-btn btn-remove" onclick="openDeleteModal(${d.id}, 'department')">حذف</button>
             </div>
         </div>
     `).join('');
@@ -125,16 +134,47 @@ async function fetchDepartmentsItems() {
     }
 }
 
+deptCollegeSelect.addEventListener("change",fetchDepartmentsItems)
+
+async function toggleDepartmentStatus(id, btnId) {
+    const btn = document.getElementById(btnId);
+    const isEnabled = (btn.dataset.status === 'yes');
+    // API Call
+    const response = await fetch(`${API_BASE}/toggle_department_admin/${id}`, {
+        method: 'PATCH'
+    });
+
+    if (response.ok) {
+        const nextStatus = isEnabled ? 'no' : 'yes';
+        // Update Data Source
+        btn.dataset.status = nextStatus;
+        btn.textContent = (nextStatus === 'yes') ? 'O' : 'X';
+        btn.className = (nextStatus === 'yes') ? 'action-btn btn-enable' : 'action-btn btn-disable';
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Login Failed";
+
+        alert("Error: " + errorMessage);
+    }
+
+}
+
+
+
 document.getElementById('addDeptBtn').onclick = async () => {
-    const college = deptCollegeSelect.value;
+    const coll = deptCollegeSelect.value;
     const name = document.getElementById('deptNameInput').value;
 
-    if (!name) return alert("Enter department name");
+    if (!name || !coll) return alert("Enter department name");
 
     const response = await fetch(`${API_BASE}/add_department_admin/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, college })
+        body: JSON.stringify({ name, college: coll })
     });
 
     if (response.ok) {
@@ -159,8 +199,6 @@ let Type = null;
 function openDeleteModal(id, type) {
     ItemIdToDelete = id;
     Type = type;
-
-    alert(type)
 
     document.getElementById('deleteConfirmPass').value = '';
     document.getElementById('deleteConfirmCheck').value = '';

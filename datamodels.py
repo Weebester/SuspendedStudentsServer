@@ -1,14 +1,20 @@
 from enum import Enum
 from tortoise import fields, Model, fields
 
+
+##########################################################Tables###############################################
+
+
 class Flag(Enum):
     Yes = "yes"
     No = "no"
+
 
 class RequestStatus(Enum):
     ACCEPTED = "Accepted"
     DENIED = "Denied"
     PENDING = "Pending"
+
 
 class EducationalYear(Model):
     id = fields.IntField(pk=True)
@@ -18,6 +24,7 @@ class EducationalYear(Model):
     class Meta:
         table = "educational_year"
 
+
 class RequestYear(Model):
     id = fields.IntField(pk=True)
     start_year = fields.CharField(max_length=50)
@@ -25,6 +32,7 @@ class RequestYear(Model):
 
     class Meta:
         table = "request_year"
+
 
 class JobStatus(Model):
     id = fields.IntField(pk=True)
@@ -34,6 +42,7 @@ class JobStatus(Model):
     class Meta:
         table = "job_status"
 
+
 class JobStatusSub(Model):
     id = fields.IntField(pk=True)
     status = fields.IntField()
@@ -42,6 +51,7 @@ class JobStatusSub(Model):
 
     class Meta:
         table = "job_status_sub"
+
 
 class Users(Model):
     id = fields.IntField(pk=True)
@@ -53,12 +63,14 @@ class Users(Model):
     class Meta:
         table = "users"
 
+
 class Colleges(Model):
     id = fields.IntField(pk=True)
     college = fields.CharField(max_length=100)
 
     class Meta:
         table = "colleges"
+
 
 class Departments(Model):
     id = fields.IntField(pk=True)
@@ -69,6 +81,7 @@ class Departments(Model):
     class Meta:
         table = "departments"
 
+
 class Status(Model):
     id = fields.IntField(pk=True)
     status = fields.CharField(max_length=100)
@@ -77,6 +90,7 @@ class Status(Model):
     class Meta:
         table = "status"
 
+
 class Study(Model):
     id = fields.IntField(pk=True)
     study = fields.CharField(max_length=50)
@@ -84,6 +98,7 @@ class Study(Model):
 
     class Meta:
         table = "study"
+
 
 class StudySub(Model):
     id = fields.IntField(pk=True)
@@ -94,29 +109,31 @@ class StudySub(Model):
     class Meta:
         table = "study_sub"
 
+
 class Requests(Model):
     id = fields.IntField(pk=True)
     student_name = fields.CharField(max_length=100)
     college = fields.IntField()
     speciality = fields.CharField(max_length=100)
     birth_date = fields.DateField()
-    
-    acception_year =  fields.CharField(max_length=50)
-    suspension_year =  fields.CharField(max_length=50)
-    suspension_reason =  fields.CharField(max_length=512)
-    request_year =  fields.CharField(max_length=50)
-    
-    job_status =  fields.CharField(max_length=100)
+
+    acception_year = fields.CharField(max_length=50)
+    suspension_year = fields.CharField(max_length=50)
+    suspension_reason = fields.CharField(max_length=512)
+    request_year = fields.CharField(max_length=50)
+
+    job_status = fields.CharField(max_length=100)
     request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
-    status = fields.CharField(max_length=100,default="~")
+    status = fields.CharField(max_length=100, default="~")
     benefactor = fields.CharEnumField(Flag)
     study = fields.CharField(max_length=100)
-   
 
     class Meta:
         table = "requests"
 
+
 #######################################Views##################################
+
 
 class Excel(Model):
     id = fields.IntField(pk=True)
@@ -128,21 +145,22 @@ class Excel(Model):
     department = fields.CharField(max_length=100)
     speciality = fields.CharField(max_length=100)
     study = fields.CharField(max_length=100)
-    
-    acception_year =  fields.CharField(max_length=50)
-    suspension_year =  fields.CharField(max_length=50)
-    suspension_reason =  fields.CharField(max_length=512)
-    
-    job_status =  fields.CharField(max_length=100)
+
+    acception_year = fields.CharField(max_length=50)
+    suspension_year = fields.CharField(max_length=50)
+    suspension_reason = fields.CharField(max_length=512)
+
+    job_status = fields.CharField(max_length=100)
     request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
-    status = fields.CharField(max_length=100,default="~")
+    status = fields.CharField(max_length=100, default="~")
 
     benefactor = fields.CharEnumField(Flag)
-    request_year =  fields.CharField(max_length=50)
-    
+    request_year = fields.CharField(max_length=50)
+
     class Meta:
         table = "excel"
-        managed= False
+        managed = False
+
 
 class RequestsCount(Model):
     id = fields.IntField(pk=True)
@@ -156,10 +174,8 @@ class RequestsCount(Model):
         managed = False
 
 
-
-
 class RequestsShort(Model):
-    
+
     id = fields.IntField(pk=True)
     college_id = fields.IntField()
     student_name = fields.CharField(max_length=100)
@@ -167,16 +183,18 @@ class RequestsShort(Model):
     college = fields.CharField(max_length=100)
     request_status = fields.CharEnumField(RequestStatus)
     study = fields.CharField(max_length=100)
-    status= fields.CharField(max_length=100)
-    request_year = fields.CharField(max_length=50 )
+    status = fields.CharField(max_length=100)
+    request_year = fields.CharField(max_length=50)
 
     class Meta:
         table = "requests_short"
         managed = False
 
+
 class UsersList(Model):
-    
+
     id = fields.IntField(pk=True)
+    college_id = fields.IntField()
     cred = fields.CharField(max_length=50)
     college = fields.CharField(max_length=100)
     enabled = fields.CharEnumField(Flag)
@@ -185,3 +203,15 @@ class UsersList(Model):
         table = "users_list"
         managed = False
 
+
+class DepartmentsList(Model):
+
+    id = fields.IntField(pk=True)
+    college_id = fields.IntField()
+    department = fields.CharField(max_length=50)
+    college = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag)
+
+    class Meta:
+        table = "departments_list"
+        managed = False

@@ -194,8 +194,20 @@ body {
     font-weight: 600;
     cursor: pointer;
     font-size: 15px;
+    transition: filter 0.2s ease;
 }
 
+#addCollegeBtn:hover,
+#addDeptBtn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+#addCollegeBtn:active,
+#addDeptBtn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
 .content .item-row {
     display: flex;
     justify-content: space-between;
@@ -227,26 +239,52 @@ body {
     font-size: 15px;
 }
 
-.content .btn-remove {
-    background: #fee2e2;
-    color: #dc2626;
+.action-btn {
     padding: 8px 14px;
     border-radius: 8px;
-    border: 1px solid #fecaca;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 15px;
+    border: none;
+    font-weight: 500;
+    transition: filter 0.2s ease;
 }
 
-.content .btn-rename {
-    background: #e0f2fe;;
-    color: #0369a1;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid #e0f2fe;;
+.action-btn:hover {
+    filter: brightness(90%);
     cursor: pointer;
-    font-size: 15px;
 }
 
+.action-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+.btn-rename {
+    background: #0369a1;
+    color: #e0f2fe;
+}
+
+.btn-remove {
+    background: #ad2828;
+    color: #fee2e2;
+}
+
+.btn-enable {
+    font-size: 15px;
+    font-weight: bolder;
+    background: #2b9439;
+    color: #e0f2fe;
+    margin-left: 8px;
+}
+
+.btn-disable {
+    font-size: 15px;
+    font-weight: bolder;
+    background: #d63a17;
+    color: #fee2e2;
+    margin-left: 8px;
+}
 /* --- Modal Styling --- */
 .content .modal-overlay {
     position: fixed;
@@ -326,11 +364,9 @@ body {
     transform: scale(0.97);
 }
 
-
-/* Update button specific colors */
 .content .btn-modal-confirm#confirmChangeBtn {
-    background-color: #e0f2fe; /* Light blue */
-    color: #0369a1;           /* Dark blue text */
+    background-color: #e0f2fe; 
+    color: #0369a1;           
     border: 1px solid #bae6fd;
 }
 

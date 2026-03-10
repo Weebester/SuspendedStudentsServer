@@ -44,10 +44,10 @@ async def MainA(page: str, request: Request):
     try:
         payload = tokenCheck(token)
     except HTTPException:
-        #raise
+        # raise
         return templates.TemplateResponse(request=request, name="index.html")
     if payload.get("id") != 1:
-        #raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+        # raise HTTPException(status_code=403, detail="Forbidden: Admins only")
         return templates.TemplateResponse(request=request, name="index.html")
     return templates.TemplateResponse(request=request, name=f"Admin/{page}.html")
 
@@ -56,17 +56,17 @@ async def MainA(page: str, request: Request):
 async def MainU(request: Request, page: str):
     token = request.cookies.get("Token")
     if not token:
-        #raise HTTPException(status_code=401, detail="Not authenticated")
+        # raise HTTPException(status_code=401, detail="Not authenticated")
         return templates.TemplateResponse(request=request, name="index.html")
     try:
         tokenCheck(token)
         return templates.TemplateResponse(request=request, name=f"User/{page}.html")
     except HTTPException:
-        #raise
+        # raise
         return templates.TemplateResponse(request=request, name="index.html")
 
 
-####################################-Account-Ops-########################################
+####################################-Accounts-Ops-########################################
 
 
 class LoginRequest(BaseModel):
@@ -93,8 +93,9 @@ async def login(body: LoginRequest, response: Response):
     except HTTPException:
         raise
 
+
 @app.get("/get_users")
-async def getUsersList(request: Request):
+async def getUsersList(request: Request ,college_id: Optional[int]=None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -107,7 +108,7 @@ async def getUsersList(request: Request):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     try:
-        return await get_users_admin()
+        return await get_users(college_id=college_id)
     except HTTPException:
         raise
 
@@ -152,7 +153,9 @@ async def addUser(body: AddUserRequest, request: Request):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     try:
-        await add_user(cred=body.cred, password=body.password, college_id=body.college_id)
+        await add_user(
+            cred=body.cred, password=body.password, college_id=body.college_id
+        )
     except HTTPException:
         raise
 
@@ -176,13 +179,11 @@ async def changePassword(account_id: int, request: Request, body: Password):
     except HTTPException:
         raise
 
-####to be done###
 @app.patch("/toggle_user/{account_id}")
-async def toggleUser(account_id: int, request: Request, enable: bool):
+async def toggleUser(account_id: int, request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
         payload = tokenCheck(token)
     except HTTPException:
@@ -191,12 +192,11 @@ async def toggleUser(account_id: int, request: Request, enable: bool):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await toggle_user(account_id, enable)
+    try :
+       await toggle_user(account_id)
+    except HTTPException:
+        raise
 
-    if result["success"]:
-        return result
-    else:
-        raise HTTPException(status_code=result["status_code"], detail=result["message"])
 
 ####to be done###
 @app.patch("/toggle_all_users")
@@ -213,19 +213,21 @@ async def toggleAllUsers(request: Request, enable: bool):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    result = await toggle_all_users(enable)
-
-    if result["success"]:
-        return result
-    else:
-        raise HTTPException(status_code=result["status_code"], detail=result["message"])
-
+    try:
+        await toggle_all_users(enable)
+    except HTTPException:
+        raise
 
 #################################################-Files-##################################################
 
 
 @app.get("/download_excel")
-async def downloadExcel(request: Request, year: Optional[int] = None , college: Optional[int]=None,status:Optional[str]=None):
+async def downloadExcel(
+    request: Request,
+    year: Optional[int] = None,
+    college: Optional[int] = None,
+    status: Optional[str] = None,
+):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -236,9 +238,9 @@ async def downloadExcel(request: Request, year: Optional[int] = None , college: 
         raise
 
     if payload.get("id") == 1:
-        records = await get_data_for_excel(year=year,college_id=college)
+        records = await get_data_for_excel(year=year, college_id=college ,status=status)
     else:
-        records = await get_data_for_excel(college_id=payload.get("id"),status=status)
+        records = await get_data_for_excel(college_id=payload.get("id"), status=status)
 
     if not records or len(records) == 0:
         raise HTTPException(status_code=404, detail="No records found")
@@ -307,7 +309,8 @@ async def downloadExcel(request: Request, year: Optional[int] = None , college: 
     )
 
 
-##############################################-YearsOPs-#######################################################
+##############################################-UnLabeld-#######################################################
+
 
 @app.get("/get_years_admin")
 async def getYearsAdmin(request: Request):
@@ -323,7 +326,7 @@ async def getYearsAdmin(request: Request):
     return await get_years()
 
 
-#######################################################-Admin-OPs-################################################################
+#######################################################################################################################
 
 
 @app.get("/get_requests")
@@ -353,6 +356,7 @@ async def getRequestsAdmin(
 
 #######################################################colleges-ops############################################
 
+
 @app.get("/get_colleges_admin")
 async def getCollegesAdmin(request: Request):
     token = request.cookies.get("Token")
@@ -366,14 +370,16 @@ async def getCollegesAdmin(request: Request):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
         return await get_colleges_admin()
     except HTTPException:
         raise
 
+
 class AddCollegeRequest(BaseModel):
-    name: str   
+    name: str
+
 
 @app.post("/add_college_admin")
 async def addCollegeAdmin(request: Request, body: AddCollegeRequest):
@@ -388,11 +394,12 @@ async def addCollegeAdmin(request: Request, body: AddCollegeRequest):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
         await add_college_admin(name=body.name)
     except HTTPException:
         raise
+
 
 @app.delete("/delete_college_admin/{college_id}")
 async def deleteCollegeAdmin(college_id: int, request: Request, body: Password):
@@ -407,17 +414,19 @@ async def deleteCollegeAdmin(college_id: int, request: Request, body: Password):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
         await delete_college_admin(college_id=college_id, password=body.password)
     except HTTPException:
         raise
 
+
 class Rename(BaseModel):
-    new_name:str
+    new_name: str
+
 
 @app.patch("/rename_college_admin/{college_id}")
-async def renameCollegeAdmin(college_id:int,request: Request,body:Rename):
+async def renameCollegeAdmin(college_id: int, request: Request, body: Rename):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -429,16 +438,18 @@ async def renameCollegeAdmin(college_id:int,request: Request,body:Rename):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
-        await rename_college_admin(college_id=college_id,new_name=body.new_name)
+        await rename_college_admin(college_id=college_id, new_name=body.new_name)
     except HTTPException:
         raise
+
 
 ######################################################department-op#####################################
 
+
 @app.get("/get_departments_admin")
-async def getDepartmentsAdmin(request: Request):
+async def getDepartmentsAdmin(request: Request ,college_id :Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -450,15 +461,17 @@ async def getDepartmentsAdmin(request: Request):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
-        return await get_departments_admin()
+        return await get_departments_admin(college_id=college_id)
     except HTTPException:
         raise
 
+
 class AddDepartmentRequest(BaseModel):
     name: str
-    college: int    
+    college: int
+
 
 @app.post("/add_department_admin")
 async def addDepartmentAdmin(request: Request, body: AddDepartmentRequest):
@@ -473,11 +486,12 @@ async def addDepartmentAdmin(request: Request, body: AddDepartmentRequest):
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
         await add_department_admin(name=body.name, college_id=body.college)
     except HTTPException:
         raise
+
 
 @app.delete("/delete_department_admin/{department_id}")
 async def deleteDepartmentAdmin(department_id: int, request: Request, body: Password):
@@ -492,14 +506,32 @@ async def deleteDepartmentAdmin(department_id: int, request: Request, body: Pass
 
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
-    
+
     try:
-        await delete_department_admin(department_id=department_id, password=body.password)
+        await delete_department_admin(
+            department_id=department_id, password=body.password
+        )
     except HTTPException:
         raise
 
 
-######################################-Non-Admin-OPs-################################
+@app.patch("/toggle_department_admin/{department_id}")
+async def toggleDepartmentAdmin(department_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try :
+       await toggle_department_admin(department_id)
+    except HTTPException:
+        raise
 
 
 ######################################################################
@@ -519,11 +551,6 @@ async def getStats(request: Request):
     if payload.get("id") == 1:
         return await get_stats()
     return {"message": "tbd"}
-
-
-@app.get("/logo")
-async def getLogo():
-    return FileResponse("Logo.png", media_type="image/png")
 
 
 if __name__ == "__main__":

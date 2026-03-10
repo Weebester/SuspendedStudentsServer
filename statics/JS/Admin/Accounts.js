@@ -18,7 +18,7 @@ let activeAccountId = null;
 })();
 
 async function fetchAccounts() {
-    const res = await fetch(`${API_BASE}/get_users`);
+    const res = await fetch(`${API_BASE}/get_users${collegeSelect.value ? `?college_id=${collegeSelect.value}` : ''}`);
     const accounts = await res.json();
 
     container.innerHTML = accounts.map(acc => `
@@ -27,16 +27,70 @@ async function fetchAccounts() {
                 <div class="account-info">
                     <div class="info-item"><label>اسم المستخدم</label><p>${acc.cred}</p></div>
                     <div class="info-item"><label>الكلية</label><p>${acc.college}</p></div>
-                    <div class="info-item"><label>مفعل:؟</label><p>${acc.enabled}</p></div>
                 </div>
-                <div class="account-actions"> 
-                    <button class="action-btn btn-disable" onclick="placeholder(${acc.id}, false)">تعطيل</button>
-                    <button class="action-btn btn-enable" onclick="placeholder(${acc.id}, true)">تفعيل</button> 
+                <div class="account-actions">
+                    <button id="toggle-${acc.id}" 
+                        data-status="${acc.enabled === 'yes' ? 'yes' : 'no'}" 
+                        class="action-btn ${acc.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
+                        onclick="toggleUserStatus(${acc.id}, 'toggle-${acc.id}')">
+                        ${acc.enabled === 'yes' ? 'O' : 'X'}
+                    </button>
                     <button class="action-btn btn-change-pw" onclick="openPassModal(${acc.id})">تغير الرمز</button>  
                     <button class="action-btn btn-remove" onclick="deleteAccount(${acc.id})">حذف</button>
                 </div>
             </div>
         `).join('');
+}
+
+collegeSelect.addEventListener('change', fetchAccounts);
+
+
+async function toggleUserStatus(id, btnId) {
+    const btn = document.getElementById(btnId);
+    const isEnabled = (btn.dataset.status === 'yes');
+    // API Call
+    const response = await fetch(`${API_BASE}/toggle_user/${id}`, {
+        method: 'PATCH'
+    });
+
+    if (response.ok) {
+        const nextStatus = isEnabled ? 'no' : 'yes';
+        // Update Data Source
+        btn.dataset.status = nextStatus;
+        btn.textContent = (nextStatus === 'yes') ? 'O' : 'X';
+        btn.className = (nextStatus === 'yes') ? 'action-btn btn-enable' : 'action-btn btn-disable';
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Login Failed";
+
+        alert("Error: " + errorMessage);
+    }
+
+}
+
+async function toggleAllUsers(bool) {
+
+    const response = await fetch(`${API_BASE}/toggle_all_users?enable=${bool}`, {
+        method: 'PATCH'
+    });
+
+    if (response.ok) {
+        fetchAccounts();
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Login Failed";
+
+        alert("Error: " + errorMessage);
+    }
+
 }
 
 let activePassUpdateId = null;
@@ -110,9 +164,6 @@ function deleteAccount(id) {
     document.getElementById('deleteConfirmPass').value = '';
     document.getElementById('deleteConfirmCheck').value = '';
 
-    // Update modal text for clarity (Optional)
-    document.getElementById('modalUserInfo').textContent = "Confirming account deletion. Please enter your password.";
-
     // Show modal
     document.getElementById('passwordModal').style.display = 'flex';
 }
@@ -154,7 +205,7 @@ document.getElementById('addAccountBtn').onclick = async () => {
     const conf = document.getElementById('confirmPasswordInput').value;
     const coll = collegeSelect.value;
 
-    if (!user || !pass || !conf) return alert("Fill all fields");
+    if (!user || !pass || !conf || !coll) return alert("Fill all fields");
     if (pass !== conf) return alert("Passwords mismatch");
     const response = await fetch(`${API_BASE}/add_user/`, {
         method: 'POST',

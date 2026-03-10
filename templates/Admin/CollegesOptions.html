@@ -5,7 +5,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello</title>
+    <link rel="icon" href="/static/icon.ico" type="image/x-icon">
+    <title>الطلبة المرقنين</title>
     <link rel="stylesheet" href="/static/CSS/Admin/CollegeOptions.css">
     <script src="/static/JS/Admin/CollegeOptions.js" defer></script>
 </head>
@@ -53,38 +54,35 @@
 
         <div id="passwordModal" class="modal-overlay" style="display: none;">
             <div class="modal-card">
-                <h3>Confirm Deletion</h3>
-                <p id="modalUserInfo">Please enter your password to confirm deleting this college.</p>
+                <h3>تئكيد الحذف</h3>
                 <div class="input-group">
-                    <label>Admin Password</label>
+                    <label>الرمز السري</label>
                     <input type="password" id="deleteConfirmPass" placeholder="••••••••">
                 </div>
                 <div class="input-group" style="margin-top: 10px;">
-                    <label>Confirm Password</label>
+                    <label>تئكيد الرمز</label>
                     <input type="password" id="deleteConfirmCheck" placeholder="••••••••">
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-                    <button id="confirmDeleteBtn" class="btn-modal-confirm">Delete Permanently</button>
+                    <button class="btn-modal-cancel" onclick="closeModal()">الغاء</button>
+                    <button id="confirmDeleteBtn" class="btn-modal-confirm">حذف</button>
                 </div>
             </div>
         </div>
 
         <div id="changeNameModal" class="modal-overlay" style="display: none;">
             <div class="modal-card">
-                <h3>Rename College</h3>
-                <p id="changePassUserInfo">Enter a New Name</p>
+                <h3>تغير اسم الكلية</h3>
 
                 <div class="input-group">
-                    <label>New Name</label>
-                    <input type="text" id="newNameInput" placeholder="new name">
+                    <label>الاسم الجديد</label>
+                    <input type="text" id="newNameInput" placeholder="الاسم الجديد">
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-modal-cancel" onclick="closePassModal()">Cancel</button>
+                    <button type="button" class="btn-modal-cancel" onclick="closePassModal()">الغاء</button>
                     <button id="confirmChangeBtn" class="btn-modal-confirm"
-                        style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Update
-                        Password</button>
+                        style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">تغير</button>
                 </div>
             </div>
         </div>
