@@ -13,21 +13,18 @@ const statusButtons = document.querySelectorAll('.status-btn');
 (async () => {
     try {
         // 1. Fetch Dropdown Data
-        const [years, colleges] = await Promise.all([
-            fetch(`${API_BASE}/get_years_admin`).then(res => res.json()),
-            fetch(`${API_BASE}/get_colleges_admin`).then(res => res.json())
-        ]);
-
-        // 2. Populate Years (Remove "Any", Set Latest)
-        // Assumed structure: { "anyKey": { "id": 1, "year": 2025, "flag": true }, ... }
+        const response = await fetch(`${API_BASE}/get_years_admin`);
+        const years = await response.json();
 
         years.forEach(y => {
-                const option = new Option(`${y.start_year}-${y.start_year + 1}`, y.start_year);
-                yearInput.add(option);
-            });
+            const label = `${y.start_year}-${y.start_year + 1}`;
+            const option = new Option(label, y.start_year);
+            yearInput.add(option);
+        });
 
-
-        // 3. Populate Colleges
+        const response2 = await fetch(`${API_BASE}/get_colleges_admin`);
+        const rawColleges = await response2.json();
+        const colleges = rawColleges.filter(c => c.id > 1);
         colleges.forEach(c => {
             collegeInput.add(new Option(c.college, c.id));
         });
@@ -148,7 +145,7 @@ function downloadExcel() {
     const college = document.getElementById('collegeInput').value;
 
     const params = new URLSearchParams();
-    
+
     // Only add if the value is not empty
     if (year) params.append('year', year);
     if (college) params.append('college', college);
