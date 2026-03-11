@@ -4,6 +4,10 @@ const API_BASE = 'http://192.168.0.113:8000';
 const studyContainer = document.getElementById('studyContainer');
 const subStudyContainer = document.getElementById('subStudyContainer');
 const subStudySelect = document.getElementById('subStudySelect');
+const addStudyBtn = document.getElementById('addStudyBtn');
+const studyNameInput = document.getElementById('studyNameInput');
+const addSub=document.getElementById('addSubBtn');
+const subNameInput =document.getElementById('subNameInput');
 
 // --- SIDE MENU TOGGLE ---
 function toggleOptions() {
@@ -53,9 +57,9 @@ async function fetchStudiesItems() {
         </div>
     `).join('');
 
-        subStudySelect.innerHTML =`<option value=''>غير محدد</option>`   
-        studies.forEach(s => subStudySelect.add(new Option(s.study, s.id)));     
-        
+        subStudySelect.innerHTML = `<option value=''>غير محدد</option>`
+        studies.forEach(s => subStudySelect.add(new Option(s.study, s.id)));
+
 
 
     } else if (response.status === 401) {
@@ -98,8 +102,9 @@ async function toggleStudyStatus(id, btnId) {
 
 }
 
-document.getElementById('addStudyBtn').onclick = async () => {
-    const name = document.getElementById('studyNameInput').value;
+
+addStudyBtn.onclick = async () => {
+    const name = studyNameInput.value;
     if (!name) return alert("Enter study name");
 
     const response = await fetch(`${API_BASE}/add_study_admin/`, {
@@ -109,7 +114,7 @@ document.getElementById('addStudyBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('studyNameInput').value = '';
+        studyNameInput.value = '';
         await fetchStudiesItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -166,7 +171,7 @@ async function fetchSubsItems() {
     }
 }
 
-subStudySelect.addEventListener("change",fetchSubsItems)
+subStudySelect.addEventListener("change", fetchSubsItems)
 
 async function toggleSubStudyStatus(id, btnId) {
     const btn = document.getElementById(btnId);
@@ -196,10 +201,9 @@ async function toggleSubStudyStatus(id, btnId) {
 }
 
 
-
-document.getElementById('addSubBtn').onclick = async () => {
+addSub.onclick = async () => {
     const study = subStudySelect.value;
-    const name = document.getElementById('subNameInput').value;
+    const name = subNameInput.value;
 
     if (!name || !study) return alert("Enter sub name");
 
@@ -210,7 +214,7 @@ document.getElementById('addSubBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('subNameInput').value = '';
+        subNameInput.value = '';
         fetchSubsItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -228,23 +232,30 @@ document.getElementById('addSubBtn').onclick = async () => {
 let ItemIdToDelete = null;
 let Type = null;
 
+
+const deletePass=document.getElementById('deleteConfirmPass')
+const deletePassConfirm= document.getElementById('deleteConfirmCheck')
+const passwordModal= document.getElementById('passwordModal')
+const confirmDeleteBtn=document.getElementById('confirmDeleteBtn')
+
+
 function openDeleteModal(id, type) {
     ItemIdToDelete = id;
     Type = type;
 
-    document.getElementById('deleteConfirmPass').value = '';
-    document.getElementById('deleteConfirmCheck').value = '';
-    document.getElementById('passwordModal').style.display = 'flex';
+    deletePass.value = '';
+    deletePassConfirm.value = '';
+    passwordModal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('passwordModal').style.display = 'none';
+    passwordModal.style.display = 'none';
     ItemIdToDelete = null;
 }
 
-document.getElementById('confirmDeleteBtn').onclick = async () => {
-    const pass = document.getElementById('deleteConfirmPass').value;
-    const conf = document.getElementById('deleteConfirmCheck').value;
+confirmDeleteBtn.onclick = async () => {
+    const pass = deletePass.value;
+    const conf = deletePassConfirm.value;
     let route = null
 
     if (Type === 'study') {
@@ -280,4 +291,3 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
         alert("Error: " + errorMessage);
     }
 };
-

@@ -4,6 +4,10 @@ const API_BASE = 'http://192.168.0.113:8000';
 const collegeContainer = document.getElementById('collegeContainer');
 const departmentContainer = document.getElementById('departmentContainer');
 const deptCollegeSelect = document.getElementById('deptCollegeSelect');
+const addCollege =document.getElementById('addCollegeBtn')
+const collegeNameInput=document.getElementById('collegeNameInput')
+const addDepart =document.getElementById('addDeptBtn')
+const departInputName =document.getElementById('deptNameInput')
 
 // --- SIDE MENU TOGGLE ---
 function toggleOptions() {
@@ -68,8 +72,8 @@ async function fetchCollegesItems() {
 
 }
 
-document.getElementById('addCollegeBtn').onclick = async () => {
-    const name = document.getElementById('collegeNameInput').value;
+addCollege.onclick = async () => {
+    const name = collegeNameInput.value;
     if (!name) return alert("Enter college name");
 
     const response = await fetch(`${API_BASE}/add_college_admin/`, {
@@ -79,7 +83,7 @@ document.getElementById('addCollegeBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('collegeNameInput').value = '';
+        collegeNameInput.value = '';
         await fetchCollegesItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -167,9 +171,9 @@ async function toggleDepartmentStatus(id, btnId) {
 
 
 
-document.getElementById('addDeptBtn').onclick = async () => {
+addDepart.onclick = async () => {
     const coll = deptCollegeSelect.value;
-    const name = document.getElementById('deptNameInput').value;
+    const name = departInputName.value;
 
     if (!name || !coll) return alert("Enter department name");
 
@@ -180,7 +184,7 @@ document.getElementById('addDeptBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('deptNameInput').value = '';
+        departInputName.value = '';
         fetchDepartmentsItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -198,23 +202,29 @@ document.getElementById('addDeptBtn').onclick = async () => {
 let ItemIdToDelete = null;
 let Type = null;
 
+const deletePass=document.getElementById('deleteConfirmPass')
+const deletePassConfirm= document.getElementById('deleteConfirmCheck')
+const passwordModal= document.getElementById('passwordModal')
+const confirmDeleteBtn=document.getElementById('confirmDeleteBtn')
+
+
 function openDeleteModal(id, type) {
     ItemIdToDelete = id;
     Type = type;
 
-    document.getElementById('deleteConfirmPass').value = '';
-    document.getElementById('deleteConfirmCheck').value = '';
-    document.getElementById('passwordModal').style.display = 'flex';
+    deletePass.value = '';
+    deletePassConfirm.value = '';
+    passwordModal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('passwordModal').style.display = 'none';
+    passwordModal.style.display = 'none';
     ItemIdToDelete = null;
 }
 
-document.getElementById('confirmDeleteBtn').onclick = async () => {
-    const pass = document.getElementById('deleteConfirmPass').value;
-    const conf = document.getElementById('deleteConfirmCheck').value;
+confirmDeleteBtn.onclick = async () => {
+    const pass = deletePass.value;
+    const conf = deletePassConfirm.value;
     let route = null
 
     if (Type === 'college') {
@@ -254,23 +264,25 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
 
 
 let activeRenameId = null;
+const renameInput=document.getElementById('newNameInput')
+const renameModal=document.getElementById('changeNameModal')
+const confirmNameChaneBtn= document.getElementById('confirmChangeBtn')
 
-// Called by the "Change Name" button in your list
 function openRenameModal(id) {
     activeRenameId = id;
     // Reset fields
-    document.getElementById('newNameInput').value = '';
-    document.getElementById('changeNameModal').style.display = 'flex';
+    renameInput.value = '';
+    renameModal.style.display = 'flex';
 }
 
 function closePassModal() {
-    document.getElementById('changeNameModal').style.display = 'none';
+    renameModal.style.display = 'none';
     activeRenameId = null;
 }
 
 // Handle the Update Button click
-document.getElementById('confirmChangeBtn').onclick = async () => {
-    const newName = document.getElementById('newNameInput').value;
+confirmNameChaneBtn.onclick = async () => {
+    const newName = renameInput.value;
 
     if (!newName) {
         return alert("new name cannot be empty.");

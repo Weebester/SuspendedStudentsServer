@@ -261,7 +261,7 @@ async def getRequestsAdmin(
         raise
 
     try:
-        if payload.get("id") == 1:
+        if payload.get("college_id") < 2:
             return await get_requests(status=status, year=year, college_id=college)
         else:
             return await get_requests(status=status, college_id=payload.get("id"))
@@ -834,7 +834,7 @@ async def downloadExcel(
     except HTTPException:
         raise
 
-    if payload.get("id") == 1:
+    if payload.get("college_id") < 2:
         records = await get_data_for_excel(year=year, college_id=college, status=status)
     else:
         records = await get_data_for_excel(college_id=payload.get("id"), status=status)
@@ -917,7 +917,7 @@ async def getStats(request: Request):
     except HTTPException:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    if payload.get("id") == 1:
+    if payload.get("college_id") < 2:
         return await get_stats()
     return {"message": "tbd"}
 

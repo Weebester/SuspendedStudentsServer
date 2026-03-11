@@ -1,6 +1,11 @@
 const API_BASE = 'http://192.168.0.113:8000';
 const collegeSelect = document.getElementById('collegeInput');
 const container = document.getElementById('accountContainer');
+const addAccountBtn= document.getElementById('addAccountBtn');
+const userNameInput= document.getElementById('usernameInput');
+const userPasswordInput= document.getElementById('passwordInput');
+const userConfirmPass= document.getElementById('confirmPasswordInput');
+
 let activeAccountId = null;
 
 // Procedural Start
@@ -95,26 +100,30 @@ async function toggleAllUsers(bool) {
 
 let activePassUpdateId = null;
 
-// Called by the "Change Password" button in your list
+const newPassInput=document.getElementById('newPassInput');
+const comfirmNewPassInput=document.getElementById('confirmNewPassInput');
+const changePassModal=document.getElementById('changePassModal');
+const confirmChange=document.getElementById('confirmChangeBtn');
+
 function openPassModal(id) {
     activePassUpdateId = id;
 
     // Reset fields
-    document.getElementById('newPassInput').value = '';
-    document.getElementById('confirmNewPassInput').value = '';
+    newPassInput.value = '';
+    comfirmNewPassInput.value = '';
 
-    document.getElementById('changePassModal').style.display = 'flex';
+    changePassModal.style.display = 'flex';
 }
 
 function closePassModal() {
-    document.getElementById('changePassModal').style.display = 'none';
+    changePassModal.style.display = 'none';
     activePassUpdateId = null;
 }
 
 // Handle the Update Button click
-document.getElementById('confirmChangeBtn').onclick = async () => {
-    const newPass = document.getElementById('newPassInput').value;
-    const confirmPass = document.getElementById('confirmNewPassInput').value;
+confirmChange.onclick = async () => {
+    const newPass = newPassInput.value;
+    const confirmPass = comfirmNewPassInput.value;
 
     if (!newPass || newPass !== confirmPass) {
         return alert("Passwords must match and cannot be empty.");
@@ -142,13 +151,13 @@ document.getElementById('confirmChangeBtn').onclick = async () => {
 };
 
 function closeModal() {
-    const modal = document.getElementById('passwordModal');
+    const modal = passModal;
     if (modal) {
         modal.style.display = 'none'; // Hides the overlay
 
         // Clear the inputs so they are empty next time you open it
-        document.getElementById('deleteConfirmPass').value = '';
-        document.getElementById('deleteConfirmCheck').value = '';
+        deletePass.value = '';
+        confirmSeletePass.value = '';
         activeAccountIdToDelete = null;
         activeCollegeIdToDelete = null;
     }
@@ -156,22 +165,27 @@ function closeModal() {
 
 let activeAccountIdToDelete = null;
 
-// Replace your old deleteAccount function with this
+const deletePass=document.getElementByIds('deleteConfirmPass');
+const confirmSeletePass=document.getElementByIds('deleteConfirmCheck');
+const passModal=document.getElementByIds('passwordModal');
+const confirmDeleteBtn=document.getElementByIds('confirmDeleteBtn');
+
+
 function deleteAccount(id) {
     activeAccountIdToDelete = id;
 
     // Reset modal inputs
-    document.getElementById('deleteConfirmPass').value = '';
-    document.getElementById('deleteConfirmCheck').value = '';
+    deletePass.value = '';
+    confirmSeletePass.value = '';
 
     // Show modal
-    document.getElementById('passwordModal').style.display = 'flex';
+    passModal.style.display = 'flex';
 }
 
 // Update the Modal's "Confirm" button logic for the Accounts page
-document.getElementById('confirmDeleteBtn').onclick = async () => {
-    const pass = document.getElementById('deleteConfirmPass').value;
-    const conf = document.getElementById('deleteConfirmCheck').value;
+confirmDeleteBtn.onclick = async () => {
+    const pass = deletePass.value;
+    const conf = confirmSeletePass.value;
 
     if (!pass || pass !== conf) {
         return alert("Passwords must match and cannot be empty.");
@@ -198,11 +212,10 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
     }
 };
 
-// Add Account
-document.getElementById('addAccountBtn').onclick = async () => {
-    const user = document.getElementById('usernameInput').value;
-    const pass = document.getElementById('passwordInput').value;
-    const conf = document.getElementById('confirmPasswordInput').value;
+addAccountBtn.onclick = async () => {
+    const user = userNameInput.value;
+    const pass = userPasswordInput.value;
+    const conf = userConfirmPass.value;
     const coll = collegeSelect.value;
 
     if (!user || !pass || !conf || !coll) return alert("Fill all fields");

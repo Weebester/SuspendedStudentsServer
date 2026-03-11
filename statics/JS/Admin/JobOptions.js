@@ -1,9 +1,11 @@
 const API_BASE = 'http://192.168.0.113:8000';
 
-// Elements
 const jobStatusContainer = document.getElementById('jobStatusContainer');
 const subjobStatusContainer = document.getElementById('subJobStatusContainer');
 const jobStatusSelect = document.getElementById('jobStatusSelect');
+const AddStatusBtn = document.getElementById('addJobStatusBtn')
+const jobStatusNameInput=document.getElementById('jobStatusNameInput');
+
 
 // --- SIDE MENU TOGGLE ---
 function toggleOptions() {
@@ -98,8 +100,8 @@ async function toggleJobStatus(id, btnId) {
 
 }
 
-document.getElementById('addJobStatusBtn').onclick = async () => {
-    const name = document.getElementById('jobStatusNameInput').value;
+AddStatusBtn.onclick = async () => {
+    const name = jobStatusNameInput.value;
     if (!name) return alert("Enter name");
 
     const response = await fetch(`${API_BASE}/add_job_status_admin/`, {
@@ -109,7 +111,7 @@ document.getElementById('addJobStatusBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('jobStatusNameInput').value = '';
+        jobStatusNameInput.value = '';
         await fetchJobStatusItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -195,11 +197,12 @@ async function toggleSubJobStatus(id, btnId) {
 
 }
 
+const addSubBtn = document.getElementById('addSubBtn');
+const subNameInput = document.getElementById('subNameInput');
 
-
-document.getElementById('addSubBtn').onclick = async () => {
+addSubBtn.onclick = async () => {
     const job_status = jobStatusSelect.value;
-    const name = document.getElementById('subNameInput').value;
+    const name = subNameInput.value;
     
     if (!name || !job_status) return alert("Enter sub name");
 
@@ -210,7 +213,7 @@ document.getElementById('addSubBtn').onclick = async () => {
     });
 
     if (response.ok) {
-        document.getElementById('subNameInput').value = '';
+        subNameInput.value = '';
         fetchSubsItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -228,23 +231,29 @@ document.getElementById('addSubBtn').onclick = async () => {
 let ItemIdToDelete = null;
 let Type = null;
 
+const deletePass=document.getElementById('deleteConfirmPass')
+const deletePassConfirm= document.getElementById('deleteConfirmCheck')
+const passwordModal= document.getElementById('passwordModal')
+const confirmDeleteBtn=document.getElementById('confirmDeleteBtn')
+
+
 function openDeleteModal(id, type) {
     ItemIdToDelete = id;
     Type = type;
 
-    document.getElementById('deleteConfirmPass').value = '';
-    document.getElementById('deleteConfirmCheck').value = '';
-    document.getElementById('passwordModal').style.display = 'flex';
+    deletePass.value = '';
+    deletePassConfirm.value = '';
+    passwordModal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('passwordModal').style.display = 'none';
+    passwordModal.style.display = 'none';
     ItemIdToDelete = null;
 }
 
-document.getElementById('confirmDeleteBtn').onclick = async () => {
-    const pass = document.getElementById('deleteConfirmPass').value;
-    const conf = document.getElementById('deleteConfirmCheck').value;
+confirmDeleteBtn.onclick = async () => {
+    const pass = deletePass.value;
+    const conf = deletePassConfirm.value;
     let route = null
 
     if (Type === 'job_status') {
