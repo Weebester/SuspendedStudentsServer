@@ -230,7 +230,7 @@ class SubJobStatusList(Model):
     enabled = fields.CharEnumField(Flag)
 
     class Meta:
-        table = "sub_jop_status_list"
+        table = "sub_job_status_list"
         managed = False
 
 

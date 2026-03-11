@@ -164,26 +164,26 @@ body {
 }
 
 /* --- Scrollable Containers --- */
-#studyContainer,
+#jobStatusContainer,
 #subStudyContainer {
     flex-grow: 1;
     overflow-y: auto;
     padding-right: 8px;
 }
 
-#studyContainer::-webkit-scrollbar,
+#jobStatusContainer::-webkit-scrollbar,
 #subStudyContainer::-webkit-scrollbar {
     width: 5px;
 }
 
-#studyContainer::-webkit-scrollbar-thumb,
+#jobStatusContainer::-webkit-scrollbar-thumb,
 #subStudyContainer::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 10px;
 }
 
 /* --- Action Buttons & Rows --- */
-#addStudyBtn,
+#addJobStatusBtn,
 #addSubBtn {
     height: 41px;
     padding: 0 20px;
@@ -197,13 +197,13 @@ body {
     transition: filter 0.2s ease;
 }
 
-#addStudyBtn:hover,
+#addJobStatusBtn:hover,
 #addSubBtn:hover {
     filter: brightness(90%);
     cursor: pointer;
 }
 
-#addStudyBtn:active,
+#addJobStatusBtn:active,
 #addSubBtn:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;

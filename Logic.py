@@ -306,3 +306,77 @@ async def toggle_sub_study_admin(sub_study_id: int):
         await sub_study.save()
     else:
         raise HTTPException(status_code=404, detail="SubStudy not found")
+
+
+#####################################################################################################
+############################################-Job-OPs-##############################################
+#####################################################################################################
+
+
+async def get_job_status_admin():
+    List = await JobStatus.all().values()
+    return List
+
+
+async def add_job_status_admin(name: str):
+    existing_status = await JobStatus.get_or_none(status=name)
+    if existing_status:
+        raise HTTPException(status_code=400, detail="Job status already exists")
+    await JobStatus.create(status=name)
+
+
+async def delete_job_status_admin(job_status_id: int, password: str):
+    user = await Users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    job_status = await JobStatus.get(id=job_status_id)
+    if job_status:
+        await job_status.delete()
+    else:
+        raise HTTPException(status_code=404, detail="job status not found")
+    
+
+async def toggle_job_status_admin(job_status_id: int):
+    job_status = await JobStatus.get(id=job_status_id)
+    if job_status:
+        job_status.enabled = Flag.No if job_status.enabled == Flag.Yes else Flag.Yes
+        await job_status.save()
+    else:
+        raise HTTPException(status_code=404, detail="Study not found")
+
+
+####################################################################################################################################
+#############################################################-Sub-Study-OPs-########################################################
+####################################################################################################################################
+
+
+async def get_sub_job_status_admin(job_status_id: int = None):
+    if job_status_id is not None:
+        List = await SubJobStatusList.filter(status_id=job_status_id).values()
+    else:
+        List = await SubJobStatusList.all().values()
+    return List
+
+
+async def add_sub_job_status_admin(name: str, job_status_id: int):
+    await JobStatusSub.create(sub=name, status=job_status_id)
+
+
+async def delete_sub_job_status_admin(sub_job_status_id: int, password: str):
+    user = await Users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    sub_job_status = await JobStatusSub.get(id=sub_job_status_id)
+    if sub_job_status:
+        await sub_job_status.delete()
+    else:
+        raise HTTPException(status_code=404, detail="sub job status not found")
+
+
+async def toggle_sub_job_status_admin(sub_job_status_id: int):
+    sub_job_status = await JobStatusSub.get(id=sub_job_status_id)
+    if sub_job_status:
+        sub_job_status.enabled = Flag.No if sub_job_status.enabled == Flag.Yes else Flag.Yes
+        await sub_job_status.save()
+    else:
+        raise HTTPException(status_code=404, detail="Sub job status not found")

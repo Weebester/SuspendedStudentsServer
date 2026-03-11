@@ -608,9 +608,7 @@ async def deleteSubStudyAdmin(sub_study_id: int, request: Request, body: Passwor
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
-        await delete_sub_study_admin(
-            sub_study_id=sub_study_id, password=body.password
-        )
+        await delete_sub_study_admin(sub_study_id=sub_study_id, password=body.password)
     except HTTPException:
         raise
 
@@ -630,6 +628,189 @@ async def toggleSubStudyAdmin(sub_study_id: int, request: Request):
 
     try:
         await toggle_sub_study_admin(sub_study_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
+###########################################-Job-ops-#################################################
+#####################################################################################################
+
+
+@app.get("/get_job_status_admin")
+async def getJobStatusAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_job_status_admin()
+    except HTTPException:
+        raise
+
+
+class AddJobStatusRequest(BaseModel):
+    name: str
+
+
+@app.post("/add_job_status_admin")
+async def addJobStatusAdmin(request: Request, body: AddJobStatusRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_job_status_admin(name=body.name)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_job_status_admin/{job_status_id}")
+async def deleteJobStatusAdmin(job_status_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_job_status_admin(
+            job_status_id=job_status_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_job_status_admin/{job_status_id}")
+async def toggleJobStatusAdmin(job_status_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_job_status_admin(job_status_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
+########################################-Sub-Job-ops-#############################################
+#####################################################################################################
+
+
+@app.get("/get_sub_job_status_admin")
+async def getSubJobStatusAdmin(request: Request, job_status_id: Optional[int] = None):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_sub_job_status_admin(job_status_id=job_status_id)
+    except HTTPException:
+        raise
+
+
+class AddSubJobStatusRequest(BaseModel):
+    name: str
+    job_status : int
+
+
+@app.post("/add_sub_job_status_admin")
+async def addSubJobStatusAdmin(request: Request, body: AddSubJobStatusRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_sub_job_status_admin(name=body.name, job_status_id=body.job_status)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_sub_job_status_admin/{sub_job_status_id}")
+async def deleteSubJobSatatusAdmin(
+    sub_job_status_id: int, request: Request, body: Password
+):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_sub_job_status_admin(
+            sub_job_status_id=sub_job_status_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_sub_job_status_admin/{sub_job_status_id}")
+async def toggleSubJobStatusAdmin(sub_job_status_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_sub_job_status_admin(sub_job_status_id)
     except HTTPException:
         raise
 

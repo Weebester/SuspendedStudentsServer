@@ -1,9 +1,9 @@
 const API_BASE = 'http://192.168.0.113:8000';
 
 // Elements
-const studyContainer = document.getElementById('studyContainer');
-const subStudyContainer = document.getElementById('subStudyContainer');
-const subStudySelect = document.getElementById('subStudySelect');
+const jobStatusContainer = document.getElementById('jobStatusContainer');
+const subjobStatusContainer = document.getElementById('subJobStatusContainer');
+const jobStatusSelect = document.getElementById('jobStatusSelect');
 
 // --- SIDE MENU TOGGLE ---
 function toggleOptions() {
@@ -17,7 +17,7 @@ function toggleOptions() {
     try {
         // Fetch dropdown items and both lists independently
         await Promise.all([
-            fetchStudiesItems(),
+            fetchJobStatusItems(),
             fetchSubsItems()
         ]);
     } catch (err) {
@@ -27,34 +27,34 @@ function toggleOptions() {
 
 
 // --- COLLEGE LOGIC ---
-async function fetchStudiesItems() {
-    const response = await fetch(`${API_BASE}/get_study_admin`);
+async function fetchJobStatusItems() {
+    const response = await fetch(`${API_BASE}/get_job_status_admin`);
     const studies = await response.json();
 
     if (response.ok) {
-        studyContainer.innerHTML = studies.map(s => `
+        jobStatusContainer.innerHTML = studies.map(j => `
         <div class="item-row">
            
             <div class="item-info">
                 <div class="info">
-                    <label>المرحلة</label>
-                    <span>${s.study}</span>
+                    <label>الحالة الوظيفية</label>
+                    <span>${j.status}</span>
                 </div>
             </div>
              <div>
-                <button id="toggle-${s.id}" 
-                        data-status="${s.enabled === 'yes' ? 'yes' : 'no'}" 
-                        class="action-btn ${s.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
-                        onclick="toggleStudyStatus(${s.id}, 'toggle-${s.id}')">
-                        ${s.enabled === 'yes' ? 'O' : 'X'}
+                <button id="toggle-${j.id}" 
+                        data-status="${j.enabled === 'yes' ? 'yes' : 'no'}" 
+                        class="action-btn ${j.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
+                        onclick="toggleJobStatus(${j.id}, 'toggle-${j.id}')">
+                        ${j.enabled === 'yes' ? 'O' : 'X'}
                 </button>
-                <button class="action-btn btn-remove" onclick="openDeleteModal(${s.id}, 'study')">حذف</button>
+                <button class="action-btn btn-remove" onclick="openDeleteModal(${j.id}, 'job_status')">حذف</button>
             </div>
         </div>
     `).join('');
 
-        subStudySelect.innerHTML =`<option value=''>غير محدد</option>`   
-        studies.forEach(s => subStudySelect.add(new Option(s.study, s.id)));     
+        jobStatusSelect.innerHTML =`<option value=''>غير محدد</option>`   
+        studies.forEach(s => jobStatusSelect.add(new Option(s.status, s.id)));     
         
 
 
@@ -71,11 +71,11 @@ async function fetchStudiesItems() {
 
 }
 
-async function toggleStudyStatus(id, btnId) {
+async function toggleJobStatus(id, btnId) {
     const btn = document.getElementById(btnId);
     const isEnabled = (btn.dataset.status === 'yes');
     // API Call
-    const response = await fetch(`${API_BASE}/toggle_study_admin/${id}`, {
+    const response = await fetch(`${API_BASE}/toggle_job_status_admin/${id}`, {
         method: 'PATCH'
     });
 
@@ -98,19 +98,19 @@ async function toggleStudyStatus(id, btnId) {
 
 }
 
-document.getElementById('addStudyBtn').onclick = async () => {
-    const name = document.getElementById('studyNameInput').value;
-    if (!name) return alert("Enter study name");
+document.getElementById('addJobStatusBtn').onclick = async () => {
+    const name = document.getElementById('jobStatusNameInput').value;
+    if (!name) return alert("Enter name");
 
-    const response = await fetch(`${API_BASE}/add_study_admin/`, {
+    const response = await fetch(`${API_BASE}/add_job_status_admin/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })
     });
 
     if (response.ok) {
-        document.getElementById('studyNameInput').value = '';
-        await fetchStudiesItems();
+        document.getElementById('jobStatusNameInput').value = '';
+        await fetchJobStatusItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
     } else {
@@ -126,30 +126,30 @@ document.getElementById('addStudyBtn').onclick = async () => {
 // --- DEPARTMENT LOGIC ---
 async function fetchSubsItems() {
 
-    const response = await fetch(`${API_BASE}/get_sub_study_admin${subStudySelect.value ? `?study_id=${subStudySelect.value}` : ''}`);
+    const response = await fetch(`${API_BASE}/get_sub_job_status_admin${jobStatusSelect.value ? `?job_status_id=${jobStatusSelect.value}` : ''}`);
     const subs = await response.json();
 
     if (response.ok) {
-        subStudyContainer.innerHTML = subs.map(ss => `
+        subjobStatusContainer.innerHTML = subs.map(sj => `
         <div class="item-row">
             <div class="item-info">    
                 <div class="info">
                     <label>الكلية</label>
-                    <p>${ss.study}</p>
+                    <p>${sj.status}</p>
                 </div>    
                 <div class="info">
                     <label>القسم</label>
-                    <p>${ss.sub}</p>
+                    <p>${sj.sub}</p>
                 </div>
             </div>
             <div>
-                <button id="toggle-S-${ss.id}" 
-                        data-status="${ss.enabled === 'yes' ? 'yes' : 'no'}" 
-                        class="action-btn ${ss.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
-                        onclick="toggleSubStudyStatus(${ss.id}, 'toggle-S-${ss.id}')">
-                        ${ss.enabled === 'yes' ? 'O' : 'X'}
+                <button id="toggle-S-${sj.id}" 
+                        data-status="${sj.enabled === 'yes' ? 'yes' : 'no'}" 
+                        class="action-btn ${sj.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
+                        onclick="toggleSubJobStatus(${sj.id}, 'toggle-S-${sj.id}')">
+                        ${sj.enabled === 'yes' ? 'O' : 'X'}
                 </button>
-                <button class="action-btn btn-remove" onclick="openDeleteModal(${ss.id}, 'sub')">حذف</button>
+                <button class="action-btn btn-remove" onclick="openDeleteModal(${sj.id}, 'sub')">حذف</button>
             </div>
         </div>
     `).join('');
@@ -166,13 +166,13 @@ async function fetchSubsItems() {
     }
 }
 
-subStudySelect.addEventListener("change",fetchSubsItems)
+jobStatusSelect.addEventListener("change",fetchSubsItems)
 
-async function toggleSubStudyStatus(id, btnId) {
+async function toggleSubJobStatus(id, btnId) {
     const btn = document.getElementById(btnId);
     const isEnabled = (btn.dataset.status === 'yes');
     // API Call
-    const response = await fetch(`${API_BASE}/toggle_sub_study_admin/${id}`, {
+    const response = await fetch(`${API_BASE}/toggle_sub_job_status_admin/${id}`, {
         method: 'PATCH'
     });
 
@@ -198,15 +198,15 @@ async function toggleSubStudyStatus(id, btnId) {
 
 
 document.getElementById('addSubBtn').onclick = async () => {
-    const study = subStudySelect.value;
+    const job_status = jobStatusSelect.value;
     const name = document.getElementById('subNameInput').value;
+    
+    if (!name || !job_status) return alert("Enter sub name");
 
-    if (!name || !study) return alert("Enter sub name");
-
-    const response = await fetch(`${API_BASE}/add_sub_study_admin/`, {
+    const response = await fetch(`${API_BASE}/add_sub_job_status_admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, study: study })
+        body: JSON.stringify({ name , job_status:job_status })
     });
 
     if (response.ok) {
@@ -247,10 +247,10 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
     const conf = document.getElementById('deleteConfirmCheck').value;
     let route = null
 
-    if (Type === 'study') {
-        route = 'delete_study_admin';
+    if (Type === 'job_status') {
+        route = 'delete_job_status_admin';
     } else if (Type === 'sub') {
-        route = 'delete_sub_study_admin';
+        route = 'delete_sub_job_status_admin';
     }
 
 
@@ -265,8 +265,8 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
     if (response.ok) {
         closeModal();
         await fetchSubsItems();
-        if (Type === 'study') {
-            await fetchStudiesItems();
+        if (Type === 'job_status') {
+            await fetchJobStatusItems();
         }
 
     } else if (response.status === 401) {
