@@ -1,0 +1,378 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    min-height: 100vh;
+    font-family: sans-serif;
+    align-items: flex-start;
+}
+
+/* --- Sidebar Styling --- */
+.sidebar {
+    width: 20%;
+    min-width: 200px;
+    background-color: #333030;
+    color: #fff;
+    padding: 1em;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+/* Sidebar Scrollbar Logic */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+.NavName h1 {
+    margin: 0;
+    padding: 1em 0.5em;
+    font-size: 1.75rem;
+    border-bottom: 1px solid #444;
+    text-align: right;
+}
+
+.NavOps {
+    list-style: none;
+    padding: 0;
+    margin-top: 1em;
+}
+
+.NavOps li a,
+.OptionsToggle {
+    display: block;
+    width: 100%;
+    text-align: right;
+    background: none;
+    border: none;
+    color: #ddd;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.NavOps li a:hover,
+.OptionsToggle:hover ,
+.SubMenu a:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+.SubMenu {
+    display: none;
+    padding-left: 1.5em;
+}
+
+.SubMenu a {
+    display: block;
+    color: #ddd;
+    text-align: right;
+    text-decoration: none;
+    padding: 0.8em 1em;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+/* --- Main Content Scope --- */
+.content {
+    flex-grow: 1;
+    height: 100vh;
+    padding: 24px;
+    background-color: #f9fafb;
+    box-sizing: border-box;
+    overflow: hidden;
+    direction: rtl;
+}
+
+.content .split-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 48px);
+    width: 100%;
+    align-items: stretch;
+}
+
+.content .side-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+.content .separator {
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #001e3b, transparent);
+    align-self: stretch;
+    margin: 0 3px;
+}
+
+/* --- UI Elements --- */
+.content .input-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 20px;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.content .input-group {
+    flex: 1;
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.content .input-group label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #666;
+}
+
+.content .input-group input,
+.content .input-group select {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    outline: none;
+}
+
+/* --- Scrollable Containers --- */
+#studyContainer,
+#subStudyContainer {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+#studyContainer::-webkit-scrollbar,
+#subStudyContainer::-webkit-scrollbar {
+    width: 5px;
+}
+
+#studyContainer::-webkit-scrollbar-thumb,
+#subStudyContainer::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+}
+
+/* --- Action Buttons & Rows --- */
+#addStudyBtn,
+#addSubBtn {
+    height: 41px;
+    padding: 0 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    transition: filter 0.2s ease;
+}
+
+#addStudyBtn:hover,
+#addSubBtn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+#addStudyBtn:active,
+#addSubBtn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+.content .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 12px;
+}
+
+.content .item-info {
+    display: flex;
+    gap: 25px;
+    font-size: 15px;
+}
+
+.content .info label {
+    display: block;
+    font-size: 10px;
+    color: #999;
+    text-align: right;
+    font-size: 15px;
+}
+
+.content .info p{
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+}
+
+.action-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+    transition: filter 0.2s ease;
+}
+
+.action-btn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+.btn-rename {
+    background: #0369a1;
+    color: #e0f2fe;
+}
+
+.btn-remove {
+    background: #ad2828;
+    color: #fee2e2;
+}
+
+.btn-enable {
+    font-size: 15px;
+    font-weight: bolder;
+    background: #2b9439;
+    color: #e0f2fe;
+    margin-left: 8px;
+}
+
+.btn-disable {
+    font-size: 15px;
+    font-weight: bolder;
+    background: #d63a17;
+    color: #fee2e2;
+    margin-left: 8px;
+}
+/* --- Modal Styling --- */
+.content .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.content .modal-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 380px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: modalFadeIn 0.3s ease-out;
+}
+ 
+/* Container for modal buttons */
+.content .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Specific Style for Modal Cancel */
+.content .btn-modal-cancel {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background-color: #f3f4f6; /* Light gray */
+    color: #4b5563;           /* Gray text */
+    transition: background-color 0.2s;
+}
+
+.content .btn-modal-cancel:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+/* Specific Style for Modal Confirm Delete */
+.content .btn-modal-confirm {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid #fecaca;
+    background-color: #fee2e2; /* Soft red */
+    color: #dc2626;           /* Danger red */
+    transition: all 0.2s ease;
+}
+
+.content .btn-modal-confirm:hover {
+    background-color: #dc2626; /* Solid red */
+    color: white;
+    border-color: #b91c1c;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* Click feedback for both */
+.content .btn-modal-cancel:active, 
+.content .btn-modal-confirm:active {
+    transform: scale(0.97);
+}
+
+.content .btn-modal-confirm#confirmChangeBtn {
+    background-color: #e0f2fe; 
+    color: #0369a1;           
+    border: 1px solid #bae6fd;
+}
+
+.content .btn-modal-confirm#confirmChangeBtn:hover {
+    background-color: #0369a1;
+    color: white;
+    border-color: #0369a1;
+    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
+}

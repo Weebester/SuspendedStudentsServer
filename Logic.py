@@ -23,7 +23,9 @@ def tokenCheck(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-########################################################AccountsOPs################################################################
+#####################################################################################################
+#####################################S####-Accounts-OPs-##############################################
+#####################################################################################################
 
 
 async def login_process(cred: str, password: str) -> dict:
@@ -94,7 +96,9 @@ async def toggle_all_users(enable: bool):
     await Users.filter(id__not=1).update(enabled=new_status)
 
 
-#######################################################Misc##############################################################
+#####################################################################################################
+############################################Misc#####################################################
+#####################################################################################################
 
 
 async def get_data_for_excel(
@@ -157,7 +161,9 @@ async def get_requests(status: str = None, year: int = None, college_id: int = N
     return result
 
 
-#########################################################-Colleges-OPs-########################################################
+#####################################################################################################
+############################################-Colleges-OPs-###########################################
+#####################################################################################################
 
 
 async def get_colleges_admin():
@@ -187,7 +193,11 @@ async def delete_college_admin(college_id: int, password: str):
         raise HTTPException(status_code=404, detail="College not found")
 
 
-#############################################################-Departments-OPs-########################################################
+#####################################################################################################
+######################################-Departments-OPs-##############################################
+#####################################################################################################
+
+
 async def get_departments_admin(college_id: int = None):
     if college_id is not None:
         List = await DepartmentsList.filter(college_id=college_id).values()
@@ -222,3 +232,77 @@ async def toggle_department_admin(department_id: int):
         await department.save()
     else:
         raise HTTPException(status_code=404, detail="Department not found")
+
+
+#####################################################################################################
+############################################-Study-OPs-##############################################
+#####################################################################################################
+
+
+async def get_study_admin():
+    List = await Study.all().values()
+    return List
+
+
+async def add_study_admin(name: str):
+    existing_study = await Study.get_or_none(study=name)
+    if existing_study:
+        raise HTTPException(status_code=400, detail="Study already exists")
+    await Study.create(study=name)
+
+
+async def delete_study_admin(study_id: int, password: str):
+    user = await Users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    study = await Study.get(id=study_id)
+    if study:
+        await study.delete()
+    else:
+        raise HTTPException(status_code=404, detail="study not found")
+    
+
+async def toggle_study_admin(study_id: int):
+    study = await Study.get(id=study_id)
+    if study:
+        study.enabled = Flag.No if study.enabled == Flag.Yes else Flag.Yes
+        await study.save()
+    else:
+        raise HTTPException(status_code=404, detail="Study not found")
+
+
+####################################################################################################################################
+#############################################################-Sub-Study-OPs-########################################################
+####################################################################################################################################
+
+
+async def get_sub_study_admin(study_id: int = None):
+    if study_id is not None:
+        List = await SubStudyList.filter(study_id=study_id).values()
+    else:
+        List = await SubStudyList.all().values()
+    return List
+
+
+async def add_sub_study_admin(name: str, study_id: int):
+    await StudySub.create(sub=name, study=study_id)
+
+
+async def delete_sub_study_admin(sub_study_id: int, password: str):
+    user = await Users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    sub_study = await StudySub.get(id=sub_study_id)
+    if sub_study:
+        await sub_study.delete()
+    else:
+        raise HTTPException(status_code=404, detail="SubStudy not found")
+
+
+async def toggle_sub_study_admin(sub_study_id: int):
+    sub_study = await StudySub.get(id=sub_study_id)
+    if sub_study:
+        sub_study.enabled = Flag.No if sub_study.enabled == Flag.Yes else Flag.Yes
+        await sub_study.save()
+    else:
+        raise HTTPException(status_code=404, detail="SubStudy not found")

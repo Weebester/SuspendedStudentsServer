@@ -28,7 +28,10 @@ app.mount("/static", StaticFiles(directory="statics"), name="statics")
 
 templates = Jinja2Templates(directory="templates")
 
-######################################-Pages-########################################
+
+#####################################################################################################
+##############################################-Pages-################################################
+#####################################################################################################
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -66,7 +69,9 @@ async def MainU(request: Request, page: str):
         return templates.TemplateResponse(request=request, name="index.html")
 
 
-####################################-Accounts-Ops-########################################
+#####################################################################################################
+####################################-Accounts-Ops-###################################################
+#####################################################################################################
 
 
 class LoginRequest(BaseModel):
@@ -95,7 +100,7 @@ async def login(body: LoginRequest, response: Response):
 
 
 @app.get("/get_users")
-async def getUsersList(request: Request ,college_id: Optional[int]=None):
+async def getUsersList(request: Request, college_id: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -179,6 +184,7 @@ async def changePassword(account_id: int, request: Request, body: Password):
     except HTTPException:
         raise
 
+
 @app.patch("/toggle_user/{account_id}")
 async def toggleUser(account_id: int, request: Request):
     token = request.cookies.get("Token")
@@ -192,13 +198,12 @@ async def toggleUser(account_id: int, request: Request):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    try :
-       await toggle_user(account_id)
+    try:
+        await toggle_user(account_id)
     except HTTPException:
         raise
 
 
-####to be done###
 @app.patch("/toggle_all_users")
 async def toggleAllUsers(request: Request, enable: bool):
     token = request.cookies.get("Token")
@@ -218,98 +223,10 @@ async def toggleAllUsers(request: Request, enable: bool):
     except HTTPException:
         raise
 
-#################################################-Files-##################################################
 
-
-@app.get("/download_excel")
-async def downloadExcel(
-    request: Request,
-    year: Optional[int] = None,
-    college: Optional[int] = None,
-    status: Optional[str] = None,
-):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise
-
-    if payload.get("id") == 1:
-        records = await get_data_for_excel(year=year, college_id=college ,status=status)
-    else:
-        records = await get_data_for_excel(college_id=payload.get("id"), status=status)
-
-    if not records or len(records) == 0:
-        raise HTTPException(status_code=404, detail="No records found")
-
-    df = pd.DataFrame(records)
-    if "id" in df.columns:
-        df = df.drop(columns=["id"])
-    if "college_id" in df.columns:
-        df = df.drop(columns=["college_id"])
-
-    if "acception_year" in df.columns:
-        df["acception_year"] = df["acception_year"].apply(lambda y: f"{y}-{y+1}")
-    if "suspension_year" in df.columns:
-        df["suspension_year"] = df["suspension_year"].apply(lambda y: f"{y}-{y+1}")
-
-    if "request_year" in df.columns:
-        df["request_year"] = df["request_year"].apply(lambda y: f"{y}-{y+1}")
-
-    benefactor_map = {Flag.Yes: "نعم", Flag.No: "لا"}
-
-    if "benefactor" in df.columns:
-        df["benefactor"] = df["benefactor"].apply(lambda x: benefactor_map.get(x, x))
-
-    RequestStatus_map = {
-        RequestStatus.PENDING: "قيد الانتظار",
-        RequestStatus.ACCEPTED: "مقبول",
-        RequestStatus.DENIED: "مرفوض",
-    }
-
-    if "request_status" in df.columns:
-        df["request_status"] = df["request_status"].apply(
-            lambda x: RequestStatus_map.get(x, x)
-        )
-
-    header_map = {
-        "student_name": "اسم الطالب",
-        "birth_date": "التولد",
-        "college": "الكلية",
-        "department": "القسم",
-        "speciality": "التخصص",
-        "study": "المرحلة الدراسية",
-        "acception_year": "سنة القبول",
-        "suspension_year": "سنة الترقين",
-        "suspension_reason": "سبب لبترقين",
-        "job_status": "الموقف الوظيفي",
-        "request_status": "حالة الطلب",
-        "status": "موقف الطلب",
-        "benefactor": "مستفيد سابقا",
-        "request_year": "العام الدراسي الحالي",
-    }
-
-    df.rename(columns=header_map, inplace=True)
-
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Students")
-
-    output.seek(0)
-
-    # 5. Return as a downloadable file
-    headers = {"Content-Disposition": 'attachment; filename="student_records.xlsx"'}
-    return StreamingResponse(
-        output,
-        headers=headers,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-
-
-##############################################-UnLabeld-#######################################################
+#####################################################################################################
+####################################-UNcatogerized-##################################################
+#####################################################################################################
 
 
 @app.get("/get_years_admin")
@@ -354,7 +271,9 @@ async def getRequestsAdmin(
         raise
 
 
-#######################################################colleges-ops############################################
+#####################################################################################################
+#############################################colleges-ops############################################
+#####################################################################################################
 
 
 @app.get("/get_colleges_admin")
@@ -445,11 +364,13 @@ async def renameCollegeAdmin(college_id: int, request: Request, body: Rename):
         raise
 
 
-######################################################department-op#####################################
+#####################################################################################################
+########################################-department-ops-#############################################
+#####################################################################################################
 
 
 @app.get("/get_departments_admin")
-async def getDepartmentsAdmin(request: Request ,college_id :Optional[int] = None):
+async def getDepartmentsAdmin(request: Request, college_id: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -528,13 +449,282 @@ async def toggleDepartmentAdmin(department_id: int, request: Request):
     if payload.get("id") != 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
-    try :
-       await toggle_department_admin(department_id)
+    try:
+        await toggle_department_admin(department_id)
     except HTTPException:
         raise
 
 
-######################################################################
+#####################################################################################################
+###########################################-Study-ops-############################################
+#####################################################################################################
+
+
+@app.get("/get_study_admin")
+async def getStudyAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_study_admin()
+    except HTTPException:
+        raise
+
+
+class AddStudyRequest(BaseModel):
+    name: str
+
+
+@app.post("/add_study_admin")
+async def addStudyAdmin(request: Request, body: AddStudyRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_study_admin(name=body.name)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_study_admin/{study_id}")
+async def deleteStudyAdmin(study_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_study_admin(study_id=study_id, password=body.password)
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_study_admin/{study_id}")
+async def toggleStudyAdmin(study_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_study_admin(study_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
+########################################-Sub-Study-ops-#############################################
+#####################################################################################################
+
+
+@app.get("/get_sub_study_admin")
+async def getSubStudyAdmin(request: Request, study_id: Optional[int] = None):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_sub_study_admin(study_id=study_id)
+    except HTTPException:
+        raise
+
+
+class AddSubStudyRequest(BaseModel):
+    name: str
+    study: int
+
+
+@app.post("/add_sub_study_admin")
+async def addSubStudyAdmin(request: Request, body: AddSubStudyRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_sub_study_admin(name=body.name, study_id=body.study)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_sub_study_admin/{sub_study_id}")
+async def deleteSubStudyAdmin(sub_study_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_sub_study_admin(
+            sub_study_id=sub_study_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_sub_study_admin/{sub_study_id}")
+async def toggleSubStudyAdmin(sub_study_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("id") != 1:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_sub_study_admin(sub_study_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
+############################################-Misc-###################################################
+#####################################################################################################
+
+
+@app.get("/download_excel")
+async def downloadExcel(
+    request: Request,
+    year: Optional[int] = None,
+    college: Optional[int] = None,
+    status: Optional[str] = None,
+):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("id") == 1:
+        records = await get_data_for_excel(year=year, college_id=college, status=status)
+    else:
+        records = await get_data_for_excel(college_id=payload.get("id"), status=status)
+
+    if not records or len(records) == 0:
+        raise HTTPException(status_code=404, detail="No records found")
+
+    df = pd.DataFrame(records)
+    if "id" in df.columns:
+        df = df.drop(columns=["id"])
+    if "college_id" in df.columns:
+        df = df.drop(columns=["college_id"])
+
+    if "acception_year" in df.columns:
+        df["acception_year"] = df["acception_year"].apply(lambda y: f"{y}-{y+1}")
+    if "suspension_year" in df.columns:
+        df["suspension_year"] = df["suspension_year"].apply(lambda y: f"{y}-{y+1}")
+
+    if "request_year" in df.columns:
+        df["request_year"] = df["request_year"].apply(lambda y: f"{y}-{y+1}")
+
+    benefactor_map = {Flag.Yes: "نعم", Flag.No: "لا"}
+
+    if "benefactor" in df.columns:
+        df["benefactor"] = df["benefactor"].apply(lambda x: benefactor_map.get(x, x))
+
+    RequestStatus_map = {
+        RequestStatus.PENDING: "قيد الانتظار",
+        RequestStatus.ACCEPTED: "مقبول",
+        RequestStatus.DENIED: "مرفوض",
+    }
+
+    if "request_status" in df.columns:
+        df["request_status"] = df["request_status"].apply(
+            lambda x: RequestStatus_map.get(x, x)
+        )
+
+    header_map = {
+        "student_name": "اسم الطالب",
+        "birth_date": "التولد",
+        "college": "الكلية",
+        "department": "القسم",
+        "speciality": "التخصص",
+        "study": "المرحلة الدراسية",
+        "acception_year": "سنة القبول",
+        "suspension_year": "سنة الترقين",
+        "suspension_reason": "سبب لبترقين",
+        "job_status": "الموقف الوظيفي",
+        "request_status": "حالة الطلب",
+        "status": "موقف الطلب",
+        "benefactor": "مستفيد سابقا",
+        "request_year": "العام الدراسي الحالي",
+    }
+
+    df.rename(columns=header_map, inplace=True)
+
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Students")
+
+    output.seek(0)
+
+    # 5. Return as a downloadable file
+    headers = {"Content-Disposition": 'attachment; filename="student_records.xlsx"'}
+    return StreamingResponse(
+        output,
+        headers=headers,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 @app.get("/stats")

@@ -2,7 +2,9 @@ from enum import Enum
 from tortoise import fields, Model, fields
 
 
-##########################################################Tables###############################################
+#####################################################################################################
+###############################################Tables################################################
+#####################################################################################################
 
 
 class Flag(Enum):
@@ -103,7 +105,7 @@ class Study(Model):
 class StudySub(Model):
     id = fields.IntField(pk=True)
     study = fields.IntField()
-    Sub = fields.CharField(max_length=50)
+    sub = fields.CharField(max_length=50)
     enabled = fields.CharEnumField(Flag, default=Flag.Yes)
 
     class Meta:
@@ -132,7 +134,9 @@ class Requests(Model):
         table = "requests"
 
 
-#######################################Views##################################
+#####################################################################################################
+#######################################Views#########################################################
+#####################################################################################################
 
 
 class Excel(Model):
@@ -208,10 +212,36 @@ class DepartmentsList(Model):
 
     id = fields.IntField(pk=True)
     college_id = fields.IntField()
-    department = fields.CharField(max_length=50)
+    department = fields.CharField(max_length=100)
     college = fields.CharField(max_length=100)
     enabled = fields.CharEnumField(Flag)
 
     class Meta:
         table = "departments_list"
+        managed = False
+
+
+class SubJobStatusList(Model):
+
+    id = fields.IntField(pk=True)
+    status_id = fields.IntField()
+    status = fields.CharField(max_length=50)
+    sub = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag)
+
+    class Meta:
+        table = "sub_jop_status_list"
+        managed = False
+
+
+class SubStudyList(Model):
+
+    id = fields.IntField(pk=True)
+    study_id = fields.IntField()
+    study = fields.CharField(max_length=50)
+    sub = fields.CharField(max_length=50)
+    enabled = fields.CharEnumField(Flag)
+
+    class Meta:
+        table = "sub_study_list"
         managed = False
