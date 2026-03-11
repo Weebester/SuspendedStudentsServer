@@ -164,27 +164,26 @@ body {
 }
 
 /* --- Scrollable Containers --- */
-#collegeContainer,
-#departmentContainer {
+.Container{
     flex-grow: 1;
     overflow-y: auto;
     padding-right: 8px;
 }
 
-#collegeContainer::-webkit-scrollbar,
-#departmentContainer::-webkit-scrollbar {
+.Container::-webkit-scrollbar
+{
     width: 5px;
 }
 
-#collegeContainer::-webkit-scrollbar-thumb,
-#departmentContainer::-webkit-scrollbar-thumb {
+.Container::-webkit-scrollbar-thumb
+{
     background: #d1d5db;
     border-radius: 10px;
 }
 
 /* --- Action Buttons & Rows --- */
-#addCollegeBtn,
-#addDeptBtn {
+.addBtn
+{
     height: 41px;
     padding: 0 20px;
     background: #007bff;
@@ -197,14 +196,12 @@ body {
     transition: filter 0.2s ease;
 }
 
-#addCollegeBtn:hover,
-#addDeptBtn:hover {
+.addBtn:hover {
     filter: brightness(90%);
     cursor: pointer;
 }
 
-#addCollegeBtn:active,
-#addDeptBtn:active {
+.addBtn:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;
 }
