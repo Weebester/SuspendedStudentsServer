@@ -19,7 +19,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
             const data = await response.json();
             //alert(data.college);
-            if (data.college === 1) {
+            alert(data.college_id)
+            if (data.college_id  < 2) {
                 window.location.href = "/Admin/Main";
             } else {
                 window.location.href = "/User/Main";

@@ -2,11 +2,6 @@ from enum import Enum
 from tortoise import fields, Model, fields
 
 
-#####################################################################################################
-###############################################Tables################################################
-#####################################################################################################
-
-
 class Flag(Enum):
     Yes = "yes"
     No = "no"
@@ -16,6 +11,25 @@ class RequestStatus(Enum):
     ACCEPTED = "Accepted"
     DENIED = "Denied"
     PENDING = "Pending"
+
+
+class Login(Model):
+
+    id = fields.IntField(pk=True)
+    college_id = fields.IntField()
+    cred = fields.CharField(max_length=50)
+    password = fields.CharField(max_length=128)
+    college = fields.CharField(max_length=100)
+    enabled = fields.CharEnumField(Flag)
+
+    class Meta:
+        table = "login"
+        managed = False
+
+
+#####################################################################################################
+###############################################Tables################################################
+#####################################################################################################
 
 
 class EducationalYear(Model):

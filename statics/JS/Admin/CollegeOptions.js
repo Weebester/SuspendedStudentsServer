@@ -29,7 +29,9 @@ function toggleOptions() {
 // --- COLLEGE LOGIC ---
 async function fetchCollegesItems() {
     const response = await fetch(`${API_BASE}/get_colleges_admin`);
-    const colleges = await response.json();
+    const rawColleges = await response.json();
+    const colleges = rawColleges.filter(c => c.id !== 1);
+    
 
     if (response.ok) {
         collegeContainer.innerHTML = colleges.map(c => `

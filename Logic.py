@@ -31,16 +31,21 @@ def tokenCheck(token: str):
 async def login_process(cred: str, password: str) -> dict:
     #  print("request received")
     #  print(cred)
-    user = await Users.get(cred=cred)
+    user = await Login.get(cred=cred)
     if user:
         if bcrypt.checkpw(password.encode(), user.password.encode()):
-            payload = {"id": user.id}
+            payload = {
+                "college_id": user.college_id,
+                "college": user.college,
+                "enabled": user.enabled.value,
+            }
+            print(payload)
             try:
                 token = jwt.encode(payload, secret_key, algorithm="HS256")
             except jwt.PyJWTError as e:
                 raise RuntimeError(f"Token generation failed: {e}")
 
-            return {"Token": token, "college": user.college}
+            return {"Token": token, "college_id": user.college_id}
         else:
             raise HTTPException(status_code=401, detail="Invalid password")
     else:
@@ -167,7 +172,7 @@ async def get_requests(status: str = None, year: int = None, college_id: int = N
 
 
 async def get_colleges_admin():
-    List = await Colleges.filter(id__not=1).values("id", "college")
+    List = await Colleges.filter(id__gt=0).values("id", "college")
     return List
 
 
@@ -260,7 +265,7 @@ async def delete_study_admin(study_id: int, password: str):
         await study.delete()
     else:
         raise HTTPException(status_code=404, detail="study not found")
-    
+
 
 async def toggle_study_admin(study_id: int):
     study = await Study.get(id=study_id)
@@ -334,7 +339,7 @@ async def delete_job_status_admin(job_status_id: int, password: str):
         await job_status.delete()
     else:
         raise HTTPException(status_code=404, detail="job status not found")
-    
+
 
 async def toggle_job_status_admin(job_status_id: int):
     job_status = await JobStatus.get(id=job_status_id)
@@ -376,7 +381,9 @@ async def delete_sub_job_status_admin(sub_job_status_id: int, password: str):
 async def toggle_sub_job_status_admin(sub_job_status_id: int):
     sub_job_status = await JobStatusSub.get(id=sub_job_status_id)
     if sub_job_status:
-        sub_job_status.enabled = Flag.No if sub_job_status.enabled == Flag.Yes else Flag.Yes
+        sub_job_status.enabled = (
+            Flag.No if sub_job_status.enabled == Flag.Yes else Flag.Yes
+        )
         await sub_job_status.save()
     else:
         raise HTTPException(status_code=404, detail="Sub job status not found")
