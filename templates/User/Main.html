@@ -1,27 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="Ar">
+
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Hello</title>
-    <link rel="stylesheet" href="/static/Style.css">
+    <link rel="icon" href="/static/icon.ico" type="image/x-icon">
+    <title>الطلبة المرقنين</title>
+    <link rel="stylesheet" href="/static/CSS/Main.css">
+    <script src="/static/JS/User/Main.js" defer></script>
 </head>
+
 <body>
-       <div class="sidebar">
+
+    <div class="content">
+        <div class="logo"><img src="/static/logo.png" alt="Logo"></div>
+        <div class="Stats">
+            <div class="stat-card">
+                <p class="label">مقبول</p>
+                <p class="count" id="count-accepted">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="label">مرفوض</p>
+                <p class="count" id="count-denied">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="label">قيد الانتظار</p>
+                <p class="count" id="count-pending">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
         <div class="NavName">
-            <h2>System 5</h2>
+            <h1>{{ role }}</h1>
         </div>
         <ul class="NavOps">
-            <li><a href="/Admin/Main">Main</a></li>
-            <li><a href="/Admin/Requests">Requests</a></li>
-            <li><a href="/Admin/Options">Options</a></li>
-            <li><a href="/Admin/Accounts">Accounts</a></li>
+            <li><a href="/User/Main">الرئيسية</a></li>
+            <li><a href="/User/Requests">الطلبات</a></li>
+            <li><a href="/logout">تسجيل الخروج</a></li>
         </ul>
     </div>
-    </div>
-    <div class="content"><p>aaaaa</p>
-    </div>
-    
 </body>
+
 </html>

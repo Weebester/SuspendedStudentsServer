@@ -19,3 +19,4 @@ if __name__ == "__main__":
     
     is_valid = check_password(password, hashed_password)
     print(f"Password is valid: {is_valid}")
+    print(None == -200)

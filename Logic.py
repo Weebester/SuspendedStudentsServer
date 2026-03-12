@@ -101,64 +101,6 @@ async def toggle_all_users(enable: bool):
     await Users.filter(id__not=1).update(enabled=new_status)
 
 
-#####################################################################################################
-############################################Misc#####################################################
-#####################################################################################################
-
-
-async def get_data_for_excel(
-    year: int = None, college_id: str = None, status: str = None
-):
-    if year is None:
-        current_year = await RequestYear.get(current=Flag.Yes)
-        year = current_year.start_year
-    data = Excel.filter(request_year=year)
-
-    if college_id is not None:
-        data = data.filter(college_id=college_id)
-
-    if status is not None:
-        data = data.filter(request_status=status)
-
-    print(year, status, college_id)
-
-    data = await data.values()
-
-    if not data:
-        raise HTTPException(status_code=404, detail="No data found")
-    return data
-
-
-async def get_stats():
-    stats = await RequestsCount.get(id=1)
-
-    print(stats.ACcount, stats.DNcount, stats.PNcount)
-    return {
-        "Accepted": stats.ACcount,
-        "Denied": stats.DNcount,
-        "Pending": stats.PNcount,
-    }
-
-async def get_requests(status: str = None, year: int = None, college_id: int = None):
-    result = RequestsShort.all()
-    if status is not None:
-        print(status)
-        result = result.filter(request_status=status)
-
-    if college_id is not None:
-        result = result.filter(college_id=college_id)
-
-    if not year:
-        current_year = await RequestYear.get(current=Flag.Yes)
-        year = current_year.start_year
-
-    print(year, status, college_id)
-
-    result = result.filter(request_year=year)
-
-    result = await result.values()
-    return result
-
 
 #####################################################################################################
 ############################################-Colleges-OPs-###########################################
@@ -493,3 +435,68 @@ async def toggle_req_year_admin(year_id: int):
     else:
         raise HTTPException(status_code=404, detail="year not found")
 
+
+###############################################################################################################
+##############################################-Requests-#######################################################
+###############################################################################################################
+
+
+async def get_requests(status: str = None, year: int = None, college_id: int = None):
+    result = RequestsShort.all()
+    if status is not None:
+        print(status)
+        result = result.filter(request_status=status)
+
+    if college_id is not None:
+        result = result.filter(college_id=college_id)
+
+    if not year:
+        current_year = await RequestYear.get(current=Flag.Yes)
+        year = current_year.start_year
+
+    print(year, status, college_id)
+
+    result = result.filter(request_year=year)
+
+    result = await result.values()
+    return result
+
+#####################################################################################################
+############################################Misc#####################################################
+#####################################################################################################
+
+
+async def get_data_for_excel(
+    year: int = None, college_id: str = None, status: str = None
+):
+    if year is None:
+        current_year = await RequestYear.get(current=Flag.Yes)
+        year = current_year.start_year
+    data = Excel.filter(request_year=year)
+
+    if college_id is not None:
+        data = data.filter(college_id=college_id)
+
+    if status is not None:
+        data = data.filter(request_status=status)
+
+    print(year, status, college_id)
+
+    data = await data.values()
+
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found")
+    return data
+
+
+async def get_stats(college_id:int=None):
+    if college_id is not None:
+        stats = await RequestsCountCollege.get(id=college_id)
+    else:
+        stats = await RequestsCount.get(id=1)
+
+    return {
+        "Accepted": stats.ACcount,
+        "Denied": stats.DNcount,
+        "Pending": stats.PNcount,
+    }

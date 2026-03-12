@@ -56,20 +56,21 @@
             {% if not sub_admin %}
             <li><a href="/Admin/Accounts">الحسابات</a></li>
             {% endif %}
-        </ul>
-        {% if not sub_admin %}
-        <div class="OptionsContainer">
-            <button class="OptionsToggle" onclick="toggleOptions()">▼ الاعدادات</button>
-            <div id="OptionsList" class="SubMenu">
-                <a href="/Admin/CollegesOptions">الكلية-القسم</a>
-                <a href="/Admin/StudyOptions">المرحلة الدراسية</a>
-                <a href="/Admin/JobOptions">الحالة الوظيفية</a>
-                <a href="/Admin/StatusOptions">حالة الطلب</a>
-                <a href="/Admin/EduYearOptions">سنة دراسية</a>
-                <a href="/Admin/ReqYearOptions">سنة الطلب</a>
+            {% if not sub_admin %}
+            <div class="OptionsContainer">
+                <button class="OptionsToggle" onclick="toggleOptions()">▼ الاعدادات</button>
+                <div id="OptionsList" class="SubMenu">
+                    <a href="/Admin/CollegesOptions">الكلية-القسم</a>
+                    <a href="/Admin/StudyOptions">المرحلة الدراسية</a>
+                    <a href="/Admin/JobOptions">الحالة الوظيفية</a>
+                    <a href="/Admin/StatusOptions">موقف الطلب</a>
+                    <a href="/Admin/EduYearOptions">سنة دراسية</a>
+                    <a href="/Admin/ReqYearOptions">سنة الطلب</a>
+                </div>
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
+            <li><a href="/logout">تسجيل الخروج</a></li>
+        </ul>
     </div>
 </body>
 

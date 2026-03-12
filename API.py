@@ -1,6 +1,6 @@
 from typing import List, Optional
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -43,15 +43,19 @@ async def root(request: Request):
 async def MainA(page: str, request: Request):
     token = request.cookies.get("Token")
     if not token:
-        # raise HTTPException(status_code=401, detail="Not authenticated")
-        return templates.TemplateResponse(request=request, name="index.html")
+        return RedirectResponse(url="/", status_code=302)
+    
     try:
         payload = tokenCheck(token)
     except HTTPException:
-        return templates.TemplateResponse(request=request, name="index.html")
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie(key="Token", path="/") 
+        return response
 
     if payload.get("college_id") > 1:
-        return templates.TemplateResponse(request=request, name="index.html")
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie(key="Token", path="/") 
+        return response
 
     if payload.get("college_id") > 0 and page in [
         "Accounts",
@@ -62,7 +66,10 @@ async def MainA(page: str, request: Request):
         "EduYearOptions",
         "ReqYearOptions",
     ]:
-        return templates.TemplateResponse(request=request, name="index.html")
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie(key="Token", path="/") 
+        return response
+
     return templates.TemplateResponse(
         request=request,
         name=f"Admin/{page}.html",
@@ -78,7 +85,7 @@ async def MainU(request: Request, page: str):
     token = request.cookies.get("Token")
     if not token:
         # raise HTTPException(status_code=401, detail="Not authenticated")
-        return templates.TemplateResponse(request=request, name="index.html")
+        return RedirectResponse(url="/", status_code=302)
 
     try:
         payload = tokenCheck(token)
@@ -92,7 +99,7 @@ async def MainU(request: Request, page: str):
 
     except HTTPException:
         # raise
-        return templates.TemplateResponse(request=request, name="index.html")
+        return RedirectResponse(url="/", status_code=302)
 
 
 #####################################################################################################
@@ -123,6 +130,12 @@ async def login(body: LoginRequest, response: Response):
         return {"college_id": result["college_id"]}
     except HTTPException:
         raise
+
+@app.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/", status_code=302)
+    response.delete_cookie(key="Token", path="/") 
+    return response
 
 
 @app.get("/get_users")
@@ -1204,7 +1217,7 @@ async def getStats(request: Request):
 
     if payload.get("college_id") < 2:
         return await get_stats()
-    return {"message": "tbd"}
+    return await get_stats(payload.get("college_id"))
 
 
 if __name__ == "__main__":

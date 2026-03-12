@@ -152,6 +152,17 @@ class Requests(Model):
 #######################################Views#########################################################
 #####################################################################################################
 
+class RequestsCountCollege(Model):
+    id = fields.IntField(pk=True)
+
+    ACcount = fields.IntField()
+    DNcount = fields.IntField()
+    PNcount = fields.IntField()
+
+    class Meta:
+        table = "requests_count_college"
+        managed = False
+
 
 class Excel(Model):
     id = fields.IntField(pk=True)

@@ -93,7 +93,6 @@ body {
 
 .content {
     flex-grow: 1;
-    width: 0;
     min-height: 100vh;
     padding: 24px;
     background-color: #f9fafb;

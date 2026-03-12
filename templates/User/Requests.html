@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="AR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/icon.ico" type="image/x-icon">
+    <title>الطلبة المرقنين</title>
+    <link rel="stylesheet" href="/static/CSS/Requests.css">
+    <script src="/static/JS/User/Requests.js" defer></script>
+</head>
+
+<body>
+
+    <div class="content">
+        <div class="dashboard-container">
+            <div class="filter-bar">
+                
+
+                <span class="emptybox"></span>
+                <button class="status-btn active" data-status="All">الكل</button>
+                <button class="status-btn" data-status="Pending">قيد الانتظار</button>
+                <button class="status-btn" data-status="Accepted">مقبول</button>
+                <button class="status-btn" data-status="Denied">مرفوض</button>
+                <button class="download-btn" onclick=downloadExcel()>
+                    Excel
+                </button>
+
+            </div>
+
+            <div id="ticketContainer" class="ticket-grid"></div>
+        </div>
+
+    </div>
+
+    <div class="sidebar">
+        <div class="NavName">
+            <h1>{{ role }}</h1>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/User/Main">الرئيسية</a></li>
+            <li><a href="/User/Requests">الطلبات</a></li>
+            <li><a href="/logout">تسجيل الخروج</a></li>
+        </ul>
+    </div>
+</body>
+
+</html>
