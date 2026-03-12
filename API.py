@@ -255,22 +255,6 @@ async def toggleAllUsers(request: Request, enable: bool):
 #####################################################################################################
 
 
-@app.get("/get_years_admin")
-async def getYearsAdmin(request: Request):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        tokenCheck(token)
-
-    except HTTPException:
-        raise
-
-    return await get_years()
-
-
-#######################################################################################################################
-
 
 @app.get("/get_requests")
 async def getRequestsAdmin(
@@ -929,6 +913,185 @@ async def toggleStatusAdmin(status_id: int, request: Request):
 
     try:
         await toggle_status_admin(status_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
+###########################################-Edu-Years-ops-#################################################
+#####################################################################################################
+
+
+@app.get("/get_edu_years_admin")
+async def getEduYearsAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_edu_years_admin()
+    except HTTPException:
+        raise
+
+
+class AddYearRequest(BaseModel):
+    year: int
+
+
+@app.post("/add_edu_year_admin")
+async def addEduYearAdmin(request: Request, body: AddYearRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_edu_year_admin(year=body.year)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_edu_year_admin/{year_id}")
+async def deleteEduYearsAdmin(year_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_edu_year_admin(
+            year_id=year_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_edu_year_admin/{year_id}")
+async def toggleEduYearsAdmin(year_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_edu_year_admin(year_id)
+    except HTTPException:
+        raise
+
+#####################################################################################################
+###########################################-Edu-Years-ops-#################################################
+#####################################################################################################
+
+
+@app.get("/get_req_years_admin")
+async def getReqYearsAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_req_years_admin()
+    except HTTPException:
+        raise
+
+
+class AddYearRequest(BaseModel):
+    year: int
+
+
+@app.post("/add_req_year_admin")
+async def addReqYearAdmin(request: Request, body: AddYearRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_req_year_admin(year=body.year)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_req_year_admin/{year_id}")
+async def deleteReqYearsAdmin(year_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_req_year_admin(
+            year_id=year_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_req_year_admin/{year_id}")
+async def toggleReqYearsAdmin(year_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_req_year_admin(year_id)
     except HTTPException:
         raise
 

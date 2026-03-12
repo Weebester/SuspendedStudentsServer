@@ -9,11 +9,11 @@ const yearInput = document.getElementById('yearInput');
 const collegeInput = document.getElementById('collegeInput');
 const statusButtons = document.querySelectorAll('.status-btn');
 
-// Procedural execution wrapper
-(async () => {
+
+const init =async () => {
     try {
         // 1. Fetch Dropdown Data
-        const response = await fetch(`${API_BASE}/get_years_admin`);
+        const response = await fetch(`${API_BASE}/get_req_years_admin`);
         const years = await response.json();
 
         years.forEach(y => {
@@ -35,7 +35,7 @@ const statusButtons = document.querySelectorAll('.status-btn');
     } catch (err) {
         console.error("Initialization failed:", err);
     }
-})();
+}
 
 async function fetchData() {
     ticketContainer.innerHTML = '<p style="padding: 20px;">Fetching records...</p>';
@@ -157,3 +157,5 @@ function downloadExcel() {
 
 yearInput.addEventListener('change', fetchData);
 collegeInput.addEventListener('change', fetchData);
+
+init();

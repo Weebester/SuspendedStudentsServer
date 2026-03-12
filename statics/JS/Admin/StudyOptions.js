@@ -17,7 +17,7 @@ function toggleOptions() {
 }
 
 // --- INITIALIZATION ---
-(async () => {
+const init =async () => {
     try {
         // Fetch dropdown items and both lists independently
         await Promise.all([
@@ -27,7 +27,7 @@ function toggleOptions() {
     } catch (err) {
         console.error("Initialization Error:", err);
     }
-})();
+}
 
 
 // --- COLLEGE LOGIC ---
@@ -291,3 +291,5 @@ confirmDeleteBtn.onclick = async () => {
         alert("Error: " + errorMessage);
     }
 };
+
+init();

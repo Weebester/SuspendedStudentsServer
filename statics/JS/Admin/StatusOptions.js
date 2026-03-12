@@ -13,7 +13,7 @@ function toggleOptions() {
 }
 
 // --- INITIALIZATION ---
-(async () => {
+const init =async () => {
     try {
         // Fetch dropdown items and both lists independently
         await Promise.all([
@@ -22,7 +22,7 @@ function toggleOptions() {
     } catch (err) {
         console.error("Initialization Error:", err);
     }
-})();
+}
 
 
 // --- COLLEGE LOGIC ---
@@ -44,17 +44,13 @@ async function fetchStatusItems() {
                 <button id="toggle-${s.id}" 
                         data-status="${s.enabled === 'yes' ? 'yes' : 'no'}" 
                         class="action-btn ${s.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
-                        onclick="toggleJobStatus(${s.id}, 'toggle-${s.id}')">
+                        onclick="toggleStatus(${s.id}, 'toggle-${s.id}')">
                         ${s.enabled === 'yes' ? 'O' : 'X'}
                 </button>
                 <button class="action-btn btn-remove" onclick="openDeleteModal(${s.id})">حذف</button>
             </div>
         </div>
     `).join('');
-
-        jobStatusSelect.innerHTML =`<option value=''>غير محدد</option>`   
-        status.forEach(s => jobStatusSelect.add(new Option(s.status, s.id)));     
-        
 
 
     } else if (response.status === 401) {
@@ -70,7 +66,7 @@ async function fetchStatusItems() {
 
 }
 
-async function toggleJobStatus(id, btnId) {
+async function toggleStatus(id, btnId) {
     const btn = document.getElementById(btnId);
     const isEnabled = (btn.dataset.status === 'yes');
     // API Call
@@ -173,3 +169,4 @@ confirmDeleteBtn.onclick = async () => {
     }
 };
 
+init();

@@ -9,7 +9,7 @@ const userConfirmPass= document.getElementById('confirmPasswordInput');
 let activeAccountId = null;
 
 // Procedural Start
-(async () => {
+const init =async () => {
     try {
         // 1. Populate Colleges (No "Any")
         const colleges = await fetch(`${API_BASE}/get_colleges_admin`).then(r => r.json());
@@ -20,7 +20,7 @@ let activeAccountId = null;
     } catch (err) {
         console.error("Init Error:", err);
     }
-})();
+}
 
 async function fetchAccounts() {
     const res = await fetch(`${API_BASE}/get_users${collegeSelect.value ? `?college_id=${collegeSelect.value}` : ''}`);
@@ -165,10 +165,10 @@ function closeModal() {
 
 let activeAccountIdToDelete = null;
 
-const deletePass=document.getElementByIds('deleteConfirmPass');
-const confirmSeletePass=document.getElementByIds('deleteConfirmCheck');
-const passModal=document.getElementByIds('passwordModal');
-const confirmDeleteBtn=document.getElementByIds('confirmDeleteBtn');
+const deletePass=document.getElementById('deleteConfirmPass');
+const confirmSeletePass=document.getElementById('deleteConfirmCheck');
+const passModal=document.getElementById('passwordModal');
+const confirmDeleteBtn=document.getElementById('confirmDeleteBtn');
 
 
 function deleteAccount(id) {
@@ -248,3 +248,5 @@ function toggleOptions() {
         list.style.display = "block";
     }
 }
+
+init();

@@ -1,7 +1,7 @@
 from turtle import pd
 
 import bcrypt
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 import datetime
@@ -69,7 +69,7 @@ async def get_users(college_id: int = None):
 
 
 async def delete_user(user_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     user = await Users.get(id=user_id)
@@ -139,12 +139,6 @@ async def get_stats():
         "Pending": stats.PNcount,
     }
 
-
-async def get_years():
-    years = await RequestYear.all().values()
-    return years
-
-
 async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
     if status is not None:
@@ -188,7 +182,7 @@ async def rename_college_admin(college_id=int, new_name=str):
 
 
 async def delete_college_admin(college_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     college = await Colleges.get(id=college_id)
@@ -220,7 +214,7 @@ async def add_department_admin(name: str, college_id: int):
 
 
 async def delete_department_admin(department_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     department = await Departments.get(id=department_id)
@@ -257,7 +251,7 @@ async def add_study_admin(name: str):
 
 
 async def delete_study_admin(study_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     study = await Study.get(id=study_id)
@@ -294,7 +288,7 @@ async def add_sub_study_admin(name: str, study_id: int):
 
 
 async def delete_sub_study_admin(sub_study_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     sub_study = await StudySub.get(id=sub_study_id)
@@ -331,7 +325,7 @@ async def add_job_status_admin(name: str):
 
 
 async def delete_job_status_admin(job_status_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     job_status = await JobStatus.get(id=job_status_id)
@@ -368,7 +362,7 @@ async def add_sub_job_status_admin(name: str, job_status_id: int):
 
 
 async def delete_sub_job_status_admin(sub_job_status_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     sub_job_status = await JobStatusSub.get(id=sub_job_status_id)
@@ -407,7 +401,7 @@ async def add_status_admin(name: str):
 
 
 async def delete_status_admin(status_id: int, password: str):
-    user = await Users.get(id=1)
+    user = await Users.get(id=0)
     if not bcrypt.checkpw(password.encode(), user.password.encode()):
         raise HTTPException(status_code=401, detail="Invalid password")
     status = await Status.get(id=status_id)
@@ -424,4 +418,78 @@ async def toggle_status_admin(status_id: int):
         await status.save()
     else:
         raise HTTPException(status_code=404, detail="status not found")
+
+
+#####################################################################################################
+############################################-Edu-Years-OPs-##############################################
+#####################################################################################################
+
+
+async def get_edu_years_admin():
+    List = await EducationalYear.all().order_by('start_year').values()
+    return List
+
+
+async def add_edu_year_admin(year: str):
+    existing_year = await EducationalYear.get_or_none(start_year=year)
+    if existing_year:
+        raise HTTPException(status_code=400, detail="year already exists")
+    await EducationalYear.create(start_year=year)
+
+
+async def delete_edu_year_admin(year_id: int, password: str):
+    user = await Users.get(id=0)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    year = await EducationalYear.get(id=year_id)
+    if year:
+        await year.delete()
+    else:
+        raise HTTPException(status_code=404, detail="year not found")
+
+
+async def toggle_edu_year_admin(year_id: int):
+    year = await EducationalYear.get(id=year_id)
+    if year:
+        year.enabled = Flag.No if year.enabled == Flag.Yes else Flag.Yes
+        await year.save()
+    else:
+        raise HTTPException(status_code=404, detail="year not found")
+
+#####################################################################################################
+############################################-Req-Years-OPs-##############################################
+#####################################################################################################
+
+
+async def get_req_years_admin():
+    List = await RequestYear.all().order_by('start_year').values()
+    return List
+
+
+async def add_req_year_admin(year: str):
+    existing_year = await RequestYear.get_or_none(start_year=year)
+    if existing_year:
+        raise HTTPException(status_code=400, detail="year already exists")
+    await RequestYear.create(start_year=year)
+
+
+async def delete_req_year_admin(year_id: int, password: str):
+    user = await Users.get(id=0)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    year = await RequestYear.get(id=year_id)
+    if year:
+        await year.delete()
+    else:
+        raise HTTPException(status_code=404, detail="year not found")
+
+
+async def toggle_req_year_admin(year_id: int):
+    year = await RequestYear.get(id=year_id)
+    if year:
+        await RequestYear.all().update(current=Flag.No)
+        year.current = Flag.Yes
+        await year.save()
+    else:
+        raise HTTPException(status_code=404, detail="year not found")
 

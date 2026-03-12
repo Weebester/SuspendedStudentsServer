@@ -1,8 +1,8 @@
 const API_BASE = 'http://192.168.0.113:8000';
 
-const StatusContainer = document.getElementById('statusContainer');
-const AddStatusBtn = document.getElementById('addStatusBtn')
-const jobStatusNameInput=document.getElementById('statusNameInput');
+const YearContainer = document.getElementById('YearsContainer');
+const AddYearBtn = document.getElementById('addYearBtn')
+const YearSelector=document.getElementById('yearSelector');
 
 
 // --- SIDE MENU TOGGLE ---
@@ -13,49 +13,44 @@ function toggleOptions() {
 }
 
 // --- INITIALIZATION ---
-(async () => {
+const init = async () => {
     try {
         // Fetch dropdown items and both lists independently
         await Promise.all([
-            fetchStatusItems(),
+            fetchYearsItems()
         ]);
+
+        YearSelector.value = new Date().getFullYear();
     } catch (err) {
         console.error("Initialization Error:", err);
     }
-})();
-
+}
 
 // --- COLLEGE LOGIC ---
-async function fetchStatusItems() {
-    const response = await fetch(`${API_BASE}/get_status_admin`);
-    const status = await response.json();
+async function fetchYearsItems() {
+    const response = await fetch(`${API_BASE}/get_req_years_admin`);
+    const years = await response.json();
 
     if (response.ok) {
-        StatusContainer.innerHTML = status.map(s => `
+        YearContainer.innerHTML = years.map(y => `
         <div class="item-row">
            
             <div class="item-info">
                 <div class="info">
-                    <label>الحالة</label>
-                    <span>${s.status}</span>
+                    <label>السنة</label>
+                    <span>${y.start_year}-${y.start_year + 1}</span>
                 </div>
             </div>
              <div>
-                <button id="toggle-${s.id}" 
-                        data-status="${s.enabled === 'yes' ? 'yes' : 'no'}" 
-                        class="action-btn ${s.enabled === 'yes' ? 'btn-enable' : 'btn-disable'}" 
-                        onclick="toggleJobStatus(${s.id}, 'toggle-${s.id}')">
-                        ${s.enabled === 'yes' ? 'O' : 'X'}
+                <button class="action-btn ${y.current === 'yes' ? 'btn-enable' : 'btn-disable'}" 
+                        onclick="setCurrentYear(${y.id})">
+                        ${y.current === 'yes' ? 'O' : 'X'}
                 </button>
-                <button class="action-btn btn-remove" onclick="openDeleteModal(${s.id})">حذف</button>
+                <button class="action-btn btn-remove" onclick="openDeleteModal(${y.id})">حذف</button>
             </div>
         </div>
     `).join('');
-
-        jobStatusSelect.innerHTML =`<option value=''>غير محدد</option>`   
-        status.forEach(s => jobStatusSelect.add(new Option(s.status, s.id)));     
-        
-
+  
 
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -70,20 +65,15 @@ async function fetchStatusItems() {
 
 }
 
-async function toggleJobStatus(id, btnId) {
-    const btn = document.getElementById(btnId);
-    const isEnabled = (btn.dataset.status === 'yes');
+async function setCurrentYear(id) {
+
     // API Call
-    const response = await fetch(`${API_BASE}/toggle_status_admin/${id}`, {
+    const response = await fetch(`${API_BASE}/toggle_req_year_admin/${id}`, {
         method: 'PATCH'
     });
 
     if (response.ok) {
-        const nextStatus = isEnabled ? 'no' : 'yes';
-        // Update Data Source
-        btn.dataset.status = nextStatus;
-        btn.textContent = (nextStatus === 'yes') ? 'O' : 'X';
-        btn.className = (nextStatus === 'yes') ? 'action-btn btn-enable' : 'action-btn btn-disable';
+        fetchYearsItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
     } else {
@@ -97,19 +87,19 @@ async function toggleJobStatus(id, btnId) {
 
 }
 
-AddStatusBtn.onclick = async () => {
-    const name = jobStatusNameInput.value;
-    if (!name) return alert("Enter name");
+AddYearBtn.onclick = async () => {
+    const year = YearSelector.value;
+    if (!year) return alert("Enter Year");
 
-    const response = await fetch(`${API_BASE}/add_status_admin/`, {
+    const response = await fetch(`${API_BASE}/add_req_year_admin/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ year: year })
     });
 
     if (response.ok) {
-        jobStatusNameInput.value = '';
-        await fetchStatusItems();
+        YearSelector.value = '';
+        await fetchYearsItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
     } else {
@@ -151,7 +141,7 @@ confirmDeleteBtn.onclick = async () => {
 
     if (!pass || pass !== conf) return alert("Passwords must match and cannot be empty.");
 
-    const response = await fetch(`${API_BASE}/delete_status_admin/${ItemIdToDelete}`, {
+    const response = await fetch(`${API_BASE}/delete_req_year_admin/${ItemIdToDelete}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pass })
@@ -159,7 +149,7 @@ confirmDeleteBtn.onclick = async () => {
 
     if (response.ok) {
         closeModal();
-        await fetchStatusItems();
+        await fetchYearsItems();
 
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
@@ -173,3 +163,4 @@ confirmDeleteBtn.onclick = async () => {
     }
 };
 
+init();
