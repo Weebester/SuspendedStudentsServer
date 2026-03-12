@@ -2,9 +2,11 @@ const API_BASE = 'http://192.168.0.113:8000';
 
 const jobStatusContainer = document.getElementById('jobStatusContainer');
 const subjobStatusContainer = document.getElementById('subJobStatusContainer');
+const jobStatusNameInput=document.getElementById('jobStatusNameInput');
 const jobStatusSelect = document.getElementById('jobStatusSelect');
 const AddStatusBtn = document.getElementById('addJobStatusBtn')
-const jobStatusNameInput=document.getElementById('jobStatusNameInput');
+const addSubBtn = document.getElementById('addSubBtn');
+const subNameInput = document.getElementById('subNameInput');
 
 
 // --- SIDE MENU TOGGLE ---
@@ -19,7 +21,7 @@ function toggleOptions() {
     try {
         // Fetch dropdown items and both lists independently
         await Promise.all([
-            fetchJobStatusItems(),
+            fetchStatusItems(),
             fetchSubsItems()
         ]);
     } catch (err) {
@@ -29,12 +31,12 @@ function toggleOptions() {
 
 
 // --- COLLEGE LOGIC ---
-async function fetchJobStatusItems() {
+async function fetchStatusItems() {
     const response = await fetch(`${API_BASE}/get_job_status_admin`);
-    const studies = await response.json();
+    const jobStatusies = await response.json();
 
     if (response.ok) {
-        jobStatusContainer.innerHTML = studies.map(j => `
+        jobStatusContainer.innerHTML = jobStatusies.map(j => `
         <div class="item-row">
            
             <div class="item-info">
@@ -56,7 +58,7 @@ async function fetchJobStatusItems() {
     `).join('');
 
         jobStatusSelect.innerHTML =`<option value=''>غير محدد</option>`   
-        studies.forEach(s => jobStatusSelect.add(new Option(s.status, s.id)));     
+        jobStatusies.forEach(s => jobStatusSelect.add(new Option(s.status, s.id)));     
         
 
 
@@ -112,7 +114,7 @@ AddStatusBtn.onclick = async () => {
 
     if (response.ok) {
         jobStatusNameInput.value = '';
-        await fetchJobStatusItems();
+        await fetchStatusItems();
     } else if (response.status === 401) {
         window.location.href = `${API_BASE}/`
     } else {
@@ -197,9 +199,6 @@ async function toggleSubJobStatus(id, btnId) {
 
 }
 
-const addSubBtn = document.getElementById('addSubBtn');
-const subNameInput = document.getElementById('subNameInput');
-
 addSubBtn.onclick = async () => {
     const job_status = jobStatusSelect.value;
     const name = subNameInput.value;
@@ -275,7 +274,7 @@ confirmDeleteBtn.onclick = async () => {
         closeModal();
         await fetchSubsItems();
         if (Type === 'job_status') {
-            await fetchJobStatusItems();
+            await fetchStatusItems();
         }
 
     } else if (response.status === 401) {

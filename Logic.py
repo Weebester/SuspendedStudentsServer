@@ -24,7 +24,7 @@ def tokenCheck(token: str):
 
 
 #####################################################################################################
-#####################################S####-Accounts-OPs-##############################################
+#########################################-Accounts-OPs-##############################################
 #####################################################################################################
 
 
@@ -347,7 +347,7 @@ async def toggle_job_status_admin(job_status_id: int):
         job_status.enabled = Flag.No if job_status.enabled == Flag.Yes else Flag.Yes
         await job_status.save()
     else:
-        raise HTTPException(status_code=404, detail="Study not found")
+        raise HTTPException(status_code=404, detail="job status not found")
 
 
 ####################################################################################################################################
@@ -387,3 +387,41 @@ async def toggle_sub_job_status_admin(sub_job_status_id: int):
         await sub_job_status.save()
     else:
         raise HTTPException(status_code=404, detail="Sub job status not found")
+
+
+#####################################################################################################
+############################################-Status-OPs-##############################################
+#####################################################################################################
+
+
+async def get_status_admin():
+    List = await Status.all().values()
+    return List
+
+
+async def add_status_admin(name: str):
+    existing_status = await Status.get_or_none(status=name)
+    if existing_status:
+        raise HTTPException(status_code=400, detail="status already exists")
+    await Status.create(status=name)
+
+
+async def delete_status_admin(status_id: int, password: str):
+    user = await Users.get(id=1)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    status = await Status.get(id=status_id)
+    if status:
+        await status.delete()
+    else:
+        raise HTTPException(status_code=404, detail="status not found")
+
+
+async def toggle_status_admin(status_id: int):
+    status = await Status.get(id=status_id)
+    if status:
+        status.enabled = Flag.No if status.enabled == Flag.Yes else Flag.Yes
+        await status.save()
+    else:
+        raise HTTPException(status_code=404, detail="status not found")
+

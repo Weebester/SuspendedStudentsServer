@@ -844,6 +844,96 @@ async def toggleSubJobStatusAdmin(sub_job_status_id: int, request: Request):
 
 
 #####################################################################################################
+###########################################-Status-ops-#################################################
+#####################################################################################################
+
+
+@app.get("/get_status_admin")
+async def getStatusAdmin(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_status_admin()
+    except HTTPException:
+        raise
+
+
+class AddStatusRequest(BaseModel):
+    name: str
+
+
+@app.post("/add_status_admin")
+async def addJobStatusAdmin(request: Request, body: AddStatusRequest):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await add_status_admin(name=body.name)
+    except HTTPException:
+        raise
+
+
+@app.delete("/delete_status_admin/{status_id}")
+async def deleteJobStatusAdmin(status_id: int, request: Request, body: Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await delete_status_admin(
+            status_id=status_id, password=body.password
+        )
+    except HTTPException:
+        raise
+
+
+@app.patch("/toggle_status_admin/{status_id}")
+async def toggleStatusAdmin(status_id: int, request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+    except HTTPException:
+        raise
+
+    if payload.get("college_id") > 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        await toggle_status_admin(status_id)
+    except HTTPException:
+        raise
+
+
+#####################################################################################################
 ############################################-Misc-###################################################
 #####################################################################################################
 
