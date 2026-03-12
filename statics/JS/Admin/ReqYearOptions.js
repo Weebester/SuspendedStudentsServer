@@ -20,7 +20,6 @@ const init = async () => {
             fetchYearsItems()
         ]);
 
-        YearSelector.value = new Date().getFullYear();
     } catch (err) {
         console.error("Initialization Error:", err);
     }

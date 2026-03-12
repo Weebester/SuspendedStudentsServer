@@ -4,16 +4,6 @@ const Accepted =document.getElementById('count-accepted');
 const Denied = document.getElementById('count-denied');
 const Pending = document.getElementById('count-pending');
 
-function toggleOptions() {
-    const list = document.getElementById("OptionsList");
-    if (list.style.display === "block") {
-        list.style.display = "none";
-    } else {
-        list.style.display = "block";
-    }
-}
-
-
 const init =async () => {
 
     const response = await fetch(`${API_BASE}/stats`);

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="Ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/icon.ico" type="image/x-icon">
+    <title>الطلبة المرقنين</title>
+    <link rel="stylesheet" href="/static/CSS/RequestForm.css">
+    <script src="/static/JS/User/NewRequest.js" defer></script>
+</head>
+
+<body>
+
+    <div class="content">
+        <div class="container">
+            <header class="form-header">
+                <h2>ارسال طلب جديد</h2>
+            </header>
+
+            <form id="student-form">
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="student-name">اسم الطالب</label>
+                        <input type="text" id="student-name" placeholder="ادخل الاسم">
+                    </div>
+                    <div class="field-group">
+                        <label for="birth-date">التولد</label>
+                        <input type="date" id="birth-date">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label>الكلية</label>
+                        <span class="fixed-label" id="college-label">{{ role }}</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="department">القسم/الفرع</label>
+                        <select id="department">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="field-group">
+                        <label for="speciality">التخصص العام / الدقيق</label>
+                        <input type="text" id="speciality"
+                            placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="study-type">الدراسة</label>
+                        <select id="study-type">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="sub-study">المرحلة الدراسية</label>
+                        <select id="sub-study">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="job-type">الموقف الوظيفي</label>
+                        <select id="job-type">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="sub-job">مشمول بالخدمة الجامعية؟</label>
+                        <select id="sub-job">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="acceptance-year">سنة القبول</label>
+                        <select id="acceptance-year">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="suspension-year">سنة انهاء العلاقة</label>
+                        <select id="suspension-year">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group full-width">
+                        <label for="suspension-reason">سبب انهاء العلاقة</label>
+                        <textarea id="suspension-reason" rows="3" placeholder="ادخل سبب انهاء علاقة الطالب كما هو مذكور في الامر الجامعي"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="benefits">الطالب مستفيد من عودة سابقا؟</label>
+                        <select id="benefits">
+                            <option value="no">-</option>
+                            <option value="no">كلا</option>
+                            <option value="yes">نعم</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label>السيرة الدراسية مع الاوليات</label>
+                        <input type="file" id="file-1">
+                    </div>
+                    <div class="field-group">
+                        <label>التعهد الخطي</label>
+                        <input type="file" id="file-1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group full-width">
+                        <label for="message">الملاحظات</label>
+                        <textarea id="message" rows="5"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btn-submit">ارسال</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="NavName">
+            <h1>{{ role }}</h1>
+        </div>
+        <ul class="NavOps">
+            <li><a href="/User/Main">الرئيسية</a></li>
+            <li><a href="/User/Requests">الطلبات</a></li>
+            <li><a href="/logout">تسجيل الخروج</a></li>
+        </ul>
+    </div>
+</body>
+
+</html>

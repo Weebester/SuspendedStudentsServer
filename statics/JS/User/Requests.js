@@ -102,14 +102,6 @@ statusButtons.forEach(btn => {
     });
 });
 
-function toggleOptions() {
-    const list = document.getElementById("OptionsList");
-    if (list.style.display === "block") {
-        list.style.display = "none";
-    } else {
-        list.style.display = "block";
-    }
-}
 
 function downloadExcel() {
 

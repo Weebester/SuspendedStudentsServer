@@ -19,8 +19,6 @@ const init = async () => {
         await Promise.all([
             fetchYearsItems()
         ]);
-
-        YearSelector.value = new Date().getFullYear();
     } catch (err) {
         console.error("Initialization Error:", err);
     }
