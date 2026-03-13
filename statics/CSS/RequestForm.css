@@ -275,18 +275,68 @@ input[type="file"]::before {
     background: #1d4ed8;
 }
 
-#btn-resubmit {
-    padding: 12px 24px;
-    background: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
+/* Styling for "Current Value" sub-labels */
+.current-val {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 400;
+    margin-top: 2px;
 }
 
-#btn-resubmit:hover {
-    background: #e5e7eb;
+/* Checklist Styling */
+.edit-toggle-container {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+}
+
+.toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.toggle-item {
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Status Field at Top */
+.status-box {
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+}
+
+.status-highlight {
+    background-color: #fef3c7; /* Light yellow warning style */
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+/* Attached Notes Container beneath the form */
+.attached-notes-container {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+.notes-content {
+    background: #f3f4f6;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 100px;
+    white-space: pre-wrap; /* Preserves formatting of old notes */
 }
 
 .hidden {

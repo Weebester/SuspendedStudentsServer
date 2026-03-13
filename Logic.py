@@ -531,7 +531,7 @@ async def create_request(params:dict):
 async def update_request_logic(record_id: int, params: dict):
     record = await Requests.get_or_none(id=record_id)
     if not record:
-        return None  
+        raise HTTPException(status_code=404, detail="No data found")
 
     update_data = {k: v for k, v in params.items() if v is not None}
 

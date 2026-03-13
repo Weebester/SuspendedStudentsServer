@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Optional
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -42,8 +43,27 @@ async def root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
+
+
+class AdminPages(str, Enum):
+    Main = "Main" 
+    Requests = "Requests"
+    Accounts = "Accounts"
+    CollegesOptions = "CollegesOptions"
+    StudyOptions = "StudyOptions"
+    JobOptions = "JobOptions"
+    StatusOptions = "StatusOptions"
+    EduYearOptions = "EduYearOptions"
+    ReqYearOptions = "ReqYearOptions"
+
+class UserPages(str, Enum):
+    Main = "Main" 
+    Requests = "Requests"
+    NewRequest = "NewRequest"
+
+
 @app.get("/Admin/{page}", response_class=HTMLResponse)
-async def MainA(page: str, request: Request):
+async def MainA(page: AdminPages, request: Request): # Changed page: str to page: AdminPages
     token = request.cookies.get("Token")
     if not token:
         return RedirectResponse(url="/", status_code=302)
@@ -61,13 +81,13 @@ async def MainA(page: str, request: Request):
         return response
 
     if payload.get("college_id") > 0 and page in [
-        "Accounts",
-        "CollegesOptions",
-        "StudyOptions",
-        "JobOptions",
-        "StatusOptions",
-        "EduYearOptions",
-        "ReqYearOptions",
+        AdminPages.Accounts,
+        AdminPages.CollegesOptions,
+        AdminPages.StudyOptions,
+        AdminPages.JobOptions,
+        AdminPages.StatusOptions,
+        AdminPages.EduYearOptions,
+        AdminPages.ReqYearOptions,
     ]:
         response = RedirectResponse(url="/", status_code=302)
         response.delete_cookie(key="Token", path="/") 
@@ -75,7 +95,7 @@ async def MainA(page: str, request: Request):
 
     return templates.TemplateResponse(
         request=request,
-        name=f"Admin/{page}.html",
+        name=f"Admin/{page.value}.html",
         context={
             "role": payload.get("college"),
             "sub_admin": False if payload.get("college_id") == 0 else True,
@@ -84,24 +104,22 @@ async def MainA(page: str, request: Request):
 
 
 @app.get("/User/{page}", response_class=HTMLResponse)
-async def MainU(request: Request, page: str):
+async def MainU(request: Request, page: UserPages): # Changed page: str to page: UserPages
     token = request.cookies.get("Token")
     if not token:
-        # raise HTTPException(status_code=401, detail="Not authenticated")
         return RedirectResponse(url="/", status_code=302)
 
     try:
         payload = tokenCheck(token)
         return templates.TemplateResponse(
             request=request,
-            name=f"User/{page}.html",
+            name=f"User/{page.value}.html",
             context={
                 "role": payload.get("college"),
             },
         )
 
     except HTTPException:
-        # raise
         return RedirectResponse(url="/", status_code=302)
 
 
@@ -1018,13 +1036,19 @@ async def submit_request(
     form.data["college"] = payload.get("college_id")
     new_record = await create_request(form.data)
     
-    for file_obj, folder, prefix in [(file_academic, "academic_files", "academic"), 
-                                     (file_pledge, "pledge_files", "pledge")]:
-        ext = os.path.splitext(file_obj.filename)[1]
-        full_path = os.path.join("statics",folder, f"{new_record.id}_{prefix}{ext}")
-        
+    for f in [file_academic, file_pledge]:
+        if not f.filename.lower().endswith(".pdf"):
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+
+    for file_obj, folder in [
+        (file_academic, "academic_files"), 
+        (file_pledge, "pledge_files")
+    ]:
+        filename = f"{new_record.id}.pdf"
+        full_path = os.path.join("statics", folder, filename)
+    
         with open(full_path, "wb") as buffer:
-            buffer.write(await file_obj.read())
+            shutil.copyfileobj(file_obj.file, buffer)
 
     await create_attached_message(notes=form.notes, request_id=new_record.id)
 
@@ -1042,7 +1066,7 @@ class UpdateRequestForm:
         suspension_year: Optional[int] = Form(None),
         suspension_reason: Optional[str] = Form(None),
         benefactor: Optional[str] = Form(None),
-        notes: str = Form(...),
+        notes: Optional[str] = Form(None),
     ):
         self.raw_data = {
             "student_name": student_name,
@@ -1060,9 +1084,9 @@ class UpdateRequestForm:
         self.notes = notes     
 
 
-@app.post("/update_request/{record_id}")
+@app.post("/update_request/{request_id}")
 async def update_request(
-    record_id: int,
+    request_id: int,
     request: Request,
     form: UpdateRequestForm = Depends(),
     file_academic: Optional[UploadFile] = File(None),
@@ -1075,20 +1099,27 @@ async def update_request(
     
     tokenCheck(token) 
 
-    updated_record = await update_request_logic(record_id, form.data)
-    if not updated_record:
-        raise HTTPException(status_code=404, detail="Request not found")
+    await update_request_logic(request_id, form.data)
+    
 
-    for file_obj, folder, prefix in [(file_academic, "academic_files", "academic"), 
-                                     (file_pledge, "pledge_files", "pledge")]:
-        if file_obj:
-            ext = os.path.splitext(file_obj.filename)[1]
-            full_path = os.path.join("statics", folder, f"{record_id}_{prefix}{ext}")
+    files_to_process = [
+        (file_academic, "academic_files"), 
+        (file_pledge, "pledge_files")
+    ]
+
+    for file_obj, folder in files_to_process:
+        if file_obj and file_obj.filename:
+
+            if not file_obj.filename.lower().endswith(".pdf"):
+                raise HTTPException(status_code=400, detail="Only PDF files allowed")
+
+            full_path = os.path.join("statics", folder, f"{request_id}.pdf")
             
             with open(full_path, "wb") as buffer:
-                buffer.write(await file_obj.read())
-
-    await create_attached_message(notes=form.notes, request_id=record_id)
+                shutil.copyfileobj(file_obj.file, buffer)
+    
+    if form.notes is not None:
+        await create_attached_message(notes=form.notes, request_id=request_id)
 
 
 #####################################################################################################
@@ -1196,4 +1227,6 @@ async def getStats(request: Request):
 
 
 if __name__ == "__main__":
+    for folder in ["academic_files", "pledge_files","non_objecton","rules"]:
+        os.makedirs(os.path.join("statics", folder), exist_ok=True)
     uvicorn.run("API:app", host="0.0.0.0", port=8000, reload=True)
