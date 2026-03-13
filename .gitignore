@@ -4,5 +4,7 @@ __pycache__/datamodels.cpython-313.pyc
 __pycache__/Logic.cpython-313.pyc
 __pycache__/Script.cpython-313.pyc
 .VSCodeCounter/
-statics/pledge_files/
-statics/academic_files/
+statics/pledge/
+statics/academic/
+statics/non_objection/
+statics/rules/

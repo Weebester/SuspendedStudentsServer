@@ -1,8 +1,8 @@
-// --- Element Constants ---
+// --- Constants & Global State ---
 const API_BASE = 'http://192.168.0.113:8000';
-// --- Element Constants ---
 const form = document.getElementById('student-form');
-const collegeLabel = document.getElementById('college-label');
+const isEditable = document.body.getAttribute('request_status').toLowerCase() === 'denied';
+const requestId = document.body.getAttribute('data-request-id');
 
 // Selectors
 const selDept = document.getElementById('department');
@@ -21,98 +21,152 @@ const txtMsg = document.getElementById('message');
 
 const file1 = document.getElementById('file-1');
 const file2 = document.getElementById('file-2');
-const btnSubmit = document.getElementById('btn-submit');
+const notesList = document.getElementById('notes-list');
 
-let formData = {}; // Global store for fetch data
+let formData = {};
 
+// --- Initialization & Main Logic ---
 async function init() {
-    // Default state
-    selSubStudy.disabled = selSubJob.disabled = true;
+    alert(isEditable)
+    if (!isEditable) {
+        const toggleCont = document.querySelector('.edit-toggle-container');
+        if (toggleCont) toggleCont.classList.add('hidden');
+        
+        const submitCont = document.getElementById('submit-container');
+        if (submitCont) submitCont.classList.add('hidden');
+        
+        document.querySelectorAll('.field-group').forEach(group => {
+            if (group.querySelector('.current-val')) {
+                const input = group.querySelector('input, select, textarea');
+                if (input) input.classList.add('hidden');
+            }
+        });
+    } else {
+        await loadFeedingData();
+        document.querySelectorAll('.toggle-item input').forEach(checkbox => {
+            checkbox.onchange = (e) => {
+                const targetId = e.target.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                if (targetInput) targetInput.disabled = !e.target.checked;
+            };
+        });
+    }
 
+    fetchNotes();
+}
+
+async function uploadNonObjection() {
+    const fileInput = document.getElementById('non-objection-file');
+    const noteInput = document.getElementById('non-objection-note');
+
+    if (!fileInput.files[0]) {
+        alert("يرجى اختيار ملف أولاً");
+        return;
+    }
+
+    const fData = new FormData();
+    fData.append("request_id", requestId);
+    fData.append("file_non_objection", fileInput.files[0]);
+    fData.append("note", noteInput.value);
+
+    try {
+        const response = await fetch(`${API_BASE}/upload_non_objection`, {
+            method: "POST",
+            body: fData
+        });
+        if (response.ok) {
+            alert("تم رفع ملف عدم الممانعة بنجاح");
+            location.reload(); 
+        }
+    } catch (e) {
+        console.error("Upload failed", e);
+    }
+}
+
+async function fetchNotes() {
+    try {
+        const res = await fetch(`${API_BASE}/get_notes/${requestId}`);
+        const notes = await res.json(); 
+        if (notesList) {
+            notesList.innerHTML = notes.length 
+                ? notes.map(n => `<div class="note-item">${n}</div>`).join('') 
+                : "لا توجد ملاحظات سابقة";
+        }
+    } catch (e) { 
+        if (notesList) notesList.innerText = "فشل تحميل سجل الملاحظات"; 
+    }
+}
+
+async function loadFeedingData() {
     try {
         const res = await fetch(`${API_BASE}/feed_form`);
         formData = await res.json();
-
-        // Populate Statics
         formData.departments.forEach(d => selDept.add(new Option(d, d)));
         formData.years.forEach(y => {
             selAccYear.add(new Option(y, y));
             selSusYear.add(new Option(y, y));
         });
-
-        // Populate Main Selectors
         Object.keys(formData.study).forEach(s => selStudy.add(new Option(s, s)));
         Object.keys(formData.job).forEach(j => selJobType.add(new Option(j, j)));
 
-        // Attach Listeners
         selStudy.onchange = () => populateSubStudy();
         selJobType.onchange = () => populateSubJob();
-
-    } catch (e) { console.error("Init failed", e); }
+    } catch (e) { console.error(e); }
 }
 
 function populateSubStudy() {
     const opts = formData.study[selStudy.value] || [];
     selSubStudy.innerHTML = '<option value="">-</option>';
-    selSubStudy.disabled = !opts.length;
+    selSubStudy.disabled = !opts.length || selStudy.disabled;
     opts.forEach(o => selSubStudy.add(new Option(o, o)));
 }
 
 function populateSubJob() {
     const opts = formData.job[selJobType.value] || [];
     selSubJob.innerHTML = '<option value="">-</option>';
-    selSubJob.disabled = !opts.length;
+    selSubJob.disabled = !opts.length || selJobType.disabled;
     opts.forEach(o => selSubJob.add(new Option(o, o)));
 }
 
-// --- Submit Logic ---
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (form) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
 
-    // 1. Trigger the red borders
-    form.classList.add('show-errors');
+        const fData = new FormData();
+        fData.append("request_id", requestId);
+        
+        const fields = [
+            { el: inputName, key: "student_name" },
+            { el: inputBirth, key: "birth_date" },
+            { el: selDept, key: "department" },
+            { el: inputSpec, key: "speciality" },
+            { el: selAccYear, key: "acception_year" },
+            { el: selSusYear, key: "suspension_year" },
+            { el: txtReason, key: "suspension_reason" },
+            { el: selBenefits, key: "benefactor" }
+        ];
 
-    // 2. Native validation check (bubbles + stop if empty)
-    if (!form.reportValidity()) return;
-
-    // 3. Build FormData (Necessary for files)
-    const formData = new FormData();
-    formData.append("student_name", inputName.value);
-    formData.append("birth_date", inputBirth.value);
-    formData.append("department", selDept.value);
-    formData.append("speciality", inputSpec.value);
-    formData.append("study", `${selStudy.value}-${selSubStudy.value}`);
-    formData.append("job_status", `${selJobType.value}-${selSubJob.value}`);
-    formData.append("acception_year", selAccYear.value);
-    formData.append("suspension_year", selSusYear.value);
-    formData.append("suspension_reason", txtReason.value);
-    formData.append("benefactor", selBenefits.value);
-    formData.append("notes", txtMsg.value);
-    
-    // Append the files
-    if (file1.files[0]) formData.append("file_academic", file1.files[0]);
-    if (file2.files[0]) formData.append("file_pledge", file2.files[0]);
-
-    try {
-        // 4. Actually send the data
-        const response = await fetch(`${API_BASE}/submit_request`, {
-            method: "POST",
-            body: formData, // Do NOT set headers, browser does it automatically
+        fields.forEach(f => {
+            if (f.el && !f.el.disabled) fData.append(f.key, f.el.value);
         });
 
-        if (response.ok) {
-            // 5. Success! Now kick him out and replace history
-            //window.location.replace("/User/Requests");
-        } else {
-            const err = await response.json();
-            alert("حدث خطأ: " + (err.detail || "Error"));
-        }
+        if (!selStudy.disabled) fData.append("study", `${selStudy.value}-${selSubStudy.value}`);
+        if (!selJobType.disabled) fData.append("job_status", `${selJobType.value}-${selSubJob.value}`);
         
-    } catch (err) {
-        console.error("Submission failed", err);
-        alert("فشل الاتصال بالسيرفر");
-    }
-});
+        if (!file1.disabled && file1.files[0]) fData.append("file_academic", file1.files[0]);
+        if (!file2.disabled && file2.files[0]) fData.append("file_pledge", file2.files[0]);
 
-// --- Run ---
+        fData.append("notes", txtMsg.value);
+
+        try {
+            const response = await fetch(`${API_BASE}/update_request`, {
+                method: "POST",
+                body: fData,
+            });
+            if (response.ok) window.location.replace("/User/Requests");
+        } catch (err) { alert("فشل الاتصال"); }
+    });
+}
+
 init();

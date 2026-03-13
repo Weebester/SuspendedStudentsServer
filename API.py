@@ -43,6 +43,43 @@ async def root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
+@app.get("/User/reivew_request/{request_id}",response_class=HTMLResponse)
+async def MainU(request: Request, request_id:int):
+    token = request.cookies.get("Token")
+    if not token:
+        return RedirectResponse(url="/", status_code=302)
+
+    try:
+        payload = tokenCheck(token)
+        req_data = await review_request(request_id) 
+        
+        return templates.TemplateResponse(
+            request=request,
+            name="User/RequestReview.html",
+            context={
+                "role": payload.get("college"),
+                "request_id": request_id,
+                "request_status": req_data.get("request_status").value, 
+                "student_name": req_data.get("student_name"),
+                "status": req_data.get("status"),
+                "birth_date": req_data.get("birth_date"),
+                "department": req_data.get("department"),
+                "speciality": req_data.get("speciality"),
+                "study_type": req_data.get("study_type"),
+                "sub_study": req_data.get("sub_study"),
+                "job_type": req_data.get("job_type"),
+                "sub_job": req_data.get("sub_job"),
+                "acceptance_year": req_data.get("acceptance_year"),
+                "suspension_year": req_data.get("suspension_year"),
+                "suspension_reason": req_data.get("suspension_reason"),
+                "benefits": req_data.get("benefits"),
+                "has_non_objection_file": req_data.get("non_objection").value,
+            },
+        )
+
+    except HTTPException:
+        return RedirectResponse(url="/", status_code=302)
+
 
 
 class AdminPages(str, Enum):
@@ -104,7 +141,7 @@ async def MainA(page: AdminPages, request: Request): # Changed page: str to page
 
 
 @app.get("/User/{page}", response_class=HTMLResponse)
-async def MainU(request: Request, page: UserPages): # Changed page: str to page: UserPages
+async def MainU(request: Request, page: UserPages):
     token = request.cookies.get("Token")
     if not token:
         return RedirectResponse(url="/", status_code=302)
@@ -948,7 +985,9 @@ async def toggleReqYearsAdmin(year_id: int, request: Request):
 #########################################-Requests-##################################################
 #####################################################################################################
 
-
+@app.get("/get_notes/{request_id}")
+async def getNotes(request_id:int):
+    return["hghgfhfhfhf","fgdgdgdg"]
 
 @app.get("/get_requests")
 async def getRequestsAdmin(
@@ -1041,8 +1080,8 @@ async def submit_request(
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
     for file_obj, folder in [
-        (file_academic, "academic_files"), 
-        (file_pledge, "pledge_files")
+        (file_academic, "academic"), 
+        (file_pledge, "pledge")
     ]:
         filename = f"{new_record.id}.pdf"
         full_path = os.path.join("statics", folder, filename)
@@ -1227,6 +1266,6 @@ async def getStats(request: Request):
 
 
 if __name__ == "__main__":
-    for folder in ["academic_files", "pledge_files","non_objecton","rules"]:
+    for folder in ["academic", "pledge","non_objecton","rules"]:
         os.makedirs(os.path.join("statics", folder), exist_ok=True)
     uvicorn.run("API:app", host="0.0.0.0", port=8000, reload=True)

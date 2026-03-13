@@ -443,7 +443,6 @@ async def toggle_req_year_admin(year_id: int):
 ###############################################################################################################
 
 
-
 async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
     if status is not None:
@@ -539,6 +538,13 @@ async def update_request_logic(record_id: int, params: dict):
     await record.save()
     
     return record
+
+
+async def review_request(request_id:int):
+    request=await Requests.get(id=request_id).values()
+    if not request:
+        raise HTTPException(status_code=404, detail="No data found")
+    return request
 
 #####################################################################################################
 ############################################Misc#####################################################

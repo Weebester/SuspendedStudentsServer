@@ -7,138 +7,206 @@
     <link rel="icon" href="/static/icon.ico" type="image/x-icon">
     <title>الطلبة المرقنين</title>
     <link rel="stylesheet" href="/static/CSS/RequestForm.css">
-    <script src="/static/JS/User/NewRequest.js" defer></script>
+    <script src="/static/JS/User/RequestReview.js" defer></script>
 </head>
 
-<body>
+<body data-request-id="{{ request_id }}" request_status="{{ request_status }}">
 
     <div class="content">
         <div class="container">
-            <header class="form-header">
-                <h2>ارسال طلب جديد</h2>
+            <header class="form-header" style="max-width: 900px; margin: 0 auto;">
+                <h2>مراجعة وتعديل الطلب</h2>
             </header>
 
-            <form id="student-form">
-                <div class="form-row">
-                    <div class="field-group">
-                        <label for="student-name">اسم الطالب</label>
-                        <input type="text" id="student-name" placeholder="ادخل الاسم" required>
-                    </div>
-                    <div class="field-group">
-                        <label for="birth-date">التولد</label>
-                        <input type="date" id="birth-date" required>
+            <section class="main-form-section">
+
+                <div class="edit-toggle-container">
+                    <p class="text_label">اختر الحقول المراد تعديلها:</p>
+                    <div class="toggle-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                        <label class="toggle-item"><input type="checkbox" data-target="student-name"> الاسم</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="birth-date"> التولد</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="department"> القسم</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="speciality"> التخصص</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="study-type"> الدراسة</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="job-type"> الوظيفة</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="acceptance-year"> القبول</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="suspension-year"> الانهاء</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="suspension-reason"> السبب</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="benefits"> مستفيد</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="file-1"> السيرة الدراسية</label>
+                        <label class="toggle-item"><input type="checkbox" data-target="file-2"> التعهد الخطي</label>
                     </div>
                 </div>
 
+                <form id="student-form">
+                    <div class="form-row">
+                        <div class="field-group">
+                            <label for="student-name">اسم الطالب<br><span class="current-val">الحالي: {{ student_name
+                                    }}</span></label>
+                            <input type="text" id="student-name" required disabled>
+                        </div>
+                        <div class="field-group">
+                            <label for="birth-date">التولد<br><span class="current-val">الحالي: {{ birth_date
+                                    }}</span></label>
+                            <input type="date" id="birth-date" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <p class="text_label">الكلية</p>
+                            <span class="fixed-label">{{ role }}</span>
+                        </div>
+                        <div class="field-group">
+                            <label for="department">القسم/الفرع<br><span class="current-val">الحالي: {{ department
+                                    }}</span></label>
+                            <select id="department" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <label for="study-type">الدراسة<br><span class="current-val">الحالي: {{ study_type
+                                    }}</span></label>
+                            <select id="study-type" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="sub-study">المرحلة الدراسية<br><span class="current-val">الحالي: {{ sub_study
+                                    }}</span></label>
+                            <select id="sub-study" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <label for="job-type">الموقف الوظيفي<br><span class="current-val">الحالي: {{ job_type
+                                    }}</span></label>
+                            <select id="job-type" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="sub-job">مشمول بالخدمة الجامعية؟<br><span class="current-val">الحالي: {{ sub_job
+                                    }}</span></label>
+                            <select id="sub-job" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <label for="acceptance-year">سنة القبول<br><span class="current-val">الحالي: {{
+                                    acceptance_year }}</span></label>
+                            <select id="acceptance-year" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="suspension-year">سنة انهاء العلاقة<br><span class="current-val">الحالي: {{
+                                    suspension_year }}</span></label>
+                            <select id="suspension-year" required disabled>
+                                <option value="">-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group full-width">
+                            <label for="suspension-reason">سبب انهاء العلاقة<br><span class="current-val">الحالي: {{
+                                    suspension_reason }}</span></label>
+                            <textarea id="suspension-reason" rows="3" required disabled></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <label for="benefits">الطالب مستفيد سابقا؟<br><span class="current-val">الحالي: {{ benefits
+                                    }}</span></label>
+                            <select id="benefits" required disabled>
+                                <option value="">-</option>
+                                <option value="no">كلا</option>
+                                <option value="yes">نعم</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <p class="text_label">تحديث السيرة الدراسية</p>
+                            <input type="file" id="file-1" disabled>
+                        </div>
+                        <div class="field-group">
+                            <p class="text_label">تحديث التعهد الخطي</p>
+                            <input type="file" id="file-2" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group">
+                            <p class="text_label">موقف الطلب الحالي<br> <span class="current-val">{{ status }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field-group full-width">
+                            <label for="message">الملاحظات الجديدة</label>
+                            <textarea id="message" rows="4" required
+                                placeholder="أدخل ملاحظات التعديل هنا..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" id="submit-container">
+                        <button type="submit" id="btn-submit" class="action-btn">اعادة ارسال</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="extras-container">
+                <header class="form-header">
+                    <h3>إدارة الملفات</h3>
+                </header>
+
                 <div class="form-row">
-                    <div class="field-group">
-                        <p class="text_label">الكلية</p>
-                        <span class="fixed-label" id="college-label">{{ role }}</span>
-                    </div>
-                    <div class="field-group">
-                        <label for="department">القسم/الفرع</label>
-                        <select id="department" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <div class="form-row">
-
-                    <div class="field-group">
-                        <label for="speciality">التخصص العام / الدقيق</label>
-                        <input type="text" id="speciality"
-                            placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="field-group">
-                        <label for="study-type">الدراسة</label>
-                        <select id="study-type" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="sub-study">المرحلة الدراسية</label>
-                        <select id="sub-study" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="field-group">
-                        <label for="job-type">الموقف الوظيفي</label>
-                        <select id="job-type" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="sub-job">مشمول بالخدمة الجامعية؟</label>
-                        <select id="sub-job" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="field-group">
-                        <label for="acceptance-year">سنة القبول</label>
-                        <select id="acceptance-year" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="suspension-year">سنة انهاء العلاقة</label>
-                        <select id="suspension-year" required>
-                            <option value="">-</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
+                    <p class="text_label">الملفات الحالية المرفوعة:</p>
                     <div class="field-group full-width">
-                        <label for="suspension-reason">سبب انهاء العلاقة</label>
-                        <textarea id="suspension-reason" rows="3" placeholder="ادخل سبب انهاء علاقة الطالب كما هو مذكور في الامر الجامعي" required></textarea>
+                        <a href="/static/academic/{{ request_id }}.pdf" target="_blank" class="view-btn">السيرة
+                            الدراسية</a>
+                        <a href="/static/pledge/{{ request_id }}.pdf" target="_blank" class="view-btn">التعهد الخطي</a>
+                        {% if has_non_objection_file == "yes" %}
+                        <a href="/static/non_objection/{{ request_id }}.pdf" target="_blank" class="view-btn">عدم
+                            ممانعة</a>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="field-group">
-                        <label for="benefits">الطالب مستفيد من عودة سابقا؟</label>
-                        <select id="benefits" required>
-                            <option value="">-</option>
-                            <option value="no">كلا</option>
-                            <option value="yes">نعم</option>
-                        </select>
-                    </div>
-                </div>
-
-
-                <div class="form-row">
-                    <div class="field-group">
-                        <p class="text_label">السيرة الدراسية مع الاوليات</p>
-                        <input type="file" id="file-1" required>
-                    </div>
-                    <div class="field-group">
-                        <p class="text_label">التعهد الخطي</p>
-                        <input type="file" id="file-2" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
+                    <p class="text_label">رفع ملف عدم ممانعة (مستقل)</p>
                     <div class="field-group full-width">
-                        <label for="message">الملاحظات</label>
-                        <textarea id="message" rows="5" required></textarea>
+                        <input type="file" id="non-objection-file">
+                        
                     </div>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" id="btn-submit">ارسال</button>
+                <div class="form-actions" id="submit-container">
+                    <button type="button" onclick="uploadNonObjection()" id="btn-upload" class="action-btn">رفع الملف</button>
                 </div>
-            </form>
+            </section>
+
+            <section class="extras-container" id="notes-history-section">
+                <header class="form-header">
+                    <h3>سجل الملاحظات السابقة</h3>
+                </header>
+                <div id="notes-list" class="notes-content">جاري تحميل الملاحظات...</div>
+            </section>
+
         </div>
     </div>
     <div class="sidebar">

@@ -84,8 +84,7 @@ function renderTickets(data) {
                 </div>
                 <button 
                     class="more-btn" 
-                    onclick="window.location.href='/details/${ticket.id}'"
-                    ${ticket.request_status!== 'Denied' ? 'disabled' : ''}>                       
+                    onclick="window.location.href='/User/reivew_request/${ticket.id}'">                       
                     عرض التفاصيل الشاملة
                 </button>
             </div>
