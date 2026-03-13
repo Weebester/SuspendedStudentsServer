@@ -443,7 +443,7 @@ async def toggle_req_year_admin(year_id: int):
 ###############################################################################################################
 
 
-async def feed_submit_form(college_id: int):
+async def feed_form(college_id: int):
     # 1. Fetch data concurrently
     (
         depts, 
@@ -463,15 +463,10 @@ async def feed_submit_form(college_id: int):
         Status.filter(enabled=Flag.Yes).values_list("status", flat=True)
     )
 
-    # 2. Helper to nest 'sub' items into parent names
     def nest_data(parents, subs, parent_key, sub_key):
-        # Map ID to Name for lookup: {1: "Medicine"}
         id_to_name = {p['id']: p[parent_key] for p in parents}
         nested = defaultdict(list)
-        
-        # Group subs by their parent name
         for s in subs:
-            # Handle both dict (from .values) or tuple (from .values_list)
             p_id = s.get(parent_key) if isinstance(s, dict) else s[0]
             val = s.get(sub_key) if isinstance(s, dict) else s[1]
             
@@ -479,7 +474,6 @@ async def feed_submit_form(college_id: int):
                 nested[id_to_name[p_id]].append(val)
         return dict(nested)
 
-    # 3. Final Formatted Dictionary
     return {
         "departments": list(depts),
         "years": list(yrs),
@@ -487,6 +481,29 @@ async def feed_submit_form(college_id: int):
         "study": nest_data(studies, study_subs, "study", "sub"),
         "job": nest_data(jobs, job_subs, "status", "sub")
     }
+
+
+async def create_attached_message(notes:str,request_id:int):
+    await AttachedMessages.create(messege=notes,request=request_id)
+
+async def create_request(params:dict):
+    current_year= await RequestYear.get(current=Flag.Yes)
+
+    return await Requests.create(
+        student_name=params.get("student_name"),
+        college=params.get("college"),
+        department=params.get("department"),
+        speciality=params.get("speciality"),
+        birth_date=params.get("birth_date"),
+        acception_year=params.get("acception_year"),
+        suspension_year=params.get("suspension_year"),
+        suspension_reason=params.get("suspension_reason"),
+        request_year=current_year.start_year,
+        job_status=params.get("job_status"),
+        benefactor=params.get("benefactor"),
+        study=params.get("study")
+        
+    )
 
 
 async def get_requests(status: str = None, year: int = None, college_id: int = None):

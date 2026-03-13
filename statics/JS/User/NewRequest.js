@@ -30,7 +30,7 @@ async function init() {
     selSubStudy.disabled = selSubJob.disabled = true;
 
     try {
-        const res = await fetch(`${API_BASE}/test`);
+        const res = await fetch(`${API_BASE}/feed_form`);
         formData = await res.json();
 
         // Populate Statics
@@ -66,31 +66,51 @@ function populateSubJob() {
 }
 
 // --- Submit Logic ---
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Mapping current form state to payload
-    const payload = {
-        student_name: inputName.value,
-        birth_date: inputBirth.value,
-        department: selDept.value,
-        speciality: inputSpec.value,
-        study: `${selStudy.value}-${selSubStudy.value}`,
-        job_status: `${selJobType.value}-${selSubJob.value}`,
-        acceptance_year: selAccYear.value,
-        suspension_year: selSusYear.value,
-        suspension_reason: txtReason.value,
-        previous_benefits: selBenefits.value,
-        notes: txtMsg.value,
-        file_academic: file1.files[0] || null,
-        file_pledge: file2.files[0] || null
-    };
+    // 1. Trigger the red borders
+    form.classList.add('show-errors');
+
+    // 2. Native validation check (bubbles + stop if empty)
+    if (!form.reportValidity()) return;
+
+    // 3. Build FormData (Necessary for files)
+    const formData = new FormData();
+    formData.append("student_name", inputName.value);
+    formData.append("birth_date", inputBirth.value);
+    formData.append("department", selDept.value);
+    formData.append("speciality", inputSpec.value);
+    formData.append("study", `${selStudy.value}-${selSubStudy.value}`);
+    formData.append("job_status", `${selJobType.value}-${selSubJob.value}`);
+    formData.append("acception_year", selAccYear.value);
+    formData.append("suspension_year", selSusYear.value);
+    formData.append("suspension_reason", txtReason.value);
+    formData.append("benefactor", selBenefits.value);
+    formData.append("notes", txtMsg.value);
+    
+    // Append the files
+    if (file1.files[0]) formData.append("file_academic", file1.files[0]);
+    if (file2.files[0]) formData.append("file_pledge", file2.files[0]);
 
     try {
-        window.location.replace("/User/Requests");
+        // 4. Actually send the data
+        const response = await fetch(`${API_BASE}/submit_request`, {
+            method: "POST",
+            body: formData, // Do NOT set headers, browser does it automatically
+        });
+
+        if (response.ok) {
+            // 5. Success! Now kick him out and replace history
+            //window.location.replace("/User/Requests");
+        } else {
+            const err = await response.json();
+            alert("حدث خطأ: " + (err.detail || "Error"));
+        }
         
     } catch (err) {
         console.error("Submission failed", err);
+        alert("فشل الاتصال بالسيرفر");
     }
 });
 

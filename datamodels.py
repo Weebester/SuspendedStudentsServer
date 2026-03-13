@@ -130,6 +130,7 @@ class Requests(Model):
     id = fields.IntField(pk=True)
     student_name = fields.CharField(max_length=100)
     college = fields.IntField()
+    department= fields.CharField(max_length=100)
     speciality = fields.CharField(max_length=100)
     birth_date = fields.DateField()
 
@@ -147,6 +148,16 @@ class Requests(Model):
 
     class Meta:
         table = "requests"
+
+
+class AttachedMessages(Model):
+    id=fields.IntField(pk=True)
+    messege=fields.CharField(max_length=512)
+    request=fields.IntField()
+    date_time=fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "attached_messages"
 
 
 #####################################################################################################
