@@ -143,6 +143,7 @@ class Requests(Model):
     status = fields.CharField(max_length=100, default="~")
     benefactor = fields.CharEnumField(Flag)
     study = fields.CharField(max_length=100)
+    non_objection = fields.CharEnumField(Flag, default=Flag.No)
 
     class Meta:
         table = "requests"
@@ -151,6 +152,7 @@ class Requests(Model):
 #####################################################################################################
 #######################################Views#########################################################
 #####################################################################################################
+
 
 class RequestsCountCollege(Model):
     id = fields.IntField(pk=True)

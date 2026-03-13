@@ -1,3 +1,5 @@
+import asyncio
+from collections import defaultdict
 from turtle import pd
 
 import bcrypt
@@ -439,6 +441,52 @@ async def toggle_req_year_admin(year_id: int):
 ###############################################################################################################
 ##############################################-Requests-#######################################################
 ###############################################################################################################
+
+
+async def feed_submit_form(college_id: int):
+    # 1. Fetch data concurrently
+    (
+        depts, 
+        yrs, 
+        jobs, 
+        job_subs, 
+        studies, 
+        study_subs, 
+        stats
+    ) = await asyncio.gather(
+        Departments.filter(college=college_id, enabled=Flag.Yes).values_list("department", flat=True),
+        EducationalYear.filter(enabled=Flag.Yes).values_list("start_year", flat=True),
+        JobStatus.filter(enabled=Flag.Yes).values("id", "status"),
+        JobStatusSub.filter(enabled=Flag.Yes).values("status", "sub"),
+        Study.filter(enabled=Flag.Yes).values("id", "study"),
+        StudySub.filter(enabled=Flag.Yes).values_list("study", "sub"),
+        Status.filter(enabled=Flag.Yes).values_list("status", flat=True)
+    )
+
+    # 2. Helper to nest 'sub' items into parent names
+    def nest_data(parents, subs, parent_key, sub_key):
+        # Map ID to Name for lookup: {1: "Medicine"}
+        id_to_name = {p['id']: p[parent_key] for p in parents}
+        nested = defaultdict(list)
+        
+        # Group subs by their parent name
+        for s in subs:
+            # Handle both dict (from .values) or tuple (from .values_list)
+            p_id = s.get(parent_key) if isinstance(s, dict) else s[0]
+            val = s.get(sub_key) if isinstance(s, dict) else s[1]
+            
+            if p_id in id_to_name:
+                nested[id_to_name[p_id]].append(val)
+        return dict(nested)
+
+    # 3. Final Formatted Dictionary
+    return {
+        "departments": list(depts),
+        "years": list(yrs),
+        "status": list(stats),
+        "study": nest_data(studies, study_subs, "study", "sub"),
+        "job": nest_data(jobs, job_subs, "status", "sub")
+    }
 
 
 async def get_requests(status: str = None, year: int = None, college_id: int = None):

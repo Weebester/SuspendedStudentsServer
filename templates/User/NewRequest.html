@@ -22,22 +22,22 @@
                 <div class="form-row">
                     <div class="field-group">
                         <label for="student-name">اسم الطالب</label>
-                        <input type="text" id="student-name" placeholder="ادخل الاسم">
+                        <input type="text" id="student-name" placeholder="ادخل الاسم" required>
                     </div>
                     <div class="field-group">
                         <label for="birth-date">التولد</label>
-                        <input type="date" id="birth-date">
+                        <input type="date" id="birth-date" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label>الكلية</label>
+                        <p class="text_label">الكلية</p>
                         <span class="fixed-label" id="college-label">{{ role }}</span>
                     </div>
                     <div class="field-group">
                         <label for="department">القسم/الفرع</label>
-                        <select id="department">
+                        <select id="department" required>
                             <option value="">-</option>
                         </select>
                     </div>
@@ -49,20 +49,20 @@
                     <div class="field-group">
                         <label for="speciality">التخصص العام / الدقيق</label>
                         <input type="text" id="speciality"
-                            placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله">
+                            placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="field-group">
                         <label for="study-type">الدراسة</label>
-                        <select id="study-type">
+                        <select id="study-type" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
                         <label for="sub-study">المرحلة الدراسية</label>
-                        <select id="sub-study">
+                        <select id="sub-study" required>
                             <option value="">-</option>
                         </select>
                     </div>
@@ -71,13 +71,13 @@
                 <div class="form-row">
                     <div class="field-group">
                         <label for="job-type">الموقف الوظيفي</label>
-                        <select id="job-type">
+                        <select id="job-type" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
                         <label for="sub-job">مشمول بالخدمة الجامعية؟</label>
-                        <select id="sub-job">
+                        <select id="sub-job" required>
                             <option value="">-</option>
                         </select>
                     </div>
@@ -86,13 +86,13 @@
                 <div class="form-row">
                     <div class="field-group">
                         <label for="acceptance-year">سنة القبول</label>
-                        <select id="acceptance-year">
+                        <select id="acceptance-year" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
                         <label for="suspension-year">سنة انهاء العلاقة</label>
-                        <select id="suspension-year">
+                        <select id="suspension-year" required>
                             <option value="">-</option>
                         </select>
                     </div>
@@ -101,15 +101,15 @@
                 <div class="form-row">
                     <div class="field-group full-width">
                         <label for="suspension-reason">سبب انهاء العلاقة</label>
-                        <textarea id="suspension-reason" rows="3" placeholder="ادخل سبب انهاء علاقة الطالب كما هو مذكور في الامر الجامعي"></textarea>
+                        <textarea id="suspension-reason" rows="3" placeholder="ادخل سبب انهاء علاقة الطالب كما هو مذكور في الامر الجامعي" required></textarea>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="field-group">
                         <label for="benefits">الطالب مستفيد من عودة سابقا؟</label>
-                        <select id="benefits">
-                            <option value="no">-</option>
+                        <select id="benefits" required>
+                            <option value="">-</option>
                             <option value="no">كلا</option>
                             <option value="yes">نعم</option>
                         </select>
@@ -119,19 +119,19 @@
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label>السيرة الدراسية مع الاوليات</label>
-                        <input type="file" id="file-1">
+                        <p class="text_label">السيرة الدراسية مع الاوليات</p>
+                        <input type="file" id="file-1" required>
                     </div>
                     <div class="field-group">
-                        <label>التعهد الخطي</label>
-                        <input type="file" id="file-1">
+                        <p class="text_label">التعهد الخطي</p>
+                        <input type="file" id="file-2" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="field-group full-width">
                         <label for="message">الملاحظات</label>
-                        <textarea id="message" rows="5"></textarea>
+                        <textarea id="message" rows="5" required></textarea>
                     </div>
                 </div>
 

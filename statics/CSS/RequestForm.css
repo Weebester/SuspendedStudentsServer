@@ -152,14 +152,28 @@ body {
 }
 
 /* Labels & Fixed Labels */
-.field-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.field-group label{
+    display: block;           /* Crucial for spans to act like labels */
+    font-size: 0.9rem;        /* 14px-ish */
+    font-weight: 600;
+    color: #555;              /* Clean grey */
+    margin-bottom: 8px;
+    margin-top: 5px;
+    cursor: default;          /* Since it's a span, we reset the cursor */
+    user-select: none;        /* Prevents accidental text selection */
+    text-align: right;        /* Standard for Arabic layout */
+}
+
+.field-group .text_label{
+    display: block;           /* Crucial for spans to act like labels */
+    font-size: 0.9rem;        /* 14px-ish */
+    font-weight: 600;
+    color: #555;              /* Clean grey */
+    margin-bottom: 8px;
+    margin-top: 5px;
+    cursor: default;          /* Since it's a span, we reset the cursor */
+    user-select: none;        /* Prevents accidental text selection */
+    text-align: right;        /* Standard for Arabic layout */
 }
 
 .fixed-label {

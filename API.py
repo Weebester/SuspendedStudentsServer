@@ -264,39 +264,6 @@ async def toggleAllUsers(request: Request, enable: bool):
 
 
 #####################################################################################################
-####################################-UNcatogerized-##################################################
-#####################################################################################################
-
-
-
-@app.get("/get_requests")
-async def getRequestsAdmin(
-    request: Request,
-    status: Optional[str] = None,
-    year: Optional[int] = None,
-    college: Optional[str] = None,
-):
-    token = request.cookies.get("Token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = tokenCheck(token)
-
-    except HTTPException:
-        raise
-
-    try:
-        if payload.get("college_id") < 2:
-            return await get_requests(status=status, year=year, college_id=college)
-        else:
-            return await get_requests(
-                status=status, college_id=payload.get("college_id")
-            )
-    except HTTPException:
-        raise
-
-
-#####################################################################################################
 #############################################colleges-ops############################################
 #####################################################################################################
 
@@ -1107,6 +1074,43 @@ async def toggleReqYearsAdmin(year_id: int, request: Request):
         await toggle_req_year_admin(year_id)
     except HTTPException:
         raise
+
+
+#####################################################################################################
+####################################-UNcatogerized-##################################################
+#####################################################################################################
+
+
+
+@app.get("/get_requests")
+async def getRequestsAdmin(
+    request: Request,
+    status: Optional[str] = None,
+    year: Optional[int] = None,
+    college: Optional[str] = None,
+):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = tokenCheck(token)
+
+    except HTTPException:
+        raise
+
+    try:
+        if payload.get("college_id") < 2:
+            return await get_requests(status=status, year=year, college_id=college)
+        else:
+            return await get_requests(
+                status=status, college_id=payload.get("college_id")
+            )
+    except HTTPException:
+        raise
+
+@app.get("/test")
+async def test():
+    return await feed_submit_form(2)
 
 
 #####################################################################################################
