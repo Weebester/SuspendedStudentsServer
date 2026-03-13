@@ -18,29 +18,39 @@ const inputBirth = document.getElementById('birth-date');
 const inputSpec = document.getElementById('speciality');
 const txtReason = document.getElementById('suspension-reason');
 const txtMsg = document.getElementById('message');
+const msgBox = document.getElementById('msgBox')
+const FileBox = document.getElementById('filesBox')
+
 
 const file1 = document.getElementById('file-1');
 const file2 = document.getElementById('file-2');
 const notesList = document.getElementById('notes-list');
 
+const toggleCont = document.querySelector('.edit-toggle-container');
+const submitCont = document.getElementById('submit-container');
+
 let formData = {};
 
 // --- Initialization & Main Logic ---
 async function init() {
-    alert(isEditable)
     if (!isEditable) {
-        const toggleCont = document.querySelector('.edit-toggle-container');
-        if (toggleCont) toggleCont.classList.add('hidden');
-        
-        const submitCont = document.getElementById('submit-container');
-        if (submitCont) submitCont.classList.add('hidden');
-        
+
+        toggleCont.classList.add('hidden');
+
+        submitCont.classList.add('hidden');
+
+        msgBox.classList.add('hidden')
+
+        FileBox.classList.add('hidden')
+
         document.querySelectorAll('.field-group').forEach(group => {
             if (group.querySelector('.current-val')) {
                 const input = group.querySelector('input, select, textarea');
                 if (input) input.classList.add('hidden');
             }
         });
+
+
     } else {
         await loadFeedingData();
         document.querySelectorAll('.toggle-item input').forEach(checkbox => {
@@ -55,9 +65,10 @@ async function init() {
     fetchNotes();
 }
 
+const fileInput = document.getElementById('non-objection-file');
+const noteInput = document.getElementById('non-objection-note');
+
 async function uploadNonObjection() {
-    const fileInput = document.getElementById('non-objection-file');
-    const noteInput = document.getElementById('non-objection-note');
 
     if (!fileInput.files[0]) {
         alert("يرجى اختيار ملف أولاً");
@@ -76,7 +87,7 @@ async function uploadNonObjection() {
         });
         if (response.ok) {
             alert("تم رفع ملف عدم الممانعة بنجاح");
-            location.reload(); 
+            location.reload();
         }
     } catch (e) {
         console.error("Upload failed", e);
@@ -85,15 +96,26 @@ async function uploadNonObjection() {
 
 async function fetchNotes() {
     try {
-        const res = await fetch(`${API_BASE}/get_notes/${requestId}`);
-        const notes = await res.json(); 
-        if (notesList) {
-            notesList.innerHTML = notes.length 
-                ? notes.map(n => `<div class="note-item">${n}</div>`).join('') 
+        const response = await fetch(`${API_BASE}/get_notes/${requestId}`);
+
+        if (response.ok) {
+            const notes = await response.json();
+
+            notesList.innerHTML = notes.length
+                ? notes.map(n => `
+                    <div class="note-item ${n.state === 'yes' ? 'state-yes' : (n.state === 'no' ? 'state-no' : 'state-null')}">
+                        <span class="note-msg">${n.messege}</span>
+                        <span class="note-time">${n.date_time}</span>
+                        </div>`).join('')
                 : "لا توجد ملاحظات سابقة";
+
+        } else {
+            const err = await response.json();
+            alert("حدث خطأ: " + (err.detail || "Error"));
         }
-    } catch (e) { 
-        if (notesList) notesList.innerText = "فشل تحميل سجل الملاحظات"; 
+
+    } catch (e) {
+        if (notesList) notesList.innerText = "فشل تحميل سجل الملاحظات";
     }
 }
 
@@ -128,45 +150,45 @@ function populateSubJob() {
     opts.forEach(o => selSubJob.add(new Option(o, o)));
 }
 
-if (form) {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!form.reportValidity()) return;
 
-        const fData = new FormData();
-        fData.append("request_id", requestId);
-        
-        const fields = [
-            { el: inputName, key: "student_name" },
-            { el: inputBirth, key: "birth_date" },
-            { el: selDept, key: "department" },
-            { el: inputSpec, key: "speciality" },
-            { el: selAccYear, key: "acception_year" },
-            { el: selSusYear, key: "suspension_year" },
-            { el: txtReason, key: "suspension_reason" },
-            { el: selBenefits, key: "benefactor" }
-        ];
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
 
-        fields.forEach(f => {
-            if (f.el && !f.el.disabled) fData.append(f.key, f.el.value);
-        });
+    const fData = new FormData();
+    fData.append("request_id", requestId);
 
-        if (!selStudy.disabled) fData.append("study", `${selStudy.value}-${selSubStudy.value}`);
-        if (!selJobType.disabled) fData.append("job_status", `${selJobType.value}-${selSubJob.value}`);
-        
-        if (!file1.disabled && file1.files[0]) fData.append("file_academic", file1.files[0]);
-        if (!file2.disabled && file2.files[0]) fData.append("file_pledge", file2.files[0]);
+    const fields = [
+        { el: inputName, key: "student_name" },
+        { el: inputBirth, key: "birth_date" },
+        { el: selDept, key: "department" },
+        { el: inputSpec, key: "speciality" },
+        { el: selAccYear, key: "acception_year" },
+        { el: selSusYear, key: "suspension_year" },
+        { el: txtReason, key: "suspension_reason" },
+        { el: selBenefits, key: "benefactor" }
+    ];
 
-        fData.append("notes", txtMsg.value);
-
-        try {
-            const response = await fetch(`${API_BASE}/update_request`, {
-                method: "POST",
-                body: fData,
-            });
-            if (response.ok) window.location.replace("/User/Requests");
-        } catch (err) { alert("فشل الاتصال"); }
+    fields.forEach(f => {
+        if (f.el && !f.el.disabled) fData.append(f.key, f.el.value);
     });
-}
+
+    if (!selStudy.disabled) fData.append("study", `${selStudy.value}-${selSubStudy.value}`);
+    if (!selJobType.disabled) fData.append("job_status", `${selJobType.value}-${selSubJob.value}`);
+
+    if (!file1.disabled && file1.files[0]) fData.append("file_academic", file1.files[0]);
+    if (!file2.disabled && file2.files[0]) fData.append("file_pledge", file2.files[0]);
+
+    fData.append("notes", txtMsg.value);
+
+    try {
+        const response = await fetch(`${API_BASE}/update_request/${requestId}`, {
+            method: "POST",
+            body: fData,
+        });
+        if (response.ok) window.location.replace("/User/Requests");
+    } catch (err) { alert("فشل الاتصال"); }
+});
+
 
 init();

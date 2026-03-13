@@ -65,14 +65,12 @@ async def MainU(request: Request, request_id:int):
                 "birth_date": req_data.get("birth_date"),
                 "department": req_data.get("department"),
                 "speciality": req_data.get("speciality"),
-                "study_type": req_data.get("study_type"),
-                "sub_study": req_data.get("sub_study"),
-                "job_type": req_data.get("job_type"),
-                "sub_job": req_data.get("sub_job"),
-                "acceptance_year": req_data.get("acceptance_year"),
+                "study": req_data.get("study"),
+                "job_status": req_data.get("job_status"),
+                "acception_year": req_data.get("acception_year"),
                 "suspension_year": req_data.get("suspension_year"),
                 "suspension_reason": req_data.get("suspension_reason"),
-                "benefits": req_data.get("benefits"),
+                "benefactor": req_data.get("benefactor"),
                 "has_non_objection_file": req_data.get("non_objection").value,
             },
         )
@@ -986,8 +984,16 @@ async def toggleReqYearsAdmin(year_id: int, request: Request):
 #####################################################################################################
 
 @app.get("/get_notes/{request_id}")
-async def getNotes(request_id:int):
-    return["hghgfhfhfhf","fgdgdgdg"]
+async def getNotes(request:Request,request_id:int):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    payload = tokenCheck(token)
+    try:
+        return await get_messages(request_id=request_id)
+    except HTTPException:
+        raise
+
 
 @app.get("/get_requests")
 async def getRequestsAdmin(
@@ -1136,14 +1142,14 @@ async def update_request(
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    tokenCheck(token) 
+    payload= tokenCheck(token) 
 
-    await update_request_logic(request_id, form.data)
+    await update_request_logic(request_id, form.data,payload.get("college_id"))
     
 
     files_to_process = [
-        (file_academic, "academic_files"), 
-        (file_pledge, "pledge_files")
+        (file_academic, "academic"), 
+        (file_pledge, "pledge")
     ]
 
     for file_obj, folder in files_to_process:

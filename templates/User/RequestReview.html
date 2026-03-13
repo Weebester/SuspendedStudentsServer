@@ -55,7 +55,7 @@
 
                     <div class="form-row">
                         <div class="field-group">
-                            <p class="text_label">الكلية</p>
+                            <p class="text_label">الكلية<br><Span class="current-val"> </Span></p>
                             <span class="fixed-label">{{ role }}</span>
                         </div>
                         <div class="field-group">
@@ -67,17 +67,27 @@
                         </div>
                     </div>
 
+
+                    <div class="form-row">
+
+                        <div class="field-group">
+                            <label for="speciality">التخصص العام / الدقيق<br><span class="current-val">الحالي: {{
+                                    speciality
+                                    }}</span></label>
+                            <input type="text" id="speciality"
+                                placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله" required disabled>
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="field-group">
-                            <label for="study-type">الدراسة<br><span class="current-val">الحالي: {{ study_type
+                            <label for="study-type">الدراسة<br><span class="current-val">الحالي: {{ study
                                     }}</span></label>
                             <select id="study-type" required disabled>
                                 <option value="">-</option>
                             </select>
                         </div>
                         <div class="field-group">
-                            <label for="sub-study">المرحلة الدراسية<br><span class="current-val">الحالي: {{ sub_study
-                                    }}</span></label>
+                            <label for="sub-study">المرحلة الدراسية<br><Span class="current-val"> </Span></label>
                             <select id="sub-study" required disabled>
                                 <option value="">-</option>
                             </select>
@@ -86,15 +96,14 @@
 
                     <div class="form-row">
                         <div class="field-group">
-                            <label for="job-type">الموقف الوظيفي<br><span class="current-val">الحالي: {{ job_type
+                            <label for="job-type">الموقف الوظيفي<br><span class="current-val">الحالي: {{ job_status
                                     }}</span></label>
                             <select id="job-type" required disabled>
                                 <option value="">-</option>
                             </select>
                         </div>
                         <div class="field-group">
-                            <label for="sub-job">مشمول بالخدمة الجامعية؟<br><span class="current-val">الحالي: {{ sub_job
-                                    }}</span></label>
+                            <label for="sub-job">مشمول بالخدمة الجامعية؟<br><Span class="current-val"> </Span></label>
                             <select id="sub-job" required disabled>
                                 <option value="">-</option>
                             </select>
@@ -104,7 +113,7 @@
                     <div class="form-row">
                         <div class="field-group">
                             <label for="acceptance-year">سنة القبول<br><span class="current-val">الحالي: {{
-                                    acceptance_year }}</span></label>
+                                    acception_year }}</span></label>
                             <select id="acceptance-year" required disabled>
                                 <option value="">-</option>
                             </select>
@@ -128,7 +137,8 @@
 
                     <div class="form-row">
                         <div class="field-group">
-                            <label for="benefits">الطالب مستفيد سابقا؟<br><span class="current-val">الحالي: {{ benefits
+                            <label for="benefits">الطالب مستفيد سابقا؟<br><span class="current-val">الحالي: {{
+                                    benefactor
                                     }}</span></label>
                             <select id="benefits" required disabled>
                                 <option value="">-</option>
@@ -138,14 +148,14 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row"  id="filesBox">
                         <div class="field-group">
                             <p class="text_label">تحديث السيرة الدراسية</p>
-                            <input type="file" id="file-1" disabled>
+                            <input type="file" id="file-1" required disabled>
                         </div>
                         <div class="field-group">
                             <p class="text_label">تحديث التعهد الخطي</p>
-                            <input type="file" id="file-2" disabled>
+                            <input type="file" id="file-2" required disabled>
                         </div>
                     </div>
 
@@ -156,7 +166,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row" id="msgBox">
                         <div class="field-group full-width">
                             <label for="message">الملاحظات الجديدة</label>
                             <textarea id="message" rows="4" required
@@ -192,11 +202,12 @@
                     <p class="text_label">رفع ملف عدم ممانعة (مستقل)</p>
                     <div class="field-group full-width">
                         <input type="file" id="non-objection-file">
-                        
+
                     </div>
                 </div>
                 <div class="form-actions" id="submit-container">
-                    <button type="button" onclick="uploadNonObjection()" id="btn-upload" class="action-btn">رفع الملف</button>
+                    <button type="button" onclick="uploadNonObjection()" id="btn-upload" class="action-btn">رفع
+                        الملف</button>
                 </div>
             </section>
 

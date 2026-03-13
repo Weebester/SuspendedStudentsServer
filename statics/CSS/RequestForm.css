@@ -356,8 +356,6 @@ input[type="file"]::before {
     flex-grow: 1;
 }
 
-
-
 .notes-content {
     background: #f3f4f6;
     padding: 15px;
@@ -366,6 +364,33 @@ input[type="file"]::before {
     white-space: pre-wrap; /* Preserves formatting of old notes */
 }
 
+.note-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-right: 4px solid #eee;
+}
+
+.note-item.state-yes { border-right-color: #22c55e; }
+.note-item.state-no { border-right-color: #ef4444; }
+.note-item.state-null { border-right-color: #d6d628; }
+
+.note-msg {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.4;
+}
+
+.note-time {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+    align-self: flex-end;
+}
 .hidden {
     display: none;
 }

@@ -102,7 +102,7 @@ form.addEventListener('submit', async (e) => {
 
         if (response.ok) {
             // 5. Success! Now kick him out and replace history
-            //window.location.replace("/User/Requests");
+            window.location.replace("/User/Requests");
         } else {
             const err = await response.json();
             alert("حدث خطأ: " + (err.detail || "Error"));

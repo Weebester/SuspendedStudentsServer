@@ -442,6 +442,8 @@ async def toggle_req_year_admin(year_id: int):
 ##############################################-Requests-#######################################################
 ###############################################################################################################
 
+async def get_messages(request_id):
+    return await AttachedMessages.filter(request=request_id).order_by("date_time").values("date_time","messege","state")
 
 async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
@@ -527,10 +529,20 @@ async def create_request(params:dict):
     )
 
 
-async def update_request_logic(record_id: int, params: dict):
+async def update_request_logic(record_id: int, params: dict ,college_id:int):
     record = await Requests.get_or_none(id=record_id)
     if not record:
         raise HTTPException(status_code=404, detail="No data found")
+    
+    new_stat= None
+    if college_id > 0 :
+        if college_id > 1 and (college_id!=record.college or record.request_status!=RequestStatus.DENIED) :
+                raise HTTPException(status_code=403, detail="not allowed")
+        else:
+            new_stat=RequestStatus.PENDING
+
+    params["request_status"] = new_stat
+
 
     update_data = {k: v for k, v in params.items() if v is not None}
 

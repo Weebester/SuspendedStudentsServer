@@ -155,6 +155,7 @@ class AttachedMessages(Model):
     messege=fields.CharField(max_length=512)
     request=fields.IntField()
     date_time=fields.DatetimeField(auto_now_add=True)
+    state=fields.CharEnumField(Flag,null=True)
 
     class Meta:
         table = "attached_messages"
