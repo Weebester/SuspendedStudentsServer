@@ -134,10 +134,10 @@ class Requests(Model):
     speciality = fields.CharField(max_length=100)
     birth_date = fields.DateField()
 
-    acception_year = fields.CharField(max_length=50)
-    suspension_year = fields.CharField(max_length=50)
+    acception_year = fields.IntField()
+    suspension_year = fields.IntField()
     suspension_reason = fields.CharField(max_length=512)
-    request_year = fields.CharField(max_length=50)
+    request_year = fields.IntField()
 
     job_status = fields.CharField(max_length=100)
     request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
@@ -188,8 +188,8 @@ class Excel(Model):
     speciality = fields.CharField(max_length=100)
     study = fields.CharField(max_length=100)
 
-    acception_year = fields.CharField(max_length=50)
-    suspension_year = fields.CharField(max_length=50)
+    acception_year = fields.IntField()
+    suspension_year = fields.IntField()
     suspension_reason = fields.CharField(max_length=512)
 
     job_status = fields.CharField(max_length=100)
@@ -197,7 +197,7 @@ class Excel(Model):
     status = fields.CharField(max_length=100, default="~")
 
     benefactor = fields.CharEnumField(Flag)
-    request_year = fields.CharField(max_length=50)
+    request_year = fields.IntField()
 
     class Meta:
         table = "excel"
@@ -226,7 +226,7 @@ class RequestsShort(Model):
     request_status = fields.CharEnumField(RequestStatus)
     study = fields.CharField(max_length=100)
     status = fields.CharField(max_length=100)
-    request_year = fields.CharField(max_length=50)
+    request_year = fields.IntField()
 
     class Meta:
         table = "requests_short"

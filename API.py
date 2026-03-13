@@ -852,7 +852,7 @@ async def toggleEduYearsAdmin(year_id: int, request: Request):
         raise
 
 #####################################################################################################
-###########################################-Edu-Years-ops-#################################################
+###########################################-Rew-Years-ops-#################################################
 #####################################################################################################
 
 
@@ -971,7 +971,7 @@ async def FeedForm(request: Request ,college_id:Optional[int]=None):
 
 
 
-class StudentForm:
+class RequestForm:
     def __init__(
         self,
         student_name: str = Form(...),
@@ -991,8 +991,8 @@ class StudentForm:
             "department": department,
             "speciality": speciality,
             "birth_date": birth_date,
-            "acception_year": str(acception_year),
-            "suspension_year": str(suspension_year),
+            "acception_year": acception_year,
+            "suspension_year": suspension_year,
             "suspension_reason": suspension_reason,
             "job_status": job_status,
             "benefactor": benefactor,
@@ -1004,7 +1004,7 @@ class StudentForm:
 @app.post("/submit_request")
 async def submit_request(
     request: Request,
-    form: StudentForm = Depends(), 
+    form: RequestForm = Depends(), 
     file_academic: UploadFile = File(...),
     file_pledge: UploadFile = File(...)
 ):
@@ -1028,7 +1028,68 @@ async def submit_request(
 
     await create_attached_message(notes=form.notes, request_id=new_record.id)
 
-        
+
+class UpdateRequestForm:
+    def __init__(
+        self,
+        student_name: Optional[str] = Form(None),
+        birth_date: Optional[str] = Form(None),
+        department: Optional[str] = Form(None),
+        speciality: Optional[str] = Form(None),
+        study: Optional[str] = Form(None),
+        job_status: Optional[str] = Form(None),
+        acception_year: Optional[int] = Form(None),
+        suspension_year: Optional[int] = Form(None),
+        suspension_reason: Optional[str] = Form(None),
+        benefactor: Optional[str] = Form(None),
+        notes: str = Form(...),
+    ):
+        self.raw_data = {
+            "student_name": student_name,
+            "department": department,
+            "speciality": speciality,
+            "birth_date": birth_date,
+            "acception_year": acception_year ,
+            "suspension_year": suspension_year,
+            "suspension_reason": suspension_reason,
+            "job_status": job_status,
+            "benefactor": benefactor,
+            "study": study
+        }
+        self.data = {k: v for k, v in self.raw_data.items() if v is not None}
+        self.notes = notes     
+
+
+@app.post("/update_request/{record_id}")
+async def update_request(
+    record_id: int,
+    request: Request,
+    form: UpdateRequestForm = Depends(),
+    file_academic: Optional[UploadFile] = File(None),
+    file_pledge: Optional[UploadFile] = File(None)
+):
+
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tokenCheck(token) 
+
+    updated_record = await update_request_logic(record_id, form.data)
+    if not updated_record:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    for file_obj, folder, prefix in [(file_academic, "academic_files", "academic"), 
+                                     (file_pledge, "pledge_files", "pledge")]:
+        if file_obj:
+            ext = os.path.splitext(file_obj.filename)[1]
+            full_path = os.path.join("statics", folder, f"{record_id}_{prefix}{ext}")
+            
+            with open(full_path, "wb") as buffer:
+                buffer.write(await file_obj.read())
+
+    await create_attached_message(notes=form.notes, request_id=record_id)
+
 
 #####################################################################################################
 ############################################-Misc-###################################################

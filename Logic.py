@@ -443,6 +443,28 @@ async def toggle_req_year_admin(year_id: int):
 ###############################################################################################################
 
 
+
+async def get_requests(status: str = None, year: int = None, college_id: int = None):
+    result = RequestsShort.all()
+    if status is not None:
+        print(status)
+        result = result.filter(request_status=status)
+
+    if college_id is not None:
+        result = result.filter(college_id=college_id)
+
+    if not year:
+        current_year = await RequestYear.get(current=Flag.Yes)
+        year = current_year.start_year
+
+    print(year, status, college_id)
+
+    result = result.filter(request_year=year)
+
+    result = await result.values()
+    return result
+
+
 async def feed_form(college_id: int):
     # 1. Fetch data concurrently
     (
@@ -486,6 +508,7 @@ async def feed_form(college_id: int):
 async def create_attached_message(notes:str,request_id:int):
     await AttachedMessages.create(messege=notes,request=request_id)
 
+
 async def create_request(params:dict):
     current_year= await RequestYear.get(current=Flag.Yes)
 
@@ -501,30 +524,21 @@ async def create_request(params:dict):
         request_year=current_year.start_year,
         job_status=params.get("job_status"),
         benefactor=params.get("benefactor"),
-        study=params.get("study")
-        
+        study=params.get("study") 
     )
 
 
-async def get_requests(status: str = None, year: int = None, college_id: int = None):
-    result = RequestsShort.all()
-    if status is not None:
-        print(status)
-        result = result.filter(request_status=status)
+async def update_request_logic(record_id: int, params: dict):
+    record = await Requests.get_or_none(id=record_id)
+    if not record:
+        return None  
 
-    if college_id is not None:
-        result = result.filter(college_id=college_id)
+    update_data = {k: v for k, v in params.items() if v is not None}
 
-    if not year:
-        current_year = await RequestYear.get(current=Flag.Yes)
-        year = current_year.start_year
-
-    print(year, status, college_id)
-
-    result = result.filter(request_year=year)
-
-    result = await result.values()
-    return result
+    record.update_from_dict(update_data)
+    await record.save()
+    
+    return record
 
 #####################################################################################################
 ############################################Misc#####################################################
