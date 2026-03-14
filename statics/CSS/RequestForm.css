@@ -389,6 +389,88 @@ input[type="file"]::before {
     margin-top: 4px;
     align-self: flex-end;
 }
+
+/* Add Account Bar */
+.content .admin-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 30px;
+    align-items: flex-end;
+}
+
+.content .status-change {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.content .status-change label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.content .status-change input,
+.content .status-change select {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    outline: none;
+    transition: 0.2s;
+}
+
+
+
+#changeBtn,
+#acceptBtn,
+#denyBtn {
+    height: 41px;
+    padding: 0 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+#changeBtn:hover ,
+#acceptBtn:hover ,
+#denyBtn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+#changeBtn:active ,
+#acceptBtn:active ,
+#denyBtn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+#changeBtn {
+    background: #007bff;
+    color: white;
+}
+
+#acceptBtn {
+    background: #57ce67;
+    color: white;
+}
+
+#denyBtn {
+    background: #d63a17;
+    color: white;
+}
+
+
 .hidden {
     display: none;
 }

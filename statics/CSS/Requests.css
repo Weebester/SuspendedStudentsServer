@@ -109,7 +109,7 @@ body {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    border: 1px solid grey;
+    border: 1px solid #d1d5db;
     margin-bottom: 30px;
     align-items: flex-end;
     justify-content: space-between;
@@ -175,6 +175,11 @@ body {
     transition: all 0.2s;
 }
 
+.content .status-btn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
 .content .download-btn {
     padding: 10px 16px;
     height: 4opx;
@@ -190,6 +195,10 @@ body {
     transition: all 0.2s;
 }
 
+.content .download-btn:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
 
 .content .status-btn.active {
     background: #2563eb;
@@ -205,9 +214,8 @@ body {
 
 .content .ticket-card {
     background: white;
-    border: 2px solid #e5e7eb;
     border-radius: 12px;
-    border-color: grey;
+    border: 1px solid #d1d5db;
     display: flex;
     flex-direction: column;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -321,16 +329,4 @@ body {
 .content .more-btn:hover {
     background: #2563eb;
     color: white;
-}
-
-.content .more-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.content .more-btn:hover:disabled {
-    background-color: #ccc;
-    color: #2563eb;
-    opacity: 0.6;
 }
