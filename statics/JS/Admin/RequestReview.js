@@ -3,6 +3,7 @@ const API_BASE = 'http://192.168.0.113:8000';
 const form = document.getElementById('student-form');
 const isEditable = document.body.getAttribute('admin').toLowerCase() === 'true';
 const requestId = document.body.getAttribute('data-request-id');
+const collegeId = document.body.getAttribute('college_id');
 
 // Selectors
 const selDept = document.getElementById('department');
@@ -107,7 +108,7 @@ async function fetchNotes() {
 
 async function loadFeedingData() {
     try {
-        const res = await fetch(`${API_BASE}/feed_form`);
+        const res = await fetch(`${API_BASE}/feed_form?college_id=${collegeId}`);
         formData = await res.json();
         formData.departments.forEach(d => selDept.add(new Option(d, d)));
         formData.years.forEach(y => {
