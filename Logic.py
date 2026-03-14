@@ -103,13 +103,14 @@ async def toggle_all_users(enable: bool):
     await Users.filter(id__not=1).update(enabled=new_status)
 
 
-
 #####################################################################################################
 ############################################-Colleges-OPs-###########################################
 #####################################################################################################
 
+
 async def get_college_name(college_id):
     return await Colleges.get(id=college_id).values("college")
+
 
 async def get_colleges_admin():
     List = await Colleges.filter(id__gt=0).values("id", "college")
@@ -372,7 +373,7 @@ async def toggle_status_admin(status_id: int):
 
 
 async def get_edu_years_admin():
-    List = await EducationalYear.all().order_by('start_year').values()
+    List = await EducationalYear.all().order_by("start_year").values()
     return List
 
 
@@ -402,13 +403,14 @@ async def toggle_edu_year_admin(year_id: int):
     else:
         raise HTTPException(status_code=404, detail="year not found")
 
+
 #####################################################################################################
 ############################################-Req-Years-OPs-##############################################
 #####################################################################################################
 
 
 async def get_req_years_admin():
-    List = await RequestYear.all().order_by('start_year').values()
+    List = await RequestYear.all().order_by("start_year").values()
     return List
 
 
@@ -444,8 +446,14 @@ async def toggle_req_year_admin(year_id: int):
 ##############################################-Requests-#######################################################
 ###############################################################################################################
 
+
 async def get_messages(request_id):
-    return await AttachedMessages.filter(request=request_id).order_by("date_time").values("date_time","messege","state")
+    return (
+        await AttachedMessages.filter(request=request_id)
+        .order_by("date_time")
+        .values("date_time", "messege", "state")
+    )
+
 
 async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
@@ -468,14 +476,16 @@ async def get_requests(status: str = None, year: int = None, college_id: int = N
 async def feed_form(college_id: int):
     # 1. Fetch data concurrently
     (
-        depts, 
-        yrs, 
-        jobs, 
-        job_subs, 
-        studies, 
-        study_subs, 
+        depts,
+        yrs,
+        jobs,
+        job_subs,
+        studies,
+        study_subs,
     ) = await asyncio.gather(
-        Departments.filter(college=college_id, enabled=Flag.Yes).values_list("department", flat=True),
+        Departments.filter(college=college_id, enabled=Flag.Yes).values_list(
+            "department", flat=True
+        ),
         EducationalYear.filter(enabled=Flag.Yes).values_list("start_year", flat=True),
         JobStatus.filter(enabled=Flag.Yes).values("id", "status"),
         JobStatusSub.filter(enabled=Flag.Yes).values("status", "sub"),
@@ -484,12 +494,12 @@ async def feed_form(college_id: int):
     )
 
     def nest_data(parents, subs, parent_key, sub_key):
-        id_to_name = {p['id']: p[parent_key] for p in parents}
+        id_to_name = {p["id"]: p[parent_key] for p in parents}
         nested = defaultdict(list)
         for s in subs:
             p_id = s.get(parent_key) if isinstance(s, dict) else s[0]
             val = s.get(sub_key) if isinstance(s, dict) else s[1]
-            
+
             if p_id in id_to_name:
                 nested[id_to_name[p_id]].append(val)
         return dict(nested)
@@ -498,16 +508,16 @@ async def feed_form(college_id: int):
         "departments": list(depts),
         "years": list(yrs),
         "study": nest_data(studies, study_subs, "study", "sub"),
-        "job": nest_data(jobs, job_subs, "status", "sub")
+        "job": nest_data(jobs, job_subs, "status", "sub"),
     }
 
 
-async def create_attached_message(notes:str,request_id:int):
-    await AttachedMessages.create(messege=notes,request=request_id)
+async def create_attached_message(notes: str, request_id: int):
+    await AttachedMessages.create(messege=notes, request=request_id)
 
 
-async def create_request(params:dict):
-    current_year= await RequestYear.get(current=Flag.Yes)
+async def create_request(params: dict):
+    current_year = await RequestYear.get(current=Flag.Yes)
 
     return await Requests.create(
         student_name=params.get("student_name"),
@@ -521,52 +531,53 @@ async def create_request(params:dict):
         request_year=current_year.start_year,
         job_status=params.get("job_status"),
         benefactor=params.get("benefactor"),
-        study=params.get("study") 
+        study=params.get("study"),
     )
 
 
-async def update_request_logic(record_id: int, params: dict ,college_id:int):
+async def update_request_logic(record_id: int, params: dict, college_id: int):
     record = await Requests.get_or_none(id=record_id)
     if not record:
         raise HTTPException(status_code=404, detail="No data found")
-    
-    new_stat= None
-    if college_id > 0 :
-        if college_id > 1 and (college_id!=record.college or record.request_status!=RequestStatus.DENIED) :
-                raise HTTPException(status_code=403, detail="not allowed")
+
+    new_stat = None
+    if college_id > 0:
+        if college_id > 1 and (
+            college_id != record.college
+            or record.request_status != RequestStatus.DENIED
+        ):
+            raise HTTPException(status_code=403, detail="not allowed")
         else:
-            new_stat=RequestStatus.PENDING
+            new_stat = RequestStatus.PENDING
 
     params["request_status"] = new_stat
-
 
     update_data = {k: v for k, v in params.items() if v is not None}
 
     record.update_from_dict(update_data)
     await record.save()
-    
+
     return record
 
 
-async def review_request(request_id:int):
-    request=await Requests.get(id=request_id).values()
+async def review_request(request_id: int):
+    request = await Requests.get(id=request_id).values()
     if not request:
         raise HTTPException(status_code=404, detail="No data found")
     return request
 
 
-async def non_objection_add(request_id:int,college_id):
-    request=await Requests.get(id=request_id)
+async def non_objection_add(request_id: int, college_id):
+    request = await Requests.get(id=request_id)
     if not request:
         raise HTTPException(status_code=404, detail="No data found")
-    
-    if college_id> 0 :
+
+    if college_id > 0:
         if college_id > 1 and college_id != request.college:
             raise HTTPException(status_code=403, detail="Not allowed")
-        
-    request.non_objection=Flag.Yes
+
+    request.non_objection = Flag.Yes
     await request.save()
-   
 
 
 #####################################################################################################
@@ -597,7 +608,7 @@ async def get_data_for_excel(
     return data
 
 
-async def get_stats(college_id:int=None):
+async def get_stats(college_id: int = None):
     if college_id is not None:
         stats = await RequestsCountCollege.get(id=college_id)
     else:
