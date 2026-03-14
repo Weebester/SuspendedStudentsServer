@@ -21,11 +21,11 @@
             <form id="student-form">
                 <div class="form-row">
                     <div class="field-group">
-                        <label for="student-name">اسم الطالب</label>
+                        <label for="student-name">اسم الطالب*</label>
                         <input type="text" id="student-name" placeholder="ادخل الاسم" required>
                     </div>
                     <div class="field-group">
-                        <label for="birth-date">التولد</label>
+                        <label for="birth-date">التولد*</label>
                         <input type="date" id="birth-date" required>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                         <span class="fixed-label" id="college-label">{{ role }}</span>
                     </div>
                     <div class="field-group">
-                        <label for="department">القسم/الفرع</label>
+                        <label for="department">القسم/الفرع*</label>
                         <select id="department" required>
                             <option value="">-</option>
                         </select>
@@ -47,7 +47,7 @@
                 <div class="form-row">
 
                     <div class="field-group">
-                        <label for="speciality">التخصص العام / الدقيق</label>
+                        <label for="speciality">التخصص العام / الدقيق*</label>
                         <input type="text" id="speciality"
                             placeholder="ادخل تخصص الطالب كما هو محدد في الامر الجامعي بقبوله" required>
                     </div>
@@ -55,13 +55,13 @@
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label for="study-type">الدراسة</label>
+                        <label for="study-type">الدراسة*</label>
                         <select id="study-type" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
-                        <label for="sub-study">المرحلة الدراسية</label>
+                        <label for="sub-study">المرحلة الدراسية*</label>
                         <select id="sub-study" required>
                             <option value="">-</option>
                         </select>
@@ -70,13 +70,13 @@
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label for="job-type">الموقف الوظيفي</label>
+                        <label for="job-type">الموقف الوظيفي*</label>
                         <select id="job-type" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
-                        <label for="sub-job">مشمول بالخدمة الجامعية؟</label>
+                        <label for="sub-job">مشمول بالخدمة الجامعية؟*</label>
                         <select id="sub-job" required>
                             <option value="">-</option>
                         </select>
@@ -85,13 +85,13 @@
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label for="acceptance-year">سنة القبول</label>
+                        <label for="acceptance-year">سنة القبول*</label>
                         <select id="acceptance-year" required>
                             <option value="">-</option>
                         </select>
                     </div>
                     <div class="field-group">
-                        <label for="suspension-year">سنة انهاء العلاقة</label>
+                        <label for="suspension-year">سنة انهاء العلاقة*</label>
                         <select id="suspension-year" required>
                             <option value="">-</option>
                         </select>
@@ -100,14 +100,14 @@
 
                 <div class="form-row">
                     <div class="field-group full-width">
-                        <label for="suspension-reason">سبب انهاء العلاقة</label>
+                        <label for="suspension-reason">سبب انهاء العلاقة*</label>
                         <textarea id="suspension-reason" rows="3" placeholder="ادخل سبب انهاء علاقة الطالب كما هو مذكور في الامر الجامعي" required></textarea>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="field-group">
-                        <label for="benefits">الطالب مستفيد من عودة سابقا؟</label>
+                        <label for="benefits">الطالب مستفيد من عودة سابقا؟*</label>
                         <select id="benefits" required>
                             <option value="">-</option>
                             <option value="no">كلا</option>
@@ -119,12 +119,16 @@
 
                 <div class="form-row">
                     <div class="field-group">
-                        <p class="text_label">السيرة الدراسية مع الاوليات</p>
+                        <p class="text_label">السيرة الدراسية مع الاوليات*</p>
                         <input type="file" id="file-1" required>
                     </div>
                     <div class="field-group">
-                        <p class="text_label">التعهد الخطي</p>
+                        <p class="text_label">التعهد الخطي*</p>
                         <input type="file" id="file-2" required>
+                    </div>
+                    <div class="field-group">
+                        <p class="text_label">عدم ممانعة</p>
+                        <input type="file" id="file-3">
                     </div>
                 </div>
 

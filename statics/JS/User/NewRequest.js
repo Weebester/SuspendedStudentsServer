@@ -21,6 +21,7 @@ const txtMsg = document.getElementById('message');
 
 const file1 = document.getElementById('file-1');
 const file2 = document.getElementById('file-2');
+const file3 = document.getElementById('file-3');
 const btnSubmit = document.getElementById('btn-submit');
 
 let formData = {}; // Global store for fetch data
@@ -92,6 +93,7 @@ form.addEventListener('submit', async (e) => {
     // Append the files
     if (file1.files[0]) formData.append("file_academic", file1.files[0]);
     if (file2.files[0]) formData.append("file_pledge", file2.files[0]);
+    if (file3.files[0]) formData.append("file_non_objection", file3.files[0]);
 
     try {
         // 4. Actually send the data

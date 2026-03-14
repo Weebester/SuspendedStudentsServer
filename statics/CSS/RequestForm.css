@@ -276,13 +276,11 @@ input[type="file"]::before {
     background: #1d4ed8;
 }
 
-
-
 .current-val {
     display: inline-block;
     font-size: 14px;
-    color: #443e72;
-    font-weight: 400;
+    color: #29559d;
+    font-weight: bold;
     margin-top: 2px;
 }
 

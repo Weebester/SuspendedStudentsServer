@@ -53,6 +53,14 @@ async def MainU(request: Request, request_id:int):
         payload = tokenCheck(token)
         req_data = await review_request(request_id) 
         
+        study_parts = req_data.get("study", "").split("-")
+        study_main = study_parts[0] if len(study_parts) > 0 else None
+        study_sub = study_parts[1] if len(study_parts) > 1 else None
+
+        job_parts = req_data.get("job_status", "").split("-")
+        job_main = job_parts[0] if len(job_parts) > 0 else None
+        job_sub = job_parts[1] if len(job_parts) > 1 else None
+
         return templates.TemplateResponse(
             request=request,
             name="User/RequestReview.html",
@@ -65,12 +73,14 @@ async def MainU(request: Request, request_id:int):
                 "birth_date": req_data.get("birth_date"),
                 "department": req_data.get("department"),
                 "speciality": req_data.get("speciality"),
-                "study": req_data.get("study"),
-                "job_status": req_data.get("job_status"),
-                "acception_year": req_data.get("acception_year"),
-                "suspension_year": req_data.get("suspension_year"),
+                "study": study_main,
+                "study_sub":study_sub,
+                "job_status": job_main,
+                "job_status_sub": job_sub,
+                "acception_year": f"{req_data.get("acception_year")}-{req_data.get("acception_year")+1}",
+                "suspension_year": f"{req_data.get("suspension_year")}-{req_data.get("suspension_year")}",
                 "suspension_reason": req_data.get("suspension_reason"),
-                "benefactor": req_data.get("benefactor"),
+                "benefactor": "كلا" if req_data.get("benefactor")==Flag.No else "نعم",
                 "has_non_objection_file": req_data.get("non_objection").value,
             },
         )
@@ -1059,7 +1069,7 @@ class RequestForm:
             "suspension_reason": suspension_reason,
             "job_status": job_status,
             "benefactor": benefactor,
-            "study": study
+            "study": study,
         }
         self.notes = notes
  
@@ -1069,7 +1079,8 @@ async def submit_request(
     request: Request,
     form: RequestForm = Depends(), 
     file_academic: UploadFile = File(...),
-    file_pledge: UploadFile = File(...)
+    file_pledge: UploadFile = File(...),
+    file_non_objection:UploadFile = File(None),
 ):
     
     token = request.cookies.get("Token")
@@ -1079,21 +1090,28 @@ async def submit_request(
     payload = tokenCheck(token) 
     
     form.data["college"] = payload.get("college_id")
+    if file_non_objection is not None:
+        form.data["non_objection"]= Flag.Yes
     new_record = await create_request(form.data)
     
     for f in [file_academic, file_pledge]:
         if not f.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
-    for file_obj, folder in [
-        (file_academic, "academic"), 
-        (file_pledge, "pledge")
-    ]:
-        filename = f"{new_record.id}.pdf"
-        full_path = os.path.join("statics", folder, filename)
+    try :
+        for file_obj, folder in [
+            (file_academic, "academic"), 
+            (file_pledge, "pledge"),
+            (file_non_objection, "non_objection")
+            ]:
+            filename = f"{new_record.id}.pdf"
+            full_path = os.path.join("statics", folder, filename)
     
-        with open(full_path, "wb") as buffer:
-            shutil.copyfileobj(file_obj.file, buffer)
+            with open(full_path, "wb") as buffer:
+                shutil.copyfileobj(file_obj.file, buffer)
+
+    except :
+        raise
 
     await create_attached_message(notes=form.notes, request_id=new_record.id)
 
@@ -1135,7 +1153,8 @@ async def update_request(
     request: Request,
     form: UpdateRequestForm = Depends(),
     file_academic: Optional[UploadFile] = File(None),
-    file_pledge: Optional[UploadFile] = File(None)
+    file_pledge: Optional[UploadFile] = File(None),
+    file_non_objection:UploadFile = File(None),
 ):
 
     token = request.cookies.get("Token")
@@ -1144,12 +1163,16 @@ async def update_request(
     
     payload= tokenCheck(token) 
 
+    if file_non_objection is not None:
+        form.data["non_objection"]= Flag.Yes
+
     await update_request_logic(request_id, form.data,payload.get("college_id"))
     
 
     files_to_process = [
         (file_academic, "academic"), 
-        (file_pledge, "pledge")
+        (file_pledge, "pledge"),
+        (file_non_objection, "non_objection")
     ]
 
     for file_obj, folder in files_to_process:
@@ -1157,16 +1180,42 @@ async def update_request(
 
             if not file_obj.filename.lower().endswith(".pdf"):
                 raise HTTPException(status_code=400, detail="Only PDF files allowed")
-
-            full_path = os.path.join("statics", folder, f"{request_id}.pdf")
+            try :
+                full_path = os.path.join("statics", folder, f"{request_id}.pdf")
             
-            with open(full_path, "wb") as buffer:
-                shutil.copyfileobj(file_obj.file, buffer)
+                with open(full_path, "wb") as buffer:
+                    shutil.copyfileobj(file_obj.file, buffer)
+            except:
+                raise
     
     if form.notes is not None:
         await create_attached_message(notes=form.notes, request_id=request_id)
 
 
+'''
+@app.post("/upload_non_objection/{request_id}")
+async def upload_non_objection(request:Request,request_id: int, file_non_objection: UploadFile = File(...)):
+
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    payload= tokenCheck(token) 
+
+    try :
+
+        filename = f"{request_id}.pdf"
+        full_path = os.path.join("statics", "non_objection", filename)
+
+        with open(full_path, "wb") as buffer:
+            shutil.copyfileobj(file_non_objection.file, buffer)
+
+        await non_objection_add(request_id=request_id,college_id=payload.get("college_id"))
+    except :
+        raise
+
+    await create_attached_message(notes="تم اظافة/تحديث ملف عدم الممانعة", request_id=request_id)
+'''
 #####################################################################################################
 ############################################-Misc-###################################################
 #####################################################################################################
@@ -1272,6 +1321,6 @@ async def getStats(request: Request):
 
 
 if __name__ == "__main__":
-    for folder in ["academic", "pledge","non_objecton","rules"]:
+    for folder in ["academic", "pledge","non_objection","rules"]:
         os.makedirs(os.path.join("statics", folder), exist_ok=True)
     uvicorn.run("API:app", host="0.0.0.0", port=8000, reload=True)

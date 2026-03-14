@@ -558,6 +558,21 @@ async def review_request(request_id:int):
         raise HTTPException(status_code=404, detail="No data found")
     return request
 
+
+async def non_objection_add(request_id:int,college_id):
+    request=await Requests.get(id=request_id)
+    if not request:
+        raise HTTPException(status_code=404, detail="No data found")
+    
+    if college_id> 0 :
+        if college_id > 1 and college_id != request.college:
+            raise HTTPException(status_code=403, detail="Not allowed")
+        
+    request.non_objection=Flag.Yes
+    await request.save()
+   
+
+
 #####################################################################################################
 ############################################Misc#####################################################
 #####################################################################################################
