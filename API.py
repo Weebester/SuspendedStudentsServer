@@ -157,6 +157,7 @@ class AdminPages(str, Enum):
     StatusOptions = "StatusOptions"
     EduYearOptions = "EduYearOptions"
     ReqYearOptions = "ReqYearOptions"
+    GuideLinesOptions="GuideLinesOptions"
 
 
 class UserPages(str, Enum):
