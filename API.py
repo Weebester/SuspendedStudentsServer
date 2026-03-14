@@ -43,16 +43,16 @@ async def root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
-@app.get("/User/reivew_request/{request_id}",response_class=HTMLResponse)
-async def MainU(request: Request, request_id:int):
+@app.get("/User/reivew_request/{request_id}", response_class=HTMLResponse)
+async def ReivewRequestU(request: Request, request_id: int):
     token = request.cookies.get("Token")
     if not token:
         return RedirectResponse(url="/", status_code=302)
 
     try:
         payload = tokenCheck(token)
-        req_data = await review_request(request_id) 
-        
+        req_data = await review_request(request_id)
+
         study_parts = req_data.get("study", "").split("-")
         study_main = study_parts[0] if len(study_parts) > 0 else None
         study_sub = study_parts[1] if len(study_parts) > 1 else None
@@ -67,31 +67,87 @@ async def MainU(request: Request, request_id:int):
             context={
                 "role": payload.get("college"),
                 "request_id": request_id,
-                "request_status": req_data.get("request_status").value, 
+                "request_status": req_data.get("request_status").value,
                 "student_name": req_data.get("student_name"),
                 "status": req_data.get("status"),
                 "birth_date": req_data.get("birth_date"),
                 "department": req_data.get("department"),
                 "speciality": req_data.get("speciality"),
                 "study": study_main,
-                "study_sub":study_sub,
+                "study_sub": study_sub,
                 "job_status": job_main,
                 "job_status_sub": job_sub,
                 "acception_year": f"{req_data.get("acception_year")}-{req_data.get("acception_year")+1}",
                 "suspension_year": f"{req_data.get("suspension_year")}-{req_data.get("suspension_year")}",
                 "suspension_reason": req_data.get("suspension_reason"),
-                "benefactor": "كلا" if req_data.get("benefactor")==Flag.No else "نعم",
+                "benefactor": "كلا" if req_data.get("benefactor") == Flag.No else "نعم",
                 "has_non_objection_file": req_data.get("non_objection").value,
             },
         )
 
     except HTTPException:
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie(key="Token", path="/")
+        return response
+
+
+@app.get("/Admin/reivew_request/{request_id}", response_class=HTMLResponse)
+async def ReviewRequestA(request: Request, request_id: int):
+    token = request.cookies.get("Token")
+    if not token:
         return RedirectResponse(url="/", status_code=302)
 
+    try:
+        payload = tokenCheck(token)
+        if payload.get("college_id") > 1:
+            raise HTTPException (status_code=403 , detail="not allowed")
+        
+        req_data = await review_request(request_id)
+        College = await get_college_name(req_data.get("college"))
+        print(College.get("college"))
+
+        study_parts = req_data.get("study", "").split("-")
+        study_main = study_parts[0] if len(study_parts) > 0 else None
+        study_sub = study_parts[1] if len(study_parts) > 1 else None
+
+        job_parts = req_data.get("job_status", "").split("-")
+        job_main = job_parts[0] if len(job_parts) > 0 else None
+        job_sub = job_parts[1] if len(job_parts) > 1 else None
+
+        return templates.TemplateResponse(
+            request=request,
+            name="Admin/RequestReview.html",
+            context={
+                "role": payload.get("college"),
+                "college": College.get("college"),
+                "admin": True if payload.get("college_id") == 0 else False,
+                "request_id": request_id,
+                "request_status": req_data.get("request_status").value,
+                "student_name": req_data.get("student_name"),
+                "status": req_data.get("status"),
+                "birth_date": req_data.get("birth_date"),
+                "department": req_data.get("department"),
+                "speciality": req_data.get("speciality"),
+                "study": study_main,
+                "study_sub": study_sub,
+                "job_status": job_main,
+                "job_status_sub": job_sub,
+                "acception_year": f"{req_data.get("acception_year")}-{req_data.get("acception_year")+1}",
+                "suspension_year": f"{req_data.get("suspension_year")}-{req_data.get("suspension_year")}",
+                "suspension_reason": req_data.get("suspension_reason"),
+                "benefactor": "كلا" if req_data.get("benefactor") == Flag.No else "نعم",
+                "has_non_objection_file": req_data.get("non_objection").value,
+            },
+        )
+
+    except HTTPException:
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie(key="Token", path="/")
+        return response
 
 
 class AdminPages(str, Enum):
-    Main = "Main" 
+    Main = "Main"
     Requests = "Requests"
     Accounts = "Accounts"
     CollegesOptions = "CollegesOptions"
@@ -101,28 +157,31 @@ class AdminPages(str, Enum):
     EduYearOptions = "EduYearOptions"
     ReqYearOptions = "ReqYearOptions"
 
+
 class UserPages(str, Enum):
-    Main = "Main" 
+    Main = "Main"
     Requests = "Requests"
     NewRequest = "NewRequest"
 
 
 @app.get("/Admin/{page}", response_class=HTMLResponse)
-async def MainA(page: AdminPages, request: Request): # Changed page: str to page: AdminPages
+async def MainA(
+    page: AdminPages, request: Request
+):  # Changed page: str to page: AdminPages
     token = request.cookies.get("Token")
     if not token:
         return RedirectResponse(url="/", status_code=302)
-    
+
     try:
         payload = tokenCheck(token)
     except HTTPException:
         response = RedirectResponse(url="/", status_code=302)
-        response.delete_cookie(key="Token", path="/") 
+        response.delete_cookie(key="Token", path="/")
         return response
 
     if payload.get("college_id") > 1:
         response = RedirectResponse(url="/", status_code=302)
-        response.delete_cookie(key="Token", path="/") 
+        response.delete_cookie(key="Token", path="/")
         return response
 
     if payload.get("college_id") > 0 and page in [
@@ -135,7 +194,7 @@ async def MainA(page: AdminPages, request: Request): # Changed page: str to page
         AdminPages.ReqYearOptions,
     ]:
         response = RedirectResponse(url="/", status_code=302)
-        response.delete_cookie(key="Token", path="/") 
+        response.delete_cookie(key="Token", path="/")
         return response
 
     return templates.TemplateResponse(
@@ -143,7 +202,7 @@ async def MainA(page: AdminPages, request: Request): # Changed page: str to page
         name=f"Admin/{page.value}.html",
         context={
             "role": payload.get("college"),
-            "sub_admin": False if payload.get("college_id") == 0 else True,
+            "admin": True if payload.get("college_id") == 0 else False,
         },
     )
 
@@ -161,6 +220,7 @@ async def MainU(request: Request, page: UserPages):
             name=f"User/{page.value}.html",
             context={
                 "role": payload.get("college"),
+                "enabled":True if payload.get("enabled")=="yes" else False,
             },
         )
 
@@ -197,10 +257,11 @@ async def login(body: LoginRequest, response: Response):
     except HTTPException:
         raise
 
+
 @app.get("/logout")
 async def logout():
     response = RedirectResponse(url="/", status_code=302)
-    response.delete_cookie(key="Token", path="/") 
+    response.delete_cookie(key="Token", path="/")
     return response
 
 
@@ -282,7 +343,7 @@ async def toggleUser(account_id: int, request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
+
     payload = tokenCheck(token)
 
     if payload.get("college_id") > 0:
@@ -321,7 +382,7 @@ async def getCollegesAdmin(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
+
     payload = tokenCheck(token)
 
     if payload.get("college_id") > 1:
@@ -777,7 +838,7 @@ async def getStatusAdmin(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") > 0:
+    if payload.get("college_id") > 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -817,9 +878,7 @@ async def deleteJobStatusAdmin(status_id: int, request: Request, body: Password)
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
-        await delete_status_admin(
-            status_id=status_id, password=body.password
-        )
+        await delete_status_admin(status_id=status_id, password=body.password)
     except HTTPException:
         raise
 
@@ -892,9 +951,7 @@ async def deleteEduYearsAdmin(year_id: int, request: Request, body: Password):
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
-        await delete_edu_year_admin(
-            year_id=year_id, password=body.password
-        )
+        await delete_edu_year_admin(year_id=year_id, password=body.password)
     except HTTPException:
         raise
 
@@ -914,6 +971,7 @@ async def toggleEduYearsAdmin(year_id: int, request: Request):
     except HTTPException:
         raise
 
+
 #####################################################################################################
 ###########################################-Rew-Years-ops-#################################################
 #####################################################################################################
@@ -926,7 +984,7 @@ async def getReqYearsAdmin(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") > 0:
+    if payload.get("college_id") > 1:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -966,9 +1024,7 @@ async def deleteReqYearsAdmin(year_id: int, request: Request, body: Password):
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
-        await delete_req_year_admin(
-            year_id=year_id, password=body.password
-        )
+        await delete_req_year_admin(year_id=year_id, password=body.password)
     except HTTPException:
         raise
 
@@ -993,8 +1049,9 @@ async def toggleReqYearsAdmin(year_id: int, request: Request):
 #########################################-Requests-##################################################
 #####################################################################################################
 
+
 @app.get("/get_notes/{request_id}")
-async def getNotes(request:Request,request_id:int):
+async def getNotes(request: Request, request_id: int):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -1029,19 +1086,18 @@ async def getRequestsAdmin(
 
 
 @app.get("/feed_form")
-async def FeedForm(request: Request ,college_id:Optional[int]=None):
+async def FeedForm(request: Request, college_id: Optional[int] = None):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
     try:
-        if payload.get("college_id") <2:
+        if payload.get("college_id") < 2:
             return await feed_form(college_id)
-        else :   
+        else:
             return await feed_form(payload.get("college_id"))
     except HTTPException:
         raise
-
 
 
 class RequestForm:
@@ -1072,45 +1128,47 @@ class RequestForm:
             "study": study,
         }
         self.notes = notes
- 
+
 
 @app.post("/submit_request")
 async def submit_request(
     request: Request,
-    form: RequestForm = Depends(), 
+    form: RequestForm = Depends(),
     file_academic: UploadFile = File(...),
     file_pledge: UploadFile = File(...),
-    file_non_objection:UploadFile = File(None),
+    file_non_objection: UploadFile = File(None),
 ):
-    
+
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    payload = tokenCheck(token) 
-    
+
+    payload = tokenCheck(token)
+    if payload.get("enabled") =="no":
+        raise HTTPException(status_code=403, detail="Forbbiden")
+
     form.data["college"] = payload.get("college_id")
     if file_non_objection is not None:
-        form.data["non_objection"]= Flag.Yes
+        form.data["non_objection"] = Flag.Yes
     new_record = await create_request(form.data)
-    
+
     for f in [file_academic, file_pledge]:
         if not f.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
-    try :
+    try:
         for file_obj, folder in [
-            (file_academic, "academic"), 
+            (file_academic, "academic"),
             (file_pledge, "pledge"),
-            (file_non_objection, "non_objection")
-            ]:
+            (file_non_objection, "non_objection"),
+        ]:
             filename = f"{new_record.id}.pdf"
             full_path = os.path.join("statics", folder, filename)
-    
+
             with open(full_path, "wb") as buffer:
                 shutil.copyfileobj(file_obj.file, buffer)
 
-    except :
+    except:
         raise
 
     await create_attached_message(notes=form.notes, request_id=new_record.id)
@@ -1136,15 +1194,15 @@ class UpdateRequestForm:
             "department": department,
             "speciality": speciality,
             "birth_date": birth_date,
-            "acception_year": acception_year ,
+            "acception_year": acception_year,
             "suspension_year": suspension_year,
             "suspension_reason": suspension_reason,
             "job_status": job_status,
             "benefactor": benefactor,
-            "study": study
+            "study": study,
         }
         self.data = {k: v for k, v in self.raw_data.items() if v is not None}
-        self.notes = notes     
+        self.notes = notes
 
 
 @app.post("/update_request/{request_id}")
@@ -1154,25 +1212,24 @@ async def update_request(
     form: UpdateRequestForm = Depends(),
     file_academic: Optional[UploadFile] = File(None),
     file_pledge: Optional[UploadFile] = File(None),
-    file_non_objection:UploadFile = File(None),
+    file_non_objection: UploadFile = File(None),
 ):
 
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    payload= tokenCheck(token) 
+
+    payload = tokenCheck(token)
 
     if file_non_objection is not None:
-        form.data["non_objection"]= Flag.Yes
+        form.data["non_objection"] = Flag.Yes
 
-    await update_request_logic(request_id, form.data,payload.get("college_id"))
-    
+    await update_request_logic(request_id, form.data, payload.get("college_id"))
 
     files_to_process = [
-        (file_academic, "academic"), 
+        (file_academic, "academic"),
         (file_pledge, "pledge"),
-        (file_non_objection, "non_objection")
+        (file_non_objection, "non_objection"),
     ]
 
     for file_obj, folder in files_to_process:
@@ -1180,19 +1237,19 @@ async def update_request(
 
             if not file_obj.filename.lower().endswith(".pdf"):
                 raise HTTPException(status_code=400, detail="Only PDF files allowed")
-            try :
+            try:
                 full_path = os.path.join("statics", folder, f"{request_id}.pdf")
-            
+
                 with open(full_path, "wb") as buffer:
                     shutil.copyfileobj(file_obj.file, buffer)
             except:
                 raise
-    
+
     if form.notes is not None:
         await create_attached_message(notes=form.notes, request_id=request_id)
 
 
-'''
+
 @app.post("/upload_non_objection/{request_id}")
 async def upload_non_objection(request:Request,request_id: int, file_non_objection: UploadFile = File(...)):
 
@@ -1215,7 +1272,8 @@ async def upload_non_objection(request:Request,request_id: int, file_non_objecti
         raise
 
     await create_attached_message(notes="تم اظافة/تحديث ملف عدم الممانعة", request_id=request_id)
-'''
+
+    
 #####################################################################################################
 ############################################-Misc-###################################################
 #####################################################################################################
@@ -1257,10 +1315,13 @@ async def downloadExcel(
     if "request_year" in df.columns:
         df["request_year"] = df["request_year"].apply(lambda y: f"{y}-{y+1}")
 
-    benefactor_map = {Flag.Yes: "نعم", Flag.No: "لا"}
+    flag_map = {Flag.Yes: "نعم", Flag.No: "لا"}
 
     if "benefactor" in df.columns:
-        df["benefactor"] = df["benefactor"].apply(lambda x: benefactor_map.get(x, x))
+        df["benefactor"] = df["benefactor"].apply(lambda x: flag_map.get(x, x))
+
+    if "non_objection" in df.columns:
+        df["non_objection" ] = df["non_objection" ].apply(lambda x: flag_map.get(x, x))
 
     RequestStatus_map = {
         RequestStatus.PENDING: "قيد الانتظار",
@@ -1284,6 +1345,7 @@ async def downloadExcel(
         "suspension_year": "سنة الترقين",
         "suspension_reason": "سبب لبترقين",
         "job_status": "الموقف الوظيفي",
+        "non_objection" : "عدم ممانعة",
         "request_status": "حالة الطلب",
         "status": "موقف الطلب",
         "benefactor": "مستفيد سابقا",
@@ -1312,7 +1374,7 @@ async def getStats(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
+
     payload = tokenCheck(token)
 
     if payload.get("college_id") < 2:
@@ -1321,6 +1383,6 @@ async def getStats(request: Request):
 
 
 if __name__ == "__main__":
-    for folder in ["academic", "pledge","non_objection","rules"]:
+    for folder in ["academic", "pledge", "non_objection", "rules"]:
         os.makedirs(os.path.join("statics", folder), exist_ok=True)
     uvicorn.run("API:app", host="0.0.0.0", port=8000, reload=True)

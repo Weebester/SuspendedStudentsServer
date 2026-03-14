@@ -8,14 +8,13 @@ const userConfirmPass= document.getElementById('confirmPasswordInput');
 
 let activeAccountId = null;
 
-// Procedural Start
+
 const init =async () => {
     try {
-        // 1. Populate Colleges (No "Any")
+
         const colleges = await fetch(`${API_BASE}/get_colleges_admin`).then(r => r.json());
         colleges.forEach(c => collegeSelect.add(new Option(c.college, c.id)));
 
-        // 2. Fetch Initial Account List
         await fetchAccounts();
     } catch (err) {
         console.error("Init Error:", err);

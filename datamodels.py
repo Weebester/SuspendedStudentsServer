@@ -194,7 +194,8 @@ class Excel(Model):
     suspension_reason = fields.CharField(max_length=512)
 
     job_status = fields.CharField(max_length=100)
-    request_status = fields.CharEnumField(RequestStatus, default=RequestStatus.PENDING)
+    non_objection = fields.CharEnumField(Flag)
+    request_status = fields.CharEnumField(RequestStatus)
     status = fields.CharField(max_length=100, default="~")
 
     benefactor = fields.CharEnumField(Flag)

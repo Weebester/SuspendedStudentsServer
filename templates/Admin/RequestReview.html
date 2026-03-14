@@ -7,10 +7,10 @@
     <link rel="icon" href="/static/icon.ico" type="image/x-icon">
     <title>الطلبة المرقنين</title>
     <link rel="stylesheet" href="/static/CSS/RequestForm.css">
-    <script src="/static/JS/User/RequestReview.js" defer></script>
+    <script src="/static/JS/Admin/RequestReview.js" defer></script>
 </head>
 
-<body data-request-id="{{ request_id }}" request_status="{{ request_status }}">
+<body data-request-id="{{ request_id }}" admin="{{ admin }}">
 
     <div class="content">
         <div class="container">
@@ -57,7 +57,7 @@
                     <div class="form-row">
                         <div class="field-group">
                             <p class="text_label">الكلية<br><Span class="current-val"> </Span></p>
-                            <span class="fixed-label">{{ role }}</span>
+                            <span class="fixed-label">{{ college }}</span>
                         </div>
                         <div class="field-group">
                             <label for="department">القسم/الفرع<br><span class="current-val"> {{ department
@@ -174,18 +174,33 @@
                         </div>
                     </div>
 
-                    <div class="form-row" id="msgBox">
-                        <div class="field-group full-width">
-                            <label for="message">الملاحظات الجديدة</label>
-                            <textarea id="message" rows="4" required
-                                placeholder="أدخل ملاحظات التعديل هنا..."></textarea>
-                        </div>
-                    </div>
-
                     <div class="form-actions" id="submit-container">
                         <button type="submit" id="btn-submit" class="action-btn">اعادة ارسال</button>
                     </div>
                 </form>
+            </section>
+
+            <section class="extras-container" id="notes-history-section">
+                <header class="form-header">
+                    <h3>خييارات المشرف</h3>
+                </header>
+                <div class="admin-bar">
+
+                    <div class="status-change">
+                        <label>موقف الطلب</label>
+                        <select id="status">
+                        </select>
+                    </div>
+                    <button id="changeBtn">تغير الموقف</button>
+                    <button id="acceptBtn">موافقة</button>
+                    <button id="denyBtn">رفض</button>
+                </div>
+                <div class="form-row" id="msgBox">
+                        <div class="field-group full-width">
+                            <label for="message">الملاحظات</label>
+                            <textarea id="message" rows="4" placeholder="أدخل ملاحظات..."></textarea>
+                        </div>
+                    </div>
             </section>
 
             <section class="extras-container">
@@ -204,19 +219,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <!-- 
-                <div class="form-row">
-                    <p class="text_label">رفع ملف عدم ممانعة (مستقل)</p>
-                    <div class="field-group full-width">
-                        <input type="file" id="non-objection-file">
 
-                    </div>
-                </div>
-                <div class="form-actions" id="submit-container">
-                    <button type="button" onclick="uploadNonObjection()" id="btn-upload" class="action-btn">رفع
-                        الملف</button>
-                </div>
-                -->
             </section>
 
             <section class="extras-container" id="notes-history-section">
@@ -233,8 +236,22 @@
             <h1>{{ role }}</h1>
         </div>
         <ul class="NavOps">
-            <li><a href="/User/Main">الرئيسية</a></li>
-            <li><a href="/User/Requests">الطلبات</a></li>
+            <li><a href="/Admin/Main">الرئيسية</a></li>
+            <li><a href="/Admin/Requests">الطلبات</a></li>
+            {% if admin %}
+            <li><a href="/Admin/Accounts">الحسابات</a></li>
+            <div class="OptionsContainer">
+                <button class="OptionsToggle" onclick="toggleOptions()">▼ الاعدادات</button>
+                <div id="OptionsList" class="SubMenu">
+                    <a href="/Admin/CollegesOptions">الكلية-القسم</a>
+                    <a href="/Admin/StudyOptions">المرحلة الدراسية</a>
+                    <a href="/Admin/JobOptions">الحالة الوظيفية</a>
+                    <a href="/Admin/StatusOptions">موقف الطلب</a>
+                    <a href="/Admin/EduYearOptions">سنة دراسية</a>
+                    <a href="/Admin/ReqYearOptions">سنة الطلب</a>
+                </div>
+            </div>
+            {% endif %}
             <li><a href="/logout">تسجيل الخروج</a></li>
         </ul>
     </div>

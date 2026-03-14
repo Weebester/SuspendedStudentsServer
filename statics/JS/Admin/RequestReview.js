@@ -1,7 +1,7 @@
 // --- Constants & Global State ---
 const API_BASE = 'http://192.168.0.113:8000';
 const form = document.getElementById('student-form');
-const isEditable = document.body.getAttribute('request_status').toLowerCase() === 'denied';
+const isEditable = document.body.getAttribute('admin').toLowerCase() === 'true';
 const requestId = document.body.getAttribute('data-request-id');
 
 // Selectors
@@ -13,14 +13,17 @@ const selSubJob = document.getElementById('sub-job');
 const selAccYear = document.getElementById('acceptance-year');
 const selSusYear = document.getElementById('suspension-year');
 const selBenefits = document.getElementById('benefits');
+const selStatus = document.getElementById('status');
+
+
 const inputName = document.getElementById('student-name');
 const inputBirth = document.getElementById('birth-date');
 const inputSpec = document.getElementById('speciality');
 const txtReason = document.getElementById('suspension-reason');
 const txtMsg = document.getElementById('message');
-const msgBox = document.getElementById('msgBox')
-const FileBox = document.getElementById('filesBox')
 
+const FileBox = document.getElementById('filesBox')
+const msgBox = document.getElementById('msgBox')
 
 const file1 = document.getElementById('file-1');
 const file2 = document.getElementById('file-2');
@@ -40,8 +43,6 @@ async function init() {
         toggleCont.classList.add('hidden');
 
         submitCont.classList.add('hidden');
-
-        msgBox.classList.add('hidden')
 
         FileBox.classList.add('hidden')
 
@@ -64,37 +65,20 @@ async function init() {
         });
     }
 
+    feedStatusSelector();
     fetchNotes();
 }
 
-/*
-const fileInput = document.getElementById('non-objection-file');
-const noteInput = document.getElementById('non-objection-note');
-
-async function uploadNonObjection() {
-
-    if (!fileInput.files[0]) {
-        alert("يرجى اختيار ملف أولاً");
-        return;
-    }
-
-    const fData = new FormData();
-    fData.append("file_non_objection", fileInput.files[0]);
-
+async function feedStatusSelector() {
     try {
-        const response = await fetch(`${API_BASE}/upload_non_objection/${requestId}`, {
-            method: "POST",
-            body: fData
-        });
-        if (response.ok) {
-            alert("تم رفع ملف عدم الممانعة بنجاح");
-            location.reload();
-        }
+        const statusies = await fetch(`${API_BASE}/get_status_admin`).then(s => s.json());
+        statusies.forEach(s => selStatus.add(new Option(s.status, s.status)));
+
+
     } catch (e) {
-        console.error("Upload failed", e);
+        if (notesList) notesList.innerText = "فشل تحميل سجل الملاحظات";
     }
 }
-*/
 
 async function fetchNotes() {
     try {
@@ -181,14 +165,12 @@ form.addEventListener('submit', async (e) => {
     if (!file2.disabled && file2.files[0]) fData.append("file_pledge", file2.files[0]);
     if (!file3.disabled && file3.files[0]) fData.append("file_non_objection", file3.files[0]);
 
-    fData.append("notes", txtMsg.value);
-
     try {
         const response = await fetch(`${API_BASE}/update_request/${requestId}`, {
             method: "POST",
             body: fData,
         });
-        if (response.ok) window.location.replace("/User/Requests");
+        if (response.ok) window.location.replace("/Admin/Requests");
     } catch (err) { alert("فشل الاتصال"); }
 });
 

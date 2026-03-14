@@ -108,6 +108,8 @@ async def toggle_all_users(enable: bool):
 ############################################-Colleges-OPs-###########################################
 #####################################################################################################
 
+async def get_college_name(college_id):
+    return await Colleges.get(id=college_id).values("college")
 
 async def get_colleges_admin():
     List = await Colleges.filter(id__gt=0).values("id", "college")
@@ -448,7 +450,6 @@ async def get_messages(request_id):
 async def get_requests(status: str = None, year: int = None, college_id: int = None):
     result = RequestsShort.all()
     if status is not None:
-        print(status)
         result = result.filter(request_status=status)
 
     if college_id is not None:
@@ -457,8 +458,6 @@ async def get_requests(status: str = None, year: int = None, college_id: int = N
     if not year:
         current_year = await RequestYear.get(current=Flag.Yes)
         year = current_year.start_year
-
-    print(year, status, college_id)
 
     result = result.filter(request_year=year)
 
@@ -475,7 +474,6 @@ async def feed_form(college_id: int):
         job_subs, 
         studies, 
         study_subs, 
-        stats
     ) = await asyncio.gather(
         Departments.filter(college=college_id, enabled=Flag.Yes).values_list("department", flat=True),
         EducationalYear.filter(enabled=Flag.Yes).values_list("start_year", flat=True),
@@ -483,7 +481,6 @@ async def feed_form(college_id: int):
         JobStatusSub.filter(enabled=Flag.Yes).values("status", "sub"),
         Study.filter(enabled=Flag.Yes).values("id", "study"),
         StudySub.filter(enabled=Flag.Yes).values_list("study", "sub"),
-        Status.filter(enabled=Flag.Yes).values_list("status", flat=True)
     )
 
     def nest_data(parents, subs, parent_key, sub_key):
@@ -500,7 +497,6 @@ async def feed_form(college_id: int):
     return {
         "departments": list(depts),
         "years": list(yrs),
-        "status": list(stats),
         "study": nest_data(studies, study_subs, "study", "sub"),
         "job": nest_data(jobs, job_subs, "status", "sub")
     }

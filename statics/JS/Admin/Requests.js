@@ -114,7 +114,7 @@ function renderTickets(data) {
                         </div>
                     </div>
                 </div>
-                <button class="more-btn" onclick="window.location.href='/details/${ticket.id}'">
+                <button class="more-btn" onclick="window.location.href='/Admin/reivew_request/${ticket.id}'">
                     عرض التفاصيل الشاملة
                 </button>
             </div>

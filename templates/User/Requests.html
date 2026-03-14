@@ -16,8 +16,9 @@
     <div class="content">
         <div class="dashboard-container">
             <div class="filter-bar">
-                
+                {% if enabled %}
                 <button class="download-btn" onclick="window.location.href='/User/NewRequest'">جديد</button>
+                {% endif %}
                 <span class="emptybox"></span>
                 <button class="status-btn active" data-status="All">الكل</button>
                 <button class="status-btn" data-status="Pending">قيد الانتظار</button>

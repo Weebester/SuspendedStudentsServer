@@ -36,10 +36,8 @@
         <ul class="NavOps">
             <li><a href="/Admin/Main">الرئيسية</a></li>
             <li><a href="/Admin/Requests">الطلبات</a></li>
-            {% if not sub_admin %}
+            {% if admin %}
             <li><a href="/Admin/Accounts">الحسابات</a></li>
-            {% endif %}
-            {% if not sub_admin %}
             <div class="OptionsContainer">
                 <button class="OptionsToggle" onclick="toggleOptions()">▼ الاعدادات</button>
                 <div id="OptionsList" class="SubMenu">
