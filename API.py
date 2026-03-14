@@ -158,11 +158,13 @@ class AdminPages(str, Enum):
     EduYearOptions = "EduYearOptions"
     ReqYearOptions = "ReqYearOptions"
     GuideLinesOptions = "GuideLinesOptions"
+    GuideLines = "GuideLines"
 
 
 class UserPages(str, Enum):
     Main = "Main"
     Requests = "Requests"
+    GuideLines = "GuideLines"
     NewRequest = "NewRequest"
 
 
@@ -194,6 +196,7 @@ async def MainA(
         AdminPages.StatusOptions,
         AdminPages.EduYearOptions,
         AdminPages.ReqYearOptions,
+        AdminPages.GuideLinesOptions,
     ]:
         response = RedirectResponse(url="/", status_code=302)
         response.delete_cookie(key="Token", path="/")
@@ -1359,10 +1362,7 @@ async def grtPDFs(request: Request):
     token = request.cookies.get("Token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    payload = tokenCheck(token)
-
-    if payload.get("college_id") != 0:
-        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+    tokenCheck(token)
 
     try:
         return await get_rules()
