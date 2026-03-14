@@ -399,7 +399,7 @@ input[type="file"]::before {
     align-items: flex-end;
 }
 
-.content .status-change {
+.content .input-group {
     flex: 1;
     min-width: 140px;
     display: flex;
@@ -407,15 +407,15 @@ input[type="file"]::before {
     gap: 6px;
 }
 
-.content .status-change label {
+.content .input-group label {
     font-size: 15px;
     font-weight: bold;
     color: #666;
     text-transform: uppercase;
 }
 
-.content .status-change input,
-.content .status-change select {
+.content .input-group input,
+.content .input-group select {
     width: 100%;
     padding: 10px 15px;
     font-size: 16px;
@@ -428,9 +428,9 @@ input[type="file"]::before {
 
 
 
-#changeBtn,
-#acceptBtn,
-#denyBtn {
+.changeBtn,
+.acceptBtn,
+.denyBtn {
     height: 41px;
     padding: 0 24px;
     font-size: 16px;
@@ -441,35 +441,113 @@ input[type="file"]::before {
     transition: filter 0.2s ease;
 }
 
-#changeBtn:hover ,
-#acceptBtn:hover ,
-#denyBtn:hover {
+.changeBtn:hover ,
+.acceptBtn:hover ,
+.denyBtn:hover {
     filter: brightness(90%);
     cursor: pointer;
 }
 
-#changeBtn:active ,
-#acceptBtn:active ,
-#denyBtn:active {
+.changeBtn:active ,
+.acceptBtn:active ,
+.denyBtn:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;
 }
 
-#changeBtn {
+.changeBtn {
     background: #007bff;
     color: white;
 }
 
-#acceptBtn {
+.acceptBtn {
     background: #57ce67;
     color: white;
 }
 
-#denyBtn {
+.denyBtn {
     background: #d63a17;
     color: white;
 }
 
+/* --- Modal Styling --- */
+.content .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.content .modal-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 380px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: modalFadeIn 0.3s ease-out;
+}
+ 
+/* Container for modal buttons */
+.content .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Specific Style for Modal Cancel */
+.content .btn-modal-cancel {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background-color: #f3f4f6; /* Light gray */
+    color: #4b5563;           /* Gray text */
+    transition: background-color 0.2s;
+}
+
+.content .btn-modal-cancel:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+/* Specific Style for Modal Confirm Delete */
+.content .btn-modal-confirm {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid #fecaca;
+    background-color: #fee2e2; /* Soft red */
+    color: #dc2626;           /* Danger red */
+    transition: all 0.2s ease;
+}
+
+.content .btn-modal-confirm:hover {
+    background-color: #dc2626; /* Solid red */
+    color: white;
+    border-color: #b91c1c;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* Click feedback for both */
+.content .btn-modal-cancel:active, 
+.content .btn-modal-confirm:active {
+    transform: scale(0.97);
+}
 
 .hidden {
     display: none;

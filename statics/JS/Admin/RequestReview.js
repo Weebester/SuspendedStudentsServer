@@ -34,6 +34,14 @@ const notesList = document.getElementById('notes-list');
 
 const toggleCont = document.querySelector('.edit-toggle-container');
 const submitCont = document.getElementById('submit-container');
+const deleteCont = document.getElementById('delete-container')
+
+function toggleOptions() {
+    const list = document.getElementById("OptionsList");
+    if (!list) return;
+    list.style.display = (list.style.display === "block") ? "none" : "block";
+}
+
 
 let formData = {};
 
@@ -46,6 +54,8 @@ async function init() {
         submitCont.classList.add('hidden');
 
         FileBox.classList.add('hidden')
+
+        deleteCont.classList.add('hidden')
 
         document.querySelectorAll('.field-group').forEach(group => {
             if (group.querySelector('.current-val')) {
@@ -90,7 +100,7 @@ async function fetchNotes() {
 
             notesList.innerHTML = notes.length
                 ? notes.map(n => `
-                    <div class="note-item ${n.state === 'yes' ? 'state-yes' : (n.state === 'no' ? 'state-no' : 'state-null')}">
+                    <div class="note-item ${n.state === 'Accepted' ? 'state-yes' : (n.state === 'Denied' ? 'state-no' : 'state-null')}">
                         <span class="note-msg">${n.messege}</span>
                         <span class="note-time">${n.date_time}</span>
                         </div>`).join('')
@@ -174,6 +184,113 @@ form.addEventListener('submit', async (e) => {
         if (response.ok) window.location.replace("/Admin/Requests");
     } catch (err) { alert("فشل الاتصال"); }
 });
+
+
+async function acceptDenyRequest(state) {
+    try {
+
+        if (txtMsg.value === '')
+            alert("enter a note")
+        else {
+            const response = await fetch(`${API_BASE}/accept_deny/${requestId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    state: state,
+                    note: txtMsg.value
+                })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                const error = await response.json();
+                alert(error.detail || "Error occurred");
+            }
+        }
+    } catch (e) {
+        console.error("Request failed", e);
+    }
+}
+
+async function updateStatus() {
+    try {
+
+        if (txtMsg.value === '')
+            alert("enter a note")
+
+        else {
+            const response = await fetch(`${API_BASE}/change_status/${requestId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    new_status: selStatus.value,
+                    note: txtMsg.value
+                })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                const error = await response.json();
+                alert(error.detail || "Error occurred");
+            }
+        }
+    } catch (e) {
+        console.error("Request failed", e);
+    }
+}
+
+
+// --- DELETE ---
+
+
+const deletePass = document.getElementById('deleteConfirmPass')
+const deletePassConfirm = document.getElementById('deleteConfirmCheck')
+const passwordModal = document.getElementById('passwordModal')
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn')
+
+
+function openDeleteModal() {
+
+
+    deletePass.value = '';
+    deletePassConfirm.value = '';
+    passwordModal.style.display = 'flex';
+}
+
+function closeModal() {
+    passwordModal.style.display = 'none';
+}
+
+confirmDeleteBtn.onclick = async () => {
+    const pass = deletePass.value;
+    const conf = deletePassConfirm.value;
+
+
+    if (!pass || pass !== conf) return alert("Passwords must match and cannot be empty.");
+
+    const response = await fetch(`${API_BASE}/delete_request/${requestId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass })
+    });
+
+    if (response.ok) {
+        closeModal();
+        window.location.replace("/Admin/Requests");
+
+    } else if (response.status === 401) {
+        window.location.href = `${API_BASE}/`
+    } else {
+
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Failed";
+
+        alert("Error: " + errorMessage);
+    }
+};
 
 
 init();

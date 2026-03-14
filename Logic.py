@@ -512,8 +512,11 @@ async def feed_form(college_id: int):
     }
 
 
-async def create_attached_message(notes: str, request_id: int):
-    await AttachedMessages.create(messege=notes, request=request_id)
+async def create_attached_message(notes: str, request_id: int,state:str=None):
+    if state is None:
+        await AttachedMessages.create(messege=notes, request=request_id)
+    else :
+        await AttachedMessages.create(messege=notes, request=request_id,state=state)
 
 
 async def create_request(params: dict):
@@ -579,6 +582,36 @@ async def non_objection_add(request_id: int, college_id):
     request.non_objection = Flag.Yes
     await request.save()
 
+
+async def accept_deny_request(request_id:int,state:str):
+    request = await Requests.get(id=request_id)
+    if not request:
+        raise HTTPException(status_code=404, detail="No data found")
+    
+    request.request_status=state
+
+    await request.save()
+
+
+async def change_request_status(request_id:int,status:str):
+    request = await Requests.get(id=request_id)
+    if not request:
+        raise HTTPException(status_code=404, detail="No data found")
+    
+    request.status=status
+
+    await request.save()
+
+
+async def delete_request(request_id:int, password: str):
+    user = await Users.get(id=0)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    request = await Requests.get(id=request_id)
+    if request:
+        await request.delete()
+    else:
+        raise HTTPException(status_code=404, detail="no data found")
 
 #####################################################################################################
 ############################################Misc#####################################################
