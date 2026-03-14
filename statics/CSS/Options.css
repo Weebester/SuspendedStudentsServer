@@ -373,3 +373,35 @@ body {
     border-color: #0369a1;
     box-shadow: 0 4px 12px rgba(3, 105, 161, 0.2);
 }
+
+/* Hide the default browser styling but keep it functional */
+input[type="file"] {
+    background: #f9f9f9;
+    border: 1px dashed grey; /* Dashed looks better for uploads */
+    padding: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-radius: 12px; /* Matches your theme */
+    transition: all 0.2s;
+    position: relative;
+}
+
+/* Use the ::file-selector-button pseudo-element to hide or restyle the "lame" part */
+input[type="file"]::file-selector-button {
+    display: none; /* Removes the "Choose File" button entirely */
+}
+
+input[type="file"]:hover {
+    background-color: #f0f0f0;
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+/* Optional: Add a "text" hint before the file name appears */
+input[type="file"]::before {
+    content: 'Click to upload file';
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}

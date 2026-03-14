@@ -617,6 +617,25 @@ async def delete_request(request_id:int, password: str):
 ############################################Misc#####################################################
 #####################################################################################################
 
+async def get_rules():
+    return await Rules.all().values_list("name", flat=True)
+
+async def create_rules(name:str):
+    file= await Rules.get_or_none(name=name)
+    if file:
+        raise HTTPException(status_code=400, detail="file already exists")
+    await Rules.create(name=name)
+
+
+async def delete_rules(name: str, password: str):
+    user = await Users.get(id=0)
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    file= await Rules.get(name=name)
+    if file:
+        await file.delete()
+    else:
+        raise HTTPException(status_code=404, detail="file not found")
 
 async def get_data_for_excel(
     year: int = None, college_id: str = None, status: str = None

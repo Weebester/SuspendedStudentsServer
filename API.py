@@ -157,7 +157,7 @@ class AdminPages(str, Enum):
     StatusOptions = "StatusOptions"
     EduYearOptions = "EduYearOptions"
     ReqYearOptions = "ReqYearOptions"
-    GuideLinesOptions="GuideLinesOptions"
+    GuideLinesOptions = "GuideLinesOptions"
 
 
 class UserPages(str, Enum):
@@ -186,7 +186,7 @@ async def MainA(
         response.delete_cookie(key="Token", path="/")
         return response
 
-    if payload.get("college_id") !=0 and page in [
+    if payload.get("college_id") != 0 and page in [
         AdminPages.Accounts,
         AdminPages.CollegesOptions,
         AdminPages.StudyOptions,
@@ -274,7 +274,7 @@ async def getUsersList(request: Request, college_id: Optional[int] = None):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     try:
         return await get_users(college_id=college_id)
@@ -290,7 +290,7 @@ async def deleteUser(account_id: int, request: Request, body: Password):
 
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -313,7 +313,7 @@ async def addUser(body: AddUserRequest, request: Request):
 
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
     try:
         await add_user(
@@ -331,7 +331,7 @@ async def changePassword(account_id: int, request: Request, body: Password):
 
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -348,7 +348,7 @@ async def toggleUser(account_id: int, request: Request):
 
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -365,7 +365,7 @@ async def toggleAllUsers(request: Request, enable: bool):
 
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -407,7 +407,7 @@ async def addCollegeAdmin(request: Request, body: AddCollegeRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -423,7 +423,7 @@ async def deleteCollegeAdmin(college_id: int, request: Request, body: Password):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -443,7 +443,7 @@ async def renameCollegeAdmin(college_id: int, request: Request, body: Rename):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -464,7 +464,7 @@ async def getDepartmentsAdmin(request: Request, college_id: Optional[int] = None
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -485,7 +485,7 @@ async def addDepartmentAdmin(request: Request, body: AddDepartmentRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -501,7 +501,7 @@ async def deleteDepartmentAdmin(department_id: int, request: Request, body: Pass
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -519,7 +519,7 @@ async def toggleDepartmentAdmin(department_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -540,7 +540,7 @@ async def getStudyAdmin(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -560,7 +560,7 @@ async def addStudyAdmin(request: Request, body: AddStudyRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -576,7 +576,7 @@ async def deleteStudyAdmin(study_id: int, request: Request, body: Password):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -592,7 +592,7 @@ async def toggleStudyAdmin(study_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -613,7 +613,7 @@ async def getSubStudyAdmin(request: Request, study_id: Optional[int] = None):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -634,7 +634,7 @@ async def addSubStudyAdmin(request: Request, body: AddSubStudyRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -650,7 +650,7 @@ async def deleteSubStudyAdmin(sub_study_id: int, request: Request, body: Passwor
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -666,7 +666,7 @@ async def toggleSubStudyAdmin(sub_study_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -687,7 +687,7 @@ async def getJobStatusAdmin(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -707,7 +707,7 @@ async def addJobStatusAdmin(request: Request, body: AddJobStatusRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -723,7 +723,7 @@ async def deleteJobStatusAdmin(job_status_id: int, request: Request, body: Passw
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -741,7 +741,7 @@ async def toggleJobStatusAdmin(job_status_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -762,7 +762,7 @@ async def getSubJobStatusAdmin(request: Request, job_status_id: Optional[int] = 
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -783,7 +783,7 @@ async def addSubJobStatusAdmin(request: Request, body: AddSubJobStatusRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -801,7 +801,7 @@ async def deleteSubJobSatatusAdmin(
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -819,7 +819,7 @@ async def toggleSubJobStatusAdmin(sub_job_status_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -860,7 +860,7 @@ async def addJobStatusAdmin(request: Request, body: AddStatusRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -876,7 +876,7 @@ async def deleteJobStatusAdmin(status_id: int, request: Request, body: Password)
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -892,7 +892,7 @@ async def toggleStatusAdmin(status_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -913,7 +913,7 @@ async def getEduYearsAdmin(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -933,7 +933,7 @@ async def addEduYearAdmin(request: Request, body: AddYearRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -949,7 +949,7 @@ async def deleteEduYearsAdmin(year_id: int, request: Request, body: Password):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -965,7 +965,7 @@ async def toggleEduYearsAdmin(year_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -1006,7 +1006,7 @@ async def addReqYearAdmin(request: Request, body: AddYearRequest):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -1022,7 +1022,7 @@ async def deleteReqYearsAdmin(year_id: int, request: Request, body: Password):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -1038,7 +1038,7 @@ async def toggleReqYearsAdmin(year_id: int, request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -1152,11 +1152,12 @@ async def SubmitRequest(
     form.data["college"] = payload.get("college_id")
     if file_non_objection is not None:
         form.data["non_objection"] = Flag.Yes
-    new_record = await create_request(form.data)
 
-    for f in [file_academic, file_pledge]:
+    for f in [file_academic, file_pledge, file_non_objection]:
         if not f.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+
+    new_record = await create_request(form.data)
 
     try:
         for file_obj, folder in [
@@ -1170,7 +1171,7 @@ async def SubmitRequest(
             with open(full_path, "wb") as buffer:
                 shutil.copyfileobj(file_obj.file, buffer)
 
-    except:
+    except HTTPException:
         raise
 
     await create_attached_message(notes=form.notes, request_id=new_record.id)
@@ -1226,26 +1227,27 @@ async def UpdateRequest(
     if file_non_objection is not None:
         form.data["non_objection"] = Flag.Yes
 
-    await update_request_logic(request_id, form.data, payload.get("college_id"))
+    for f in [file_academic, file_pledge, file_non_objection]:
+        if not f.filename.lower().endswith(".pdf"):
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
     files_to_process = [
         (file_academic, "academic"),
         (file_pledge, "pledge"),
         (file_non_objection, "non_objection"),
     ]
+    try:
+        for file_obj, folder in files_to_process:
+            if file_obj and file_obj.filename:
 
-    for file_obj, folder in files_to_process:
-        if file_obj and file_obj.filename:
-
-            if not file_obj.filename.lower().endswith(".pdf"):
-                raise HTTPException(status_code=400, detail="Only PDF files allowed")
-            try:
                 full_path = os.path.join("statics", folder, f"{request_id}.pdf")
 
                 with open(full_path, "wb") as buffer:
                     shutil.copyfileobj(file_obj.file, buffer)
-            except:
-                raise
+    except HTTPException:
+        raise
+
+    await update_request_logic(request_id, form.data, payload.get("college_id"))
 
     if form.notes is not None:
         await create_attached_message(notes=form.notes, request_id=request_id)
@@ -1262,6 +1264,9 @@ async def UploadNonObjection(
 
     payload = tokenCheck(token)
 
+    if not file_non_objection.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files allowed")
+
     try:
 
         filename = f"{request_id}.pdf"
@@ -1273,12 +1278,12 @@ async def UploadNonObjection(
         await non_objection_add(
             request_id=request_id, college_id=payload.get("college_id")
         )
-    except:
-        raise
 
-    await create_attached_message(
-        notes="تم اضافة/تحديث ملف عدم الممانعة", request_id=request_id
-    )
+        await create_attached_message(
+            notes="تم اضافة/تحديث ملف عدم الممانعة", request_id=request_id
+        )
+    except HTTPException:
+        raise
 
 
 class acceptDenyRequest(BaseModel):
@@ -1334,7 +1339,7 @@ async def deleteRequest(request: Request, request_id: int, body: Password):
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = tokenCheck(token)
 
-    if payload.get("college_id") !=0:
+    if payload.get("college_id") != 0:
         raise HTTPException(status_code=403, detail="Forbidden: Admins only")
 
     try:
@@ -1347,6 +1352,70 @@ async def deleteRequest(request: Request, request_id: int, body: Password):
 #####################################################################################################
 ############################################-Misc-###################################################
 #####################################################################################################
+
+
+@app.get("/get_guidlines")
+async def grtPDFs(request: Request):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    payload = tokenCheck(token)
+
+    if payload.get("college_id") != 0:
+        raise HTTPException(status_code=403, detail="Forbidden: Admins only")
+
+    try:
+        return await get_rules()
+    except:
+        raise HTTPException(status_code=404, detail="Faild to retrive")
+
+
+@app.post("/upload_pdf/{name}")
+async def UploadPDF(request: Request, name: str, file_pdf: UploadFile = File(...)):
+
+    if file_pdf.content_type != "application/pdf":
+        raise HTTPException(
+            status_code=400, detail="Invalid file type. Only PDF files are allowed."
+        )
+
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    tokenCheck(token)
+
+    try:
+        filename = f"{name}.pdf"
+        full_path = os.path.join("statics", "rules", filename)
+        await create_rules(name=name)
+        with open(full_path, "wb") as buffer:
+            shutil.copyfileobj(file_pdf.file, buffer)
+
+        
+    except :
+        raise 
+
+
+@app.delete("/delete_pdf/{name}")
+async def DeletePDF(request: Request, name: str,body:Password):
+    token = request.cookies.get("Token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    tokenCheck(token)
+
+    filename = f"{name}.pdf"
+    full_path = os.path.join("statics", "rules", filename)
+
+    try:
+
+        if os.path.exists(full_path):
+            await delete_rules(name=name,password=body.password)
+            os.remove(full_path)    
+        else:
+            raise HTTPException(status_code=500, detail="Error deleting file")
+    except Exception :
+        raise 
 
 
 @app.get("/download_excel")

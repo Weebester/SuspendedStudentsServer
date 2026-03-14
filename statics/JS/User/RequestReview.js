@@ -80,18 +80,19 @@ async function uploadNonObjection() {
     const fData = new FormData();
     fData.append("file_non_objection", fileInput.files[0]);
 
-    try {
-        const response = await fetch(`${API_BASE}/upload_non_objection/${requestId}`, {
-            method: "POST",
-            body: fData
-        });
-        if (response.ok) {
-            alert("تم رفع ملف عدم الممانعة بنجاح");
-            location.reload();
-        }
-    } catch (e) {
-        console.error("Upload failed", e);
+    
+    const response = await fetch(`${API_BASE}/upload_non_objection/${requestId}`, {
+        method: "POST",
+        body: fData
+    });
+    if (response.ok) {
+        alert("تم رفع ملف عدم الممانعة بنجاح");
+        location.reload();
+    } else {
+        alert(`Upload failed: `);
+        console.error(e);
     }
+
 }
 
 
