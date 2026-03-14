@@ -24,7 +24,6 @@ const FileBox = document.getElementById('filesBox')
 
 const file1 = document.getElementById('file-1');
 const file2 = document.getElementById('file-2');
-const file3 = document.getElementById('file-3');
 
 const notesList = document.getElementById('notes-list');
 
@@ -67,7 +66,7 @@ async function init() {
     fetchNotes();
 }
 
-/*
+
 const fileInput = document.getElementById('non-objection-file');
 const noteInput = document.getElementById('non-objection-note');
 
@@ -94,7 +93,7 @@ async function uploadNonObjection() {
         console.error("Upload failed", e);
     }
 }
-*/
+
 
 async function fetchNotes() {
     try {
@@ -179,7 +178,6 @@ form.addEventListener('submit', async (e) => {
 
     if (!file1.disabled && file1.files[0]) fData.append("file_academic", file1.files[0]);
     if (!file2.disabled && file2.files[0]) fData.append("file_pledge", file2.files[0]);
-    if (!file3.disabled && file3.files[0]) fData.append("file_non_objection", file3.files[0]);
 
     fData.append("notes", txtMsg.value);
 
