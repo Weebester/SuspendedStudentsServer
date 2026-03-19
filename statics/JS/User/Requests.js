@@ -52,6 +52,11 @@ const statusTranslations = {
     "Denied": "مرفوض"
 };
 
+const genderTranslations = {
+    "male": "ذكر",
+    "female": "انثى",
+};
+
 function renderTickets(data) {
     /*
     if (!data || data.length === 0) {
@@ -69,6 +74,7 @@ function renderTickets(data) {
                 </div>
                 <div class="card-body">
                     <h3 class="student-name">${ticket.student_name}</h3>
+                    <h4 class="student-speciality">الجنس: ${genderTranslations[ticket.gender]||ticket.gender}</h4>
                     <h4 class="student-speciality">التخصص: ${ticket.speciality}</h4>
                     <h4 class="student-speciality">موقف الطلب:${ticket.status}</h4>
                     <div class="details-grid">

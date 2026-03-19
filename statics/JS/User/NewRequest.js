@@ -13,6 +13,7 @@ const selSubJob = document.getElementById('sub-job');
 const selAccYear = document.getElementById('acceptance-year');
 const selSusYear = document.getElementById('suspension-year');
 const selBenefits = document.getElementById('benefits');
+const selGender = document.getElementById('gender');
 const inputName = document.getElementById('student-name');
 const inputBirth = document.getElementById('birth-date');
 const inputSpec = document.getElementById('speciality');
@@ -24,7 +25,7 @@ const file2 = document.getElementById('file-2');
 const file3 = document.getElementById('file-3');
 const btnSubmit = document.getElementById('btn-submit');
 
-let formData = {}; // Global store for fetch data
+let formData = {}; 
 
 async function init() {
     // Default state
@@ -70,13 +71,9 @@ function populateSubJob() {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // 1. Trigger the red borders
-    form.classList.add('show-errors');
 
-    // 2. Native validation check (bubbles + stop if empty)
     if (!form.reportValidity()) return;
 
-    // 3. Build FormData (Necessary for files)
     const formData = new FormData();
     formData.append("student_name", inputName.value);
     formData.append("birth_date", inputBirth.value);
@@ -88,6 +85,7 @@ form.addEventListener('submit', async (e) => {
     formData.append("suspension_year", selSusYear.value);
     formData.append("suspension_reason", txtReason.value);
     formData.append("benefactor", selBenefits.value);
+    formData.append("gender", selGender.value);
     formData.append("notes", txtMsg.value);
     
     // Append the files
@@ -96,14 +94,14 @@ form.addEventListener('submit', async (e) => {
     if (file3.files[0]) formData.append("file_non_objection", file3.files[0]);
 
     try {
-        // 4. Actually send the data
+
         const response = await fetch(`${API_BASE}/submit_request`, {
             method: "POST",
-            body: formData, // Do NOT set headers, browser does it automatically
+            body: formData, 
         });
 
         if (response.ok) {
-            // 5. Success! Now kick him out and replace history
+
             window.location.replace("/User/Requests");
         } else {
             const err = await response.json();

@@ -69,6 +69,7 @@ async def ReivewRequestU(request: Request, request_id: int):
                 "request_id": request_id,
                 "request_status": req_data.get("request_status").value,
                 "student_name": req_data.get("student_name"),
+                "gender": "ذكر" if req_data.get("gender") == Gender.Male else "انثى",
                 "status": req_data.get("status"),
                 "birth_date": req_data.get("birth_date"),
                 "department": req_data.get("department"),
@@ -124,6 +125,7 @@ async def ReviewRequestA(request: Request, request_id: int):
                 "admin": True if payload.get("college_id") == 0 else False,
                 "request_id": request_id,
                 "request_status": req_data.get("request_status").value,
+                "gender": "ذكر" if req_data.get("gender") == Gender.Male else "انثى",
                 "student_name": req_data.get("student_name"),
                 "status": req_data.get("status"),
                 "birth_date": req_data.get("birth_date"),
@@ -1110,6 +1112,7 @@ class RequestForm:
         self,
         student_name: str = Form(...),
         birth_date: str = Form(...),
+        gender: str = Form(...),
         department: str = Form(...),
         speciality: str = Form(...),
         study: str = Form(...),
@@ -1125,6 +1128,7 @@ class RequestForm:
             "department": department,
             "speciality": speciality,
             "birth_date": birth_date,
+            "gender":gender,
             "acception_year": acception_year,
             "suspension_year": suspension_year,
             "suspension_reason": suspension_reason,
@@ -1157,7 +1161,7 @@ async def SubmitRequest(
         form.data["non_objection"] = Flag.Yes
 
     for f in [file_academic, file_pledge, file_non_objection]:
-        if not f.filename.lower().endswith(".pdf"):
+        if f is not None and not f.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
     new_record = await create_request(form.data)
@@ -1168,11 +1172,12 @@ async def SubmitRequest(
             (file_pledge, "pledge"),
             (file_non_objection, "non_objection"),
         ]:
-            filename = f"{new_record.id}.pdf"
-            full_path = os.path.join("statics", folder, filename)
+            if file_obj and file_obj.filename:
 
-            with open(full_path, "wb") as buffer:
-                shutil.copyfileobj(file_obj.file, buffer)
+                full_path = os.path.join("statics", folder, f"{new_record.id}.pdf")
+
+                with open(full_path, "wb") as buffer:
+                    shutil.copyfileobj(file_obj.file, buffer)
 
     except HTTPException:
         raise
@@ -1185,6 +1190,7 @@ class UpdateRequestForm:
         self,
         student_name: Optional[str] = Form(None),
         birth_date: Optional[str] = Form(None),
+        gender: str = Form(None),
         department: Optional[str] = Form(None),
         speciality: Optional[str] = Form(None),
         study: Optional[str] = Form(None),
@@ -1200,6 +1206,7 @@ class UpdateRequestForm:
             "department": department,
             "speciality": speciality,
             "birth_date": birth_date,
+            "gender":gender,
             "acception_year": acception_year,
             "suspension_year": suspension_year,
             "suspension_reason": suspension_reason,
@@ -1231,7 +1238,7 @@ async def UpdateRequest(
         form.data["non_objection"] = Flag.Yes
 
     for f in [file_academic, file_pledge, file_non_objection]:
-        if not f.filename.lower().endswith(".pdf"):
+        if f is not None and not f.filename.lower().endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
     files_to_process = [
@@ -1461,6 +1468,11 @@ async def downloadExcel(
 
     if "non_objection" in df.columns:
         df["non_objection"] = df["non_objection"].apply(lambda x: flag_map.get(x, x))
+
+    gender_map = {Gender.Male: "ذكر", Gender.Female: "انثى"}
+
+    if "gender" in df.columns:
+        df["gender"] = df["gender"].apply(lambda x: gender_map.get(x, x))
 
     RequestStatus_map = {
         RequestStatus.PENDING: "قيد الانتظار",

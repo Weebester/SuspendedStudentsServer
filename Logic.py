@@ -528,6 +528,7 @@ async def create_request(params: dict):
         department=params.get("department"),
         speciality=params.get("speciality"),
         birth_date=params.get("birth_date"),
+        gender=params.get("gender"),
         acception_year=params.get("acception_year"),
         suspension_year=params.get("suspension_year"),
         suspension_reason=params.get("suspension_reason"),

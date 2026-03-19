@@ -6,6 +6,10 @@ class Flag(Enum):
     Yes = "yes"
     No = "no"
 
+class Gender(Enum):
+    Male = "male"
+    Female = "female"
+
 
 class RequestStatus(Enum):
     ACCEPTED = "Accepted"
@@ -129,6 +133,7 @@ class StudySub(Model):
 class Requests(Model):
     id = fields.IntField(pk=True)
     student_name = fields.CharField(max_length=100)
+    gender = fields.CharEnumField(Gender)
     college = fields.IntField()
     department = fields.CharField(max_length=100)
     speciality = fields.CharField(max_length=100)
@@ -187,6 +192,7 @@ class Excel(Model):
     id = fields.IntField(pk=True)
     college_id = fields.IntField()
     student_name = fields.CharField(max_length=100)
+    gender = fields.CharEnumField(Gender)
     birth_date = fields.DateField()
 
     college = fields.CharField(max_length=100)
@@ -228,6 +234,7 @@ class RequestsShort(Model):
     id = fields.IntField(pk=True)
     college_id = fields.IntField()
     student_name = fields.CharField(max_length=100)
+    gender = fields.CharEnumField(Gender)
     speciality = fields.CharField(max_length=100)
     college = fields.CharField(max_length=100)
     request_status = fields.CharEnumField(RequestStatus)

@@ -14,6 +14,7 @@ const selSubJob = document.getElementById('sub-job');
 const selAccYear = document.getElementById('acceptance-year');
 const selSusYear = document.getElementById('suspension-year');
 const selBenefits = document.getElementById('benefits');
+const selGender = document.getElementById('gender');
 const selStatus = document.getElementById('status');
 
 
@@ -162,7 +163,8 @@ form.addEventListener('submit', async (e) => {
         { el: selAccYear, key: "acception_year" },
         { el: selSusYear, key: "suspension_year" },
         { el: txtReason, key: "suspension_reason" },
-        { el: selBenefits, key: "benefactor" }
+        { el: selBenefits, key: "benefactor" },
+        { el: selGender, key: "gender" }
     ];
 
     fields.forEach(f => {
